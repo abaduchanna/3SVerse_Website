@@ -10,5 +10,10 @@
   "devDependencies": {
     "@types/node": "catalog:",
     "tsx": "catalog:"
-  }
+  },
+  "description": "",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
