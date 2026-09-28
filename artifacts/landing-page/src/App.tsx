@@ -1782,6 +1782,7 @@ function ReviewCard({ review }: { review: DealerReview }) {
 }
 
 function Reviews() {
+  const wa = whatsappLink();
   const [form, setForm] = useState({ name: '', email: '', store: '', tool: REVIEW_TOOLS[0], rating: '5', text: '', website: '' });
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
   const [note, setNote] = useState('');
