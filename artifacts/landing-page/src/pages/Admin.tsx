@@ -36,6 +36,66 @@ interface FullOrder {
   rejectionReason: string;
 }
 
+interface ContactRec {
+  id?: string;
+  createdAt?: string;
+  name?: string;
+  email?: string;
+  organization?: string;
+  locations?: string;
+  interest?: string;
+  message?: string;
+}
+
+interface ReviewRec {
+  id?: string;
+  createdAt?: string;
+  name?: string;
+  email?: string;
+  store?: string;
+  tool?: string;
+  rating?: string;
+  review?: string;
+  published?: boolean;
+}
+
+type AdminTab = 'orders' | 'contacts' | 'reviews' | 'export';
+
+const TABS: Array<{ id: AdminTab; label: string }> = [
+  { id: 'orders', label: 'Orders' },
+  { id: 'contacts', label: 'Contact inbox' },
+  { id: 'reviews', label: 'Review inbox' },
+  { id: 'export', label: 'Export data' },
+];
+
+/** RFC-4180-ish CSV cell: quote when needed, double inner quotes. */
+function csvCell(value: unknown): string {
+  const text = String(value ?? '');
+  return /[",\n\r]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
+}
+
+function downloadFile(filename: string, content: string, mime: string): void {
+  const blob = new Blob([content], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 4000);
+}
+
+function toCsv(rows: Array<Record<string, unknown>>, columns: Array<[string, string]>): string {
+  const header = columns.map(([, title]) => csvCell(title)).join(',');
+  const body = rows
+    .map((row) => columns.map(([key]) => csvCell(row[key])).join(','))
+    .join('\n');
+  return `${header}\n${body}\n`;
+}
+
+const stamp = () => new Date().toISOString().slice(0, 10);
+
 async function api(body: Record<string, unknown>): Promise<{ status: number; data: Record<string, unknown> }> {
   const res = await fetch('/api/admin', {
     method: 'POST',
@@ -73,6 +133,10 @@ export default function Admin() {
   const [flash, setFlash] = useState('');
   const [instructions, setInstructions] = useState('');
   const [settingsSaved, setSettingsSaved] = useState(false);
+  const [tab, setTab] = useState<AdminTab>('orders');
+  const [contacts, setContacts] = useState<ContactRec[] | null>(null);
+  const [reviews, setReviews] = useState<ReviewRec[] | null>(null);
+  const [exportNote, setExportNote] = useState('');
 
   const flashMsg = (msg: string) => {
     setFlash(msg);
@@ -181,6 +245,109 @@ export default function Admin() {
     }
   };
 
+  const loadInbox = useCallback(async (which: 'contacts' | 'reviews') => {
+    setBusy(which);
+    const { status, data } = await api({ action: `${which}-list` });
+    setBusy('');
+    if (status === 401) {
+      setAuthed('no');
+      return;
+    }
+    if (data.ok) {
+      if (which === 'contacts') setContacts((data.contacts ?? []) as ContactRec[]);
+      else setReviews((data.reviews ?? []) as ReviewRec[]);
+    }
+  }, []);
+
+  const openTab = (next: AdminTab) => {
+    setTab(next);
+    if (next === 'contacts' && contacts === null) void loadInbox('contacts');
+    if (next === 'reviews' && reviews === null) void loadInbox('reviews');
+  };
+
+  const runExport = async () => {
+    setBusy('export');
+    setExportNote('');
+    const { status, data } = await api({ action: 'export-all' });
+    setBusy('');
+    if (status === 401) {
+      setAuthed('no');
+      return;
+    }
+    if (!data.ok) {
+      flashMsg(String(data.error ?? 'Export failed.'));
+      return;
+    }
+    const orders = (data.orders ?? []) as Array<Record<string, unknown>>;
+    const inboxContacts = (data.contacts ?? []) as Array<Record<string, unknown>>;
+    const inboxReviews = (data.reviews ?? []) as Array<Record<string, unknown>>;
+
+    // Orders CSV — one row per line item, keyed to the order.
+    const orderRows: Array<Record<string, unknown>> = [];
+    for (const o of orders) {
+      const items = (o.items ?? []) as Array<Record<string, unknown>>;
+      for (const it of items) {
+        orderRows.push({
+          id: o.id,
+          status: o.status,
+          createdAt: o.createdAt,
+          customer: (o.customer as Record<string, unknown> | undefined)?.name ?? '',
+          email: (o.customer as Record<string, unknown> | undefined)?.email ?? '',
+          company: (o.customer as Record<string, unknown> | undefined)?.company ?? '',
+          messenger: (o.customer as Record<string, unknown> | undefined)?.messenger ?? '',
+          product: it.productName ?? '',
+          model: it.modelLabel ?? '',
+          pcs: it.seatsLabel ?? '',
+          qty: it.qty ?? '',
+          unitPrice: it.unitPrice ?? '',
+          lineTotal: it.lineTotal ?? '',
+          licenseKey: it.licenseKey ?? '',
+          orderTotal: o.total ?? '',
+        });
+      }
+      if (items.length === 0) {
+        orderRows.push({ id: o.id, status: o.status, createdAt: o.createdAt, orderTotal: o.total });
+      }
+    }
+    downloadFile(
+      `3sverse-orders-${stamp()}.csv`,
+      toCsv(orderRows, [
+        ['id', 'Order'], ['status', 'Status'], ['createdAt', 'Created'],
+        ['customer', 'Customer'], ['email', 'Email'], ['company', 'Company'],
+        ['messenger', 'TG/WA'], ['product', 'Product'], ['model', 'Model'],
+        ['pcs', 'PCs'], ['qty', 'Qty'], ['unitPrice', 'Unit'],
+        ['lineTotal', 'Line total'], ['licenseKey', 'License key'], ['orderTotal', 'Order total'],
+      ]),
+      'text/csv;charset=utf-8',
+    );
+    downloadFile(
+      `3sverse-contacts-${stamp()}.csv`,
+      toCsv(inboxContacts, [
+        ['createdAt', 'Created'], ['name', 'Name'], ['email', 'Email'],
+        ['organization', 'Organization'], ['locations', 'Locations'],
+        ['interest', 'Interested in'], ['message', 'Message'],
+      ]),
+      'text/csv;charset=utf-8',
+    );
+    downloadFile(
+      `3sverse-reviews-${stamp()}.csv`,
+      toCsv(inboxReviews, [
+        ['createdAt', 'Created'], ['name', 'Name'], ['email', 'Email'],
+        ['store', 'Store/city'], ['tool', 'Tool'], ['rating', 'Rating'],
+        ['review', 'Review'], ['published', 'Published'],
+      ]),
+      'text/csv;charset=utf-8',
+    );
+    downloadFile(
+      `3sverse-full-backup-${stamp()}.json`,
+      JSON.stringify(data, null, 2),
+      'application/json',
+    );
+    setExportNote(
+      `Downloaded: ${orderRows.length} order rows · ${inboxContacts.length} contacts · ${inboxReviews.length} reviews · 1 full JSON backup`,
+    );
+  };
+
   if (authed === 'checking') {
     return (
       <div className="flex min-h-[100dvh] items-center justify-center bg-background text-muted-foreground">
@@ -250,6 +417,25 @@ export default function Admin() {
             </p>
           </form>
         ) : (
+          <>
+            <nav className="mb-8 flex flex-wrap gap-2" aria-label="Admin sections">
+              {TABS.map((t) => (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => openTab(t.id)}
+                  className={`rounded-xl border px-4 py-2 text-[13px] transition-colors ${
+                    tab === t.id
+                      ? 'border-brand-cyan/40 bg-[#6ee7ef]/[.06] text-foreground'
+                      : 'border-border bg-card text-muted-foreground hover:border-foreground/25 hover:text-foreground'
+                  }`}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </nav>
+
+            {tab === 'orders' ? (
           <div className="grid gap-6 lg:grid-cols-[420px_1fr]">
             <section>
               <div className="mb-4 flex items-center justify-between">
@@ -437,6 +623,131 @@ export default function Admin() {
               </div>
             </section>
           </div>
+            ) : null}
+
+            {tab === 'contacts' ? (
+              <section className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-[16px] font-medium text-foreground">Contact inbox</h2>
+                  <button
+                    type="button"
+                    onClick={() => void loadInbox('contacts')}
+                    className="inline-flex items-center gap-2 rounded-xl border border-input px-3.5 py-2 text-[12.5px] text-foreground hover:border-foreground/40"
+                  >
+                    <RefreshCw className={`h-3.5 w-3.5 ${busy === 'contacts' ? 'animate-spin' : ''}`} /> Refresh
+                  </button>
+                </div>
+                <p className="text-[12.5px] text-muted-foreground">
+                  Every website contact form submission, stored in Netlify Blobs (store
+                  <code className="mx-1 rounded bg-foreground/[.06] px-1.5 py-0.5">contact-inbox</code>)
+                  and emailed to you — full history in one place.
+                </p>
+                {contacts !== null && contacts.length === 0 ? (
+                  <p className="rounded-2xl border border-border bg-card px-4 py-6 text-center text-[13.5px] text-muted-foreground">
+                    No contact submissions yet.
+                  </p>
+                ) : null}
+                {(contacts ?? []).map((c, idx) => (
+                  <article key={c.id ?? idx} className="rounded-2xl border border-border bg-card p-5">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <p className="text-[14px] text-foreground">
+                        {c.name}{' '}
+                        <span className="text-[12.5px] text-muted-foreground">&lt;{c.email}&gt;</span>
+                      </p>
+                      <span className="font-mono-tech text-[11.5px] text-muted-foreground">
+                        {c.createdAt ? new Date(c.createdAt).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : ''}
+                      </span>
+                    </div>
+                    <p className="mt-1 text-[12.5px] text-muted-foreground">
+                      {[c.organization, c.locations, c.interest].filter(Boolean).join(' · ')}
+                    </p>
+                    {c.message ? (
+                      <p className="mt-2 whitespace-pre-wrap rounded-xl border border-border bg-foreground/[.02] px-3 py-2 text-[13px] text-foreground/85">
+                        {c.message}
+                      </p>
+                    ) : null}
+                  </article>
+                ))}
+              </section>
+            ) : null}
+
+            {tab === 'reviews' ? (
+              <section className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-[16px] font-medium text-foreground">Review inbox</h2>
+                  <button
+                    type="button"
+                    onClick={() => void loadInbox('reviews')}
+                    className="inline-flex items-center gap-2 rounded-xl border border-input px-3.5 py-2 text-[12.5px] text-foreground hover:border-foreground/40"
+                  >
+                    <RefreshCw className={`h-3.5 w-3.5 ${busy === 'reviews' ? 'animate-spin' : ''}`} /> Refresh
+                  </button>
+                </div>
+                <p className="text-[12.5px] text-muted-foreground">
+                  Dealer review submissions, stored in Netlify Blobs (store
+                  <code className="mx-1 rounded bg-foreground/[.06] px-1.5 py-0.5">review-inbox</code>).
+                  Verify against license records, then publish the good ones in the site&rsquo;s REVIEWS list.
+                </p>
+                {reviews !== null && reviews.length === 0 ? (
+                  <p className="rounded-2xl border border-border bg-card px-4 py-6 text-center text-[13.5px] text-muted-foreground">
+                    No review submissions yet.
+                  </p>
+                ) : null}
+                {(reviews ?? []).map((r, idx) => (
+                  <article key={r.id ?? idx} className="rounded-2xl border border-border bg-card p-5">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <p className="text-[14px] text-foreground">
+                        {r.name}{' '}
+                        <span className="text-[12.5px] text-muted-foreground">&lt;{r.email}&gt;</span>
+                      </p>
+                      <span className="rounded-full border border-amber-400/30 bg-amber-400/[.08] px-2.5 py-0.5 text-[11px] font-medium text-amber-700 dark:text-amber-200">
+                        {r.rating ?? '—'}
+                      </span>
+                    </div>
+                    <p className="mt-1 text-[12.5px] text-muted-foreground">
+                      {[r.store, r.tool].filter(Boolean).join(' · ')}
+                      {r.createdAt ? ` · ${new Date(r.createdAt).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}` : ''}
+                    </p>
+                    {r.review ? (
+                      <blockquote className="mt-2 whitespace-pre-wrap rounded-xl border border-border bg-foreground/[.02] px-3 py-2 text-[13px] text-foreground/85">
+                        “{r.review}”
+                      </blockquote>
+                    ) : null}
+                  </article>
+                ))}
+              </section>
+            ) : null}
+
+            {tab === 'export' ? (
+              <section className="max-w-2xl space-y-4">
+                <div className="rounded-3xl border border-border bg-card p-6 sm:p-8">
+                  <h2 className="text-[16px] font-medium text-foreground">Export full data</h2>
+                  <p className="mt-1.5 text-[13px] leading-6 text-muted-foreground">
+                    One click, everything: orders (with license keys), contact submissions and
+                    review submissions — three CSV files plus a complete JSON backup. Keep the
+                    JSON backup somewhere safe; it is your offline copy of the whole store.
+                  </p>
+                  <button
+                    type="button"
+                    disabled={busy === 'export'}
+                    onClick={() => void runExport()}
+                    className="mt-5 inline-flex items-center gap-2 rounded-xl border bg-white px-6 py-3 text-[14.5px] font-semibold text-[#0b0a10] transition-transform hover:scale-[1.02] disabled:opacity-60"
+                  >
+                    {busy === 'export' ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+                    Download all data (3 CSV + JSON)
+                  </button>
+                  {exportNote ? (
+                    <p className="mt-3 text-[13px] text-emerald-700 dark:text-emerald-300">{exportNote}</p>
+                  ) : null}
+                  <ul className="mt-5 space-y-1.5 text-[12.5px] text-muted-foreground">
+                    <li>· Orders → dealer-orders store (live since launch)</li>
+                    <li>· Contact submissions → contact-inbox store (live since the data-capture update)</li>
+                    <li>· Review submissions → review-inbox store (live since the data-capture update)</li>
+                  </ul>
+                </div>
+              </section>
+            ) : null}
+          </>
         )}
       </main>
     </div>

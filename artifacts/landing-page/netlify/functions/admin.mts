@@ -12,6 +12,10 @@
 //                   customer email with keys + download link
 //   reject        { id, reason }                     → REJECTED
 //   unapprove     { id }                             → back to PENDING
+//   contacts-list                                    → contact-form inbox
+//   reviews-list                                     → review-form inbox
+//   export-all                                       → FULL data dump (orders +
+//                   contacts + reviews) for the seller's CSV/JSON export
 //   settings-get                                     → payment instructions
 //   settings-set  { paymentInstructions }            → save instructions
 //
@@ -58,6 +62,27 @@ function ordersStore() {
 
 function settingsStore() {
   return getStore("dealer-settings");
+}
+
+function contactInboxStore() {
+  return getStore("contact-inbox");
+}
+
+function reviewInboxStore() {
+  return getStore("review-inbox");
+}
+
+/** List every JSON doc in an inbox store (oldest store format kept
+ * tolerant — records missing a field simply render empty in the UI). */
+async function listInbox(store: ReturnType<typeof getStore>): Promise<Record<string, unknown>[]> {
+  const out: Record<string, unknown>[] = [];
+  const listed = await store.list({ paginate: true });
+  for (const blob of listed.blobs) {
+    const rec = (await store.get(blob.key, { type: "json" })) as null | Record<string, unknown>;
+    if (rec) out.push(rec);
+  }
+  out.sort((a, b) => String(b.createdAt ?? "").localeCompare(String(a.createdAt ?? "")));
+  return out.slice(0, 500);
 }
 
 // ---------------------------------------------------------------- sessions
@@ -325,6 +350,62 @@ export default async (req: Request): Promise<Response> => {
 
     await store.setJSON(id, rec);
     return json(200, { ok: true, emailHint: emailResult.ok ? undefined : emailResult.hint });
+  }
+
+  if (action === "contacts-list") {
+    try {
+      const contacts = await listInbox(contactInboxStore());
+      return json(200, { ok: true, contacts });
+    } catch (err) {
+      return json(200, { ok: true, contacts: [], hint: `inbox empty or unreachable (${String(err).slice(0, 120)})` });
+    }
+  }
+
+  if (action === "reviews-list") {
+    try {
+      const reviews = await listInbox(reviewInboxStore());
+      return json(200, { ok: true, reviews });
+    } catch (err) {
+      return json(200, { ok: true, reviews: [], hint: `inbox empty or unreachable (${String(err).slice(0, 120)})` });
+    }
+  }
+
+  if (action === "export-all") {
+    // One call, everything the seller owns: orders (incl. keys + tokens
+    // stripped), contacts, reviews. The /admin Export tab turns this into
+    // per-store CSV downloads plus a full JSON backup.
+    const orders: Record<string, unknown>[] = [];
+    try {
+      const store = ordersStore();
+      const listed = await store.list({ paginate: true });
+      for (const blob of listed.blobs) {
+        const rec = (await store.get(blob.key, { type: "json" })) as null | Record<string, unknown>;
+        if (!rec) continue;
+        const { token: _token, ...safe } = rec as { token?: string };
+        orders.push(safe);
+      }
+    } catch (err) {
+      console.error(`[admin] export orders failed — ${String(err).slice(0, 200)}`);
+    }
+    let contacts: Record<string, unknown>[] = [];
+    let reviews: Record<string, unknown>[] = [];
+    try {
+      contacts = await listInbox(contactInboxStore());
+    } catch (err) {
+      console.error(`[admin] export contacts failed — ${String(err).slice(0, 200)}`);
+    }
+    try {
+      reviews = await listInbox(reviewInboxStore());
+    } catch (err) {
+      console.error(`[admin] export reviews failed — ${String(err).slice(0, 200)}`);
+    }
+    return json(200, {
+      ok: true,
+      exportedAt: new Date().toISOString(),
+      orders,
+      contacts,
+      reviews,
+    });
   }
 
   if (action === "settings-get") {

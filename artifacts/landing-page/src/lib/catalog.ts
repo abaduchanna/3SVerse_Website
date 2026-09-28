@@ -227,6 +227,14 @@ export const PAID_DOWNLOAD = {
      the License Studio "Orders" tab shows pending orders live (key issue
      prefills straight from the order). Must match gatewayUrl origin. */
   orderInboxUrl: 'https://3sverse-downloads.abaduchanna.workers.dev/order',
+  /* Capture worker (dormant until deployed — setup:
+     app-repos/3sverse-capture-worker/SETUP.md): stores contact/review
+     submissions into the ledger repo (ledger/captures/…) BEFORE the email
+     copy goes out, so the seller keeps the full history. The forms try it
+     first and silently skip it while it is offline. Must match the
+     orderInboxUrl workers.dev account. */
+  captureContactUrl: 'https://3sverse-capture.abaduchanna.workers.dev/contact',
+  captureReviewUrl: 'https://3sverse-capture.abaduchanna.workers.dev/review',
   /* Turnstile-gated free-trial entry (worker /trial → public GitHub release).
      Only used when TURNSTILE_SITE_KEY is set below. */
   trialUrl: 'https://3sverse-downloads.abaduchanna.workers.dev/trial',

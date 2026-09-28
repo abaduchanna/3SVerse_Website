@@ -1756,16 +1756,20 @@ function Reviews() {
       _replyto: email,
       _autoresponse: 'Thanks for your 3S Verse review! We verify every review against license records before publishing. We may reply here to confirm a detail or two.',
       _honey: form.website,
+      website: form.website,
       ...(cfToken ? { 'cf-turnstile-response': cfToken, turnstileToken: cfToken } : {}),
     };
-    // Same protected chain as the contact form: worker /contact (Turnstile
-    // verified server-side) → FormSubmit direct → mailto fallback.
+    // Same protected chain as the contact form: /api/review (same-origin
+    // function — SAVES the review to the review-inbox blob store AND emails
+    // it) → worker /contact (Turnstile verified server-side) → FormSubmit
+    // direct → mailto fallback.
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 8000);
       let delivered = false;
+      // 0. same-origin function — stores + emails the review
       try {
-        const res = await fetch(PAID_DOWNLOAD.contactRelayUrl, {
+        const res = await fetch('/api/review', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
           body: JSON.stringify(fields),
@@ -1776,6 +1780,38 @@ function Reviews() {
       } catch {
         delivered = false;
       }
+      // 1. capture worker — STORES the review in the ledger repo (full
+      //    history) + emails a copy; silently skipped while it is offline
+      if (!delivered) {
+        try {
+          const res = await fetch(PAID_DOWNLOAD.captureReviewUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+            body: JSON.stringify(fields),
+            signal: controller.signal,
+          });
+          const payload = (await res.json().catch(() => null)) as { ok?: boolean } | null;
+          delivered = res.ok && Boolean(payload?.ok);
+        } catch {
+          delivered = false;
+        }
+      }
+      // 2. worker relay — Turnstile verified server-side
+      if (!delivered) {
+        try {
+          const res = await fetch(PAID_DOWNLOAD.contactRelayUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+            body: JSON.stringify(fields),
+            signal: controller.signal,
+          });
+          const payload = (await res.json().catch(() => null)) as { ok?: boolean } | null;
+          delivered = res.ok && Boolean(payload?.ok);
+        } catch {
+          delivered = false;
+        }
+      }
+      // 3. FormSubmit direct
       if (!delivered) {
         const response = await fetch('https://formsubmit.co/ajax/connect@3sverse.com', {
           method: 'POST',
@@ -2158,14 +2194,18 @@ function Contact() {
       _captcha: 'false',
       _replyto: cleanEmail,
       _honey: form.website,
+      website: form.website,
       ...(cfToken ? { 'cf-turnstile-response': cfToken, turnstileToken: cfToken } : {}),
     };
 
     // POST chain, most-protected first:
-    //   1. worker /contact — verifies the Turnstile token server-side
-    //      before relaying (the static site has no server of its own)
-    //   2. FormSubmit AJAX — direct fallback when the worker is unreachable
-    //   3. mailto — never lose the inquiry
+    //   0. /api/contact (same-origin Netlify function) — SAVES the inquiry
+    //      to the contact-inbox blob store (seller's full history in /admin)
+    //      AND emails it — active when the site is hosted on Netlify
+    //   1. capture worker — stores the inquiry in the ledger repo
+    //   2. worker /contact — verifies the Turnstile token server-side
+    //   3. FormSubmit AJAX — direct fallback when the workers are unreachable
+    //   4. mailto — never lose the inquiry
     const postJson = async (url: string, signal: AbortSignal) => {
       const res = await fetch(url, {
         method: 'POST',
@@ -2181,13 +2221,36 @@ function Contact() {
       const timeoutId = setTimeout(() => controller.abort(), 8000);
       let delivered = false;
       let relayNote = '';
+      // 0. same-origin function — stores + emails the inquiry
       try {
-        const { res, payload } = await postJson(PAID_DOWNLOAD.contactRelayUrl, controller.signal);
+        const { res, payload } = await postJson('/api/contact', controller.signal);
         if (res.ok && payload?.ok) delivered = true;
         else relayNote = 'relay';
       } catch {
         relayNote = 'relay';
       }
+      // 1. capture worker — STORES the inquiry in the ledger repo (full
+      //    history) + emails a copy; silently skipped while it is offline
+      if (!delivered) {
+        try {
+          const { res, payload } = await postJson(PAID_DOWNLOAD.captureContactUrl, controller.signal);
+          if (res.ok && payload?.ok) delivered = true;
+          else relayNote = 'relay';
+        } catch {
+          relayNote = 'relay';
+        }
+      }
+      // 2. worker relay — verifies the Turnstile token server-side
+      if (!delivered) {
+        try {
+          const { res, payload } = await postJson(PAID_DOWNLOAD.contactRelayUrl, controller.signal);
+          if (res.ok && payload?.ok) delivered = true;
+          else relayNote = 'relay';
+        } catch {
+          relayNote = 'relay';
+        }
+      }
+      // 3. FormSubmit direct
       if (!delivered) {
         // Worker unreachable (or its env not live yet) — go direct.
         const { res, payload } = await postJson('https://formsubmit.co/ajax/connect@3sverse.com', controller.signal);

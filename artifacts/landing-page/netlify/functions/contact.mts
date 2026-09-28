@@ -5,6 +5,13 @@
 // used to 404 and every contact submission failed. This serverless port
 // keeps the exact same request/response contract but runs on Netlify.
 //
+// DATA CAPTURE: every valid submission is SAVED to the Netlify Blobs
+// store "contact-inbox" (one JSON doc per submission) BEFORE the seller
+// email goes out, so the seller can pull the full history from the
+// /admin console (Contacts tab + CSV/JSON export) even if an email is
+// lost. Storage failure never blocks the email — the inquiry still
+// reaches Connect@3SVerse.com either way.
+//
 // Zero npm dependencies — uses the platform fetch / Request / Response.
 //
 // Required environment variable (Netlify UI → Site configuration →
@@ -17,6 +24,11 @@
 //                     requires 3sverse.com to be verified in Resend. While the
 //                     domain is unverified, set this to onboarding@resend.dev —
 //                     Resend then only allows delivery to your own account email.)
+//   TURNSTILE_SECRET — server-side Turnstile check when set (the CF-worker
+//                     relay verifies its own copy; this covers the direct
+//                     same-origin path). Unset → honeypot + rate limit only.
+
+import { getStore } from "@netlify/blobs";
 
 const CONTACT_TO = resolveEnv("CONTACT_TO") ?? "Connect@3SVerse.com";
 const RESEND_FROM =
@@ -52,9 +64,41 @@ type ContactBody = {
   name?: unknown;
   email?: unknown;
   organization?: unknown;
+  locations?: unknown;
+  interest?: unknown;
   message?: unknown;
   website?: unknown;
+  turnstileToken?: unknown;
+  "cf-turnstile-response"?: unknown;
 };
+
+function contactInbox() {
+  return getStore("contact-inbox");
+}
+
+/** Server-side Turnstile check — only when TURNSTILE_SECRET is set.
+ * Returns null when the token is fine (or no secret configured), else a
+ * short rejection reason. Never leaks the secret. */
+async function turnstileRejectReason(token: string): Promise<string | null> {
+  const secret = resolveEnv("TURNSTILE_SECRET");
+  if (!secret) return null; // not configured → skip (honeypot + rate limit still on)
+  if (!token) return "complete the verification box first";
+  try {
+    const res = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ secret, response: token }),
+      signal: AbortSignal.timeout(8_000),
+    });
+    const data = (await res.json().catch(() => null)) as { success?: boolean } | null;
+    if (data?.success) return null;
+    return "verification failed — please retry the checkbox";
+  } catch {
+    // Verification service unreachable — fail open rather than lose the
+    // inquiry; the honeypot + rate limiter still apply.
+    return null;
+  }
+}
 
 function json(
   status: number,
@@ -145,6 +189,8 @@ export default async function handler(req: Request): Promise<Response> {
   const name = readText(body.name, MAX_NAME_LENGTH);
   const email = readText(body.email, MAX_EMAIL_LENGTH);
   const organization = readText(body.organization, MAX_ORGANIZATION_LENGTH);
+  const locations = readText(body.locations, 80) || "not specified";
+  const interest = readText(body.interest, 160) || "not specified";
   const message = readText(body.message, MAX_MESSAGE_LENGTH);
 
   if (!name || !email || !organization || !message) {
@@ -156,6 +202,14 @@ export default async function handler(req: Request): Promise<Response> {
 
   if (!emailPattern.test(email)) {
     return json(400, { error: "Please provide a valid email address." });
+  }
+
+  const turnstileToken =
+    readText(body.turnstileToken, 2048) ||
+    readText(body["cf-turnstile-response"], 2048);
+  const turnstileReject = await turnstileRejectReason(turnstileToken);
+  if (turnstileReject) {
+    return json(400, { error: turnstileReject });
   }
 
   const retryAfter = rateLimitRetryAfter(clientKey(req));
@@ -175,12 +229,36 @@ export default async function handler(req: Request): Promise<Response> {
     return json(503, { error: "Email delivery is not configured." });
   }
 
+  // ---- capture to the inbox store FIRST (email can never reconstruct it)
+  const rec = {
+    kind: "contact",
+    createdAt: new Date().toISOString(),
+    name,
+    email,
+    organization,
+    locations,
+    interest,
+    message,
+  };
+  let stored = true;
+  try {
+    const id = `ct-${Date.now().toString(36)}-${crypto.randomUUID().slice(0, 8)}`;
+    await contactInbox().setJSON(id, rec);
+  } catch (err) {
+    stored = false;
+    console.error(
+      `[contact] inbox save failed (email still attempted) — ${String(err).slice(0, 300)}`,
+    );
+  }
+
   const text = [
     "New project inquiry from the 3S Verse website",
     "",
     `Name: ${name}`,
     `Email: ${email}`,
     `Organization: ${organization}`,
+    `Locations: ${locations}`,
+    `Interested in: ${interest}`,
     "",
     "Message:",
     message,
@@ -237,9 +315,9 @@ export default async function handler(req: Request): Promise<Response> {
       }
     })();
     console.log(
-      `[contact] Inquiry from ${email} accepted by Resend — id=${data?.id ?? "unknown"}`,
+      `[contact] Inquiry from ${email} accepted by Resend — id=${data?.id ?? "unknown"} stored=${stored}`,
     );
-    return json(200, { ok: true });
+    return json(200, { ok: true, stored });
   } catch (error) {
     console.error(
       `[contact] Submission failed — ${error instanceof Error ? error.message : String(error)}`,
