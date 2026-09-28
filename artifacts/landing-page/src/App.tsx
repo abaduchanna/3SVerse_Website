@@ -1733,12 +1733,12 @@ const TRUST_CARDS = [
   {
     icon: MessageCircle,
     title: 'Human support',
-    text: 'WhatsApp and email, answered by the person who built the tools — same business day (US Central, business days only), next business day worst case.',
+    text: 'WhatsApp and email, answered by the operators who built the tools — same business day (US Central, business days only), next business day worst case.',
   },
   {
     icon: UserCheck,
-    title: 'Founder-operated',
-    text: 'One person builds, sells, and supports these tools — you always deal with the operator directly, never a reseller or middleman.',
+    title: 'Operator-built, operator-supported',
+    text: 'Built by operators who ran the same counters you do — you always deal directly with the people who built your tools, never a reseller or middleman.',
   },
   {
     icon: CreditCard,

@@ -477,7 +477,7 @@ export default function DealerStore() {
           {LAUNCH_OFFER.active ? (
             <span className="text-brand-cyan">{LAUNCH_OFFER.label} — {LAUNCH_OFFER.note} </span>
           ) : null}
-          Start with the free 7-day trial. Then pay the way your cash flow likes: <span className="text-foreground">monthly $89, cancel anytime</span>, <span className="text-foreground">annual (save 44%)</span>, or <span className="text-foreground">one-time lifetime</span> — founding-customer pricing, pay once, runs forever. USD billing — bank transfer, Wise, PayPal, or USDT. Keys are delivered after payment confirmation.
+          Start with the free 7-day trial. Then pay the way your cash flow likes — tap the billing pills on any card and the price switches instantly: <span className="text-foreground">monthly $89, cancel anytime</span>, <span className="text-foreground">annual (save 44%)</span>, or <span className="text-foreground">one-time lifetime</span>. Lifetime is founding-customer pricing: pay once, runs forever. USD billing — bank transfer, Wise, PayPal, or USDT. Keys are delivered after payment confirmation.
         </p>
       </div>
       <div className="mb-8 flex flex-wrap items-center gap-x-6 gap-y-2.5 rounded-2xl border border-border bg-foreground/[.02] px-5 py-3.5 font-mono-tech text-[10px] uppercase tracking-[.16em] text-muted-foreground">
