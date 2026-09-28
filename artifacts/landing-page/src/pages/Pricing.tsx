@@ -66,7 +66,7 @@ function PlanCard({ product, featured }: { product: Product; featured?: boolean 
           {formatUSD(lifetime)}
         </span>
         <span className="pb-0.5 text-[12px] font-light text-muted-foreground">
-          {isBundle ? 'one-time · all three tools' : 'one-time · per PC'}
+          {isBundle ? 'one-time · 2 licenses of each tool (6 total)' : 'one-time · per PC'}
         </span>
       </div>
       <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] font-light text-muted-foreground">

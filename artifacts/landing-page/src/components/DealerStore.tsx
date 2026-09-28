@@ -18,6 +18,7 @@ import {
   Undo2,
 } from 'lucide-react';
 import {
+  BUNDLE_EACH,
   LAUNCH_OFFER,
   MODELS,
   PAID_DOWNLOAD,
@@ -26,6 +27,7 @@ import {
   PRODUCTS,
   TRIAL_DOWNLOAD,
   TURNSTILE_SITE_KEY,
+  bundleLicenseNote,
   discountPercent,
   formatUSD,
   isRecurringModel,
@@ -42,6 +44,8 @@ import {
   type ModelId,
 } from '@/lib/catalog';
 import { TurnstileWidget } from '@/components/TurnstileWidget';
+import TrialGateModal from '@/components/TrialGateModal';
+import { savedTrialLead } from '@/lib/trialgate';
 import { buildOrderInvoice } from '@/lib/autoinvoice';
 import {
   formatDueLong,
@@ -160,6 +164,9 @@ export default function DealerStore() {
   const [paidProduct, setPaidProduct] = useState('bundle');
   const [paidBusy, setPaidBusy] = useState(false);
   const [paidError, setPaidError] = useState('');
+  /* Trial gate — the card download button starts the lead-form modal; the
+     actual download only fires after a successful form submission. */
+  const [gateFor, setGateFor] = useState<{ product: string; label: string } | null>(null);
 
   const total = useMemo(
     () =>
@@ -227,6 +234,12 @@ export default function DealerStore() {
   const setPcs = (productId: string, pcs: number) => {
     const sel = selections[productId];
     const model = sel?.model ?? 'lifetime';
+    /* The Full Bundle ships 2 licenses of EACH tool (6 total) at one price —
+       there is no per-PC choice to make, so the count is pinned at 1 bundle. */
+    if (productId === 'bundle') {
+      setSelection(productId, { pcs: 1 });
+      return;
+    }
     const clamped = Math.max(PC_MIN, Math.min(50, Math.round(Number.isFinite(pcs) ? pcs : 1)));
     setSelection(productId, { pcs: model === 'trial' ? 1 : clamped });
   };
@@ -352,36 +365,75 @@ export default function DealerStore() {
 
     // File the order into the license-ledger inbox (Cloudflare worker →
     // vidapay-license-server/ledger/orders_inbox/<ref>.json) so the
-    // License Studio "Orders" tab shows it to the seller live. Best-effort
-    // and fire-and-forget: the FormSubmit email below stays as the backup
-    // channel and must never be blocked by this call.
+    // License Studio "Orders" tab shows it to the seller live. The worker
+    // ALSO emails the customer the invoice when EmailJS credentials are
+    // configured server-side — its response tells us whether that happened
+    // so the browser never double-sends. Awaited with a short timeout: a
+    // hung worker must not block the order, the FormSubmit relay below is
+    // the backup channel.
+    let workerInvoiceEmailed = false;
     if (PAID_DOWNLOAD.orderInboxUrl) {
-      void fetch(PAID_DOWNLOAD.orderInboxUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ref,
-          name: form.name.trim(),
-          email: form.email.trim(),
-          company: form.company.trim(),
-          messenger: form.messenger.trim(),
-          notes: form.notes.trim(),
-          items: lines.map((l) => ({
-            productId: l.productId,
-            model: l.model,
-            pcs: l.pcs,
-            qty: l.qty,
-          })),
-          total,
-          totalLabel: formatUSD(total),
-          ...(cfToken ? { turnstileToken: cfToken } : {}),
-        }),
-      }).catch(() => null);
+      try {
+        const inboxController = new AbortController();
+        const inboxTimer = window.setTimeout(() => inboxController.abort(), 6000);
+        const inboxRes = await fetch(PAID_DOWNLOAD.orderInboxUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ref,
+            name: form.name.trim(),
+            email: form.email.trim(),
+            company: form.company.trim(),
+            messenger: form.messenger.trim(),
+            notes: form.notes.trim(),
+            items: lines.map((l) => ({
+              productId: l.productId,
+              model: l.model,
+              pcs: l.pcs,
+              qty: l.qty,
+            })),
+            total,
+            totalLabel: formatUSD(total),
+            ...(cfToken ? { turnstileToken: cfToken } : {}),
+          }),
+          signal: inboxController.signal,
+        });
+        window.clearTimeout(inboxTimer);
+        if (inboxRes.ok) {
+          const inboxPayload = (await inboxRes.json().catch(() => null)) as { invoiceEmailed?: boolean } | null;
+          workerInvoiceEmailed = inboxPayload?.invoiceEmailed === true;
+        }
+      } catch {
+        /* ledger unreachable — FormSubmit below still delivers the order */
+      }
     }
 
     // Static hosting (GitHub Pages) has no server functions, so orders go
     // through FormSubmit — the same relay the contact form uses. The very
     // first submission emails a one-time activation link to the seller inbox.
+    // _autoresponse: FormSubmit emails THIS text back to the customer's own
+    // address instantly — a plain-text receipt/invoice built right here with
+    // the live order details (no external mail service needed).
+    const autoresponse =
+      `3S VERSE — ORDER RECEIVED (this is your receipt/invoice)\n\n` +
+      `Order reference: ${ref}\n` +
+      `Invoice number: ${autoInvoice.invoiceNo}\n` +
+      `Date: ${autoInvoice.date}\n` +
+      `Billed to: ${autoInvoice.customer.name}${form.company.trim() ? ` (${form.company.trim()})` : ''} <${autoInvoice.customer.email}>\n\n` +
+      `Items:\n` +
+      autoInvoice.items.map((i) => `  - ${i.name} — ${i.detail} × ${i.qty} = ${formatUSD(i.unit * i.qty)}`).join('\n') +
+      `\n\nTotal: ${formatUSD(total)} USD\n` +
+      `Pay by: bank transfer, Wise, PayPal, or USDT — within 7 days.\n` +
+      `Reply to this email (Connect@3SVerse.com) with your payment receipt ` +
+      `and order reference ${ref}. License keys + download links are ` +
+      `delivered by email right after payment is confirmed.\n\n` +
+      `By placing this order you accept our End-User License Agreement, ` +
+      `Terms & Conditions and Refund Policy:\n` +
+      `  EULA:            https://3sverse.com/#/eula\n` +
+      `  Terms:           https://3sverse.com/#/terms\n` +
+      `  Privacy:         https://3sverse.com/#/privacy\n` +
+      `  Refund policy:   https://3sverse.com/#/refund\n\n` +
+      `3S Verse · 3sverse.com · Connect@3SVerse.com`;
     const fields: Record<string, string> = {
       order_ref: ref,
       name: form.name.trim().slice(0, 120),
@@ -394,11 +446,14 @@ export default function DealerStore() {
           const product = PRODUCTS.find((p) => p.id === l.productId);
           if (!product) return [`item_${i + 1}`, 'unknown item'];
           const discounted = discountPercent(product, l.model, l.pcs) > 0;
+          const bundleSuffix = l.productId === 'bundle'
+            ? ` — ${BUNDLE_EACH} licenses of each tool (${BUNDLE_EACH * 3} total)`
+            : '';
           return [
             `item_${i + 1}`,
             `${product.name} · ${MODELS.find((m) => m.id === l.model)?.label} · ${
               pcLabel(l.pcs)
-            } × ${l.qty} = ${formatUSD(unitPrice(product, l.model, l.pcs) * l.qty)}` +
+            }${bundleSuffix} × ${l.qty} = ${formatUSD(unitPrice(product, l.model, l.pcs) * l.qty)}` +
               (discounted
                 ? ` (list ${formatUSD(listPrice(product, l.model, l.pcs) * l.qty)})`
                 : ''),
@@ -412,6 +467,7 @@ export default function DealerStore() {
       _template: 'table',
       _captcha: 'false',
       _replyto: form.email.trim().slice(0, 254),
+      _autoresponse: autoresponse,
     };
 
     try {
@@ -433,9 +489,10 @@ export default function DealerStore() {
       if (!response.ok || payload?.success !== 'true') throw new Error('order relay failed');
       setInvoice(autoInvoice);
       setResult(placed(false));
-      // Auto-email the invoice to the customer (EmailJS). Fire-and-forget:
-      // the success screen must never wait on the mail relay.
-      if (emailjsConfigured()) {
+      // Invoice email to the customer: the worker (ledger inbox) already
+      // tried server-side; only if it did NOT, the browser sends its own
+      // EmailJS copy — never both (no duplicate invoices).
+      if (!workerInvoiceEmailed && emailjsConfigured()) {
         void emailInvoiceHtml({
           to: autoInvoice.customer.email,
           name: autoInvoice.customer.name,
@@ -444,6 +501,8 @@ export default function DealerStore() {
           totalLabel: formatUSD(total),
           html: renderInvoiceDocument(autoInvoice),
         }).then((ok) => setInvoiceEmailed(ok));
+      } else if (workerInvoiceEmailed) {
+        setInvoiceEmailed(true);
       }
     } catch {
       // Relay unreachable — never lose the order: hand it to the visitor's
@@ -730,6 +789,16 @@ export default function DealerStore() {
                       </button>
                     ))}
                   </div>
+                  {product.id === 'bundle' ? (
+                  <div className="flex items-center gap-2">
+                    <span
+                      data-testid="pcs-value-bundle"
+                      className="text-[14px] font-medium text-foreground"
+                    >
+                      {BUNDLE_EACH} licenses of each tool — {BUNDLE_EACH * 3} total
+                    </span>
+                  </div>
+                  ) : (
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
@@ -771,7 +840,12 @@ export default function DealerStore() {
                       />
                     )}
                   </div>
-                  {sel.model !== 'trial' ? (
+                  )}
+                  {product.id === 'bundle' ? (
+                    <p className="text-[12px] leading-4 text-muted-foreground">
+                      <span className="text-brand-cyan">Bundle deal</span> — one price, {bundleLicenseNote()} (every tool on every licensed PC).
+                    </p>
+                  ) : sel.model !== 'trial' ? (
                     <p className="text-[12px] leading-4 text-muted-foreground">
                       {tier.offPct > 0 ? (
                         <span className="text-brand-cyan">{tier.label} included</span>
@@ -782,16 +856,21 @@ export default function DealerStore() {
                     </p>
                   ) : null}
                   {sel.model === 'trial' && trialDownloadUrl(product.id) ? (
-                    <a
-                      href={trialDownloadUrl(product.id)}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (savedTrialLead()) {
+                          window.location.href = trialDownloadUrl(product.id);
+                          return;
+                        }
+                        setGateFor({ product: product.id, label: product.name });
+                      }}
                       data-testid={`trial-download-${product.id}`}
                       className="flex items-center gap-2 rounded-xl border border-brand-cyan/30 bg-[#6ee7ef]/[.06] px-4 py-2.5 text-[13px] font-medium text-brand-cyan transition-colors hover:border-brand-cyan/60"
                     >
                       <Download className="h-4 w-4 shrink-0" />
                       <span className="min-w-0 flex-1">{TRIAL_DOWNLOAD.label}</span>
-                    </a>
+                    </button>
                   ) : null}
                   <div className="flex items-end justify-between border-t border-border pt-4">
                     <div>
@@ -812,7 +891,9 @@ export default function DealerStore() {
                       <p className="mt-1 text-[12px] text-muted-foreground">
                         {sel.model === 'trial'
                           ? '7 days · 1 PC · no card needed'
-                          : `${formatUSD(perPcPrice(product, sel.model, sel.pcs))} per PC · ${modelBillingNote(sel.model)}`}
+                          : product.id === 'bundle'
+                            ? `${bundleLicenseNote()} · ${modelBillingNote(sel.model)}`
+                            : `${formatUSD(perPcPrice(product, sel.model, sel.pcs))} per PC · ${modelBillingNote(sel.model)}`}
                       </p>
                     </div>
                     <button
@@ -1015,6 +1096,15 @@ export default function DealerStore() {
           </div>
         </form>
       ) : null}
+
+      <TrialGateModal
+        open={gateFor !== null}
+        productName={gateFor?.label ?? ''}
+        onClose={() => setGateFor(null)}
+        onUnlocked={() => {
+          if (gateFor) window.location.href = trialDownloadUrl(gateFor.product);
+        }}
+      />
     </div>
   );
 }

@@ -11,6 +11,8 @@
  */
 import { useEffect, useState } from 'react';
 import { ArrowLeft, Check, FileDown, ShieldCheck } from 'lucide-react';
+import TrialGateModal from '@/components/TrialGateModal';
+import { savedTrialLead } from '@/lib/trialgate';
 
 const RELEASES_API = 'https://api.github.com/repos/abaduchanna/3SVerse_Downloads/releases/latest';
 const RELEASES_PAGE = 'https://github.com/abaduchanna/3SVerse_Downloads/releases/latest';
@@ -38,6 +40,30 @@ export default function DownloadPage() {
   const [meta, setMeta] = useState<Record<string, AssetMeta> | null>(null);
   const [metaFailed, setMetaFailed] = useState(false);
   const [publishedAt, setPublishedAt] = useState('');
+  /* NO direct downloads — every EXE (trials included) downloads only after
+     the short form (TrialGateModal) is submitted successfully. A lead
+     saved in this browser (from any earlier gated download) skips the form. */
+  const [gateFor, setGateFor] = useState<{ name: string; label: string } | null>(null);
+
+  const startDownload = (name: string) => {
+    window.location.href = dlUrl(name);
+  };
+
+  const requestDownload = (name: string, label: string) => {
+    if (savedTrialLead()) {
+      startDownload(name);
+      return;
+    }
+    setGateFor({ name, label });
+  };
+
+  const requestBundle = () => {
+    if (savedTrialLead()) {
+      window.open(RELEASES_PAGE, '_blank', 'noopener');
+      return;
+    }
+    setGateFor({ name: '3SVerse_Downloads release list', label: 'Full Bundle — all three tools' });
+  };
 
   useEffect(() => {
     document.title = 'Download — 3S Verse';
@@ -65,7 +91,6 @@ export default function DownloadPage() {
     })();
   }, []);
 
-  const bundle = RELEASES_PAGE;
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -125,13 +150,14 @@ export default function DownloadPage() {
                       {name}{typeof m?.size === 'number' ? ` · ${formatMB(m.size)}` : ''}
                     </div>
                   </div>
-                  <a
-                    href={dlUrl(name)}
+                  <button
+                    type="button"
+                    onClick={() => requestDownload(name, label)}
                     data-testid={`dl-button-${name}`}
                     className="inline-flex items-center gap-2 rounded-xl border bg-white px-5 py-3 text-[13.5px] font-semibold text-[#0b0a10] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#f7f3e8]"
                   >
                     <FileDown className="h-4 w-4" /> Download (.exe)
-                  </a>
+                  </button>
                 </div>
                 {sha ? (
                   <div className="mt-4 border-t border-border pt-3">
@@ -153,21 +179,36 @@ export default function DownloadPage() {
             <div className="rounded-2xl border border-border bg-card p-6">
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <div className="min-w-0">
-                  <div className="text-[15.5px] font-medium text-foreground">All three tools — the Full Bundle</div>
+                  <div className="text-[15.5px] font-medium text-foreground">All three tools — the Full Bundle (2 licenses of each — 6 total)</div>
                   <div className="mt-1 font-mono-tech text-[10px] uppercase tracking-[.16em] text-muted-foreground">
                     Grab each installer from the release list
                   </div>
                 </div>
-                <a
-                  href={bundle}
+                <button
+                  type="button"
+                  onClick={requestBundle}
                   data-testid="dl-button-bundle"
                   className="inline-flex items-center gap-2 rounded-xl border border-input px-5 py-3 text-[13.5px] font-semibold text-foreground transition-colors hover:border-foreground/40 hover:text-foreground"
                 >
                   <FileDown className="h-4 w-4" /> Release list
-                </a>
+                </button>
               </div>
             </div>
           </div>
+
+        <TrialGateModal
+          open={gateFor !== null}
+          productName={gateFor?.label ?? ''}
+          onClose={() => setGateFor(null)}
+          onUnlocked={() => {
+            if (!gateFor) return;
+            if (gateFor.name === '3SVerse_Downloads release list') {
+              window.open(RELEASES_PAGE, '_blank', 'noopener');
+            } else {
+              startDownload(gateFor.name);
+            }
+          }}
+        />
 
         <div className="mt-10 rounded-2xl border border-brand-cyan/20 bg-[#6ee7ef]/[.04] p-6" data-testid="download-security">
           <div className="flex items-center gap-2.5">

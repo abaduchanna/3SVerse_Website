@@ -13,6 +13,7 @@
  * it survives Gmail/Outlook paste and prints cleanly to A4 PDF.
  */
 import {
+  BUNDLE_EACH,
   MODELS,
   PRODUCTS,
   discountPercent,
@@ -98,10 +99,13 @@ export function catalogInvoiceItem(
   const modelLabel = MODELS.find((m) => m.id === model)?.label ?? model;
   const seatsLabel = pcLabel(pcs);
   const off = discountPercent(product, model, pcs);
+  const bundleNote = productId === 'bundle'
+    ? ` — ${BUNDLE_EACH} licenses of each tool (${BUNDLE_EACH * 3} total)`
+    : '';
   const detail =
     off > 0
-      ? `${modelLabel} · ${seatsLabel} — list ${formatUSD(listPrice(product, model, pcs))} · −${off}%`
-      : `${modelLabel} · ${seatsLabel}`;
+      ? `${modelLabel} · ${seatsLabel}${bundleNote} — list ${formatUSD(listPrice(product, model, pcs))} · −${off}%`
+      : `${modelLabel} · ${seatsLabel}${bundleNote}`;
   return {
     name: product.name,
     detail,
@@ -305,6 +309,12 @@ ${data.validUntil && !paid && !cancelled
 <div style="font-size:11px;font-weight:700;letter-spacing:.18em;color:${MUTED};text-transform:uppercase;margin:22px 0 8px;">Notes</div>
 <div style="font-size:13px;line-height:1.6;color:${MUTED};margin:0 0 26px;">${esc(data.notes)}</div>`);
   }
+
+  /* legal block — the business-protecting terms every invoice must carry.
+     Mirrors the on-site legal pages (#/terms, #/privacy, #/eula, #/refund). */
+  parts.push(`<div style="height:1px;background:${HAIR};"></div>
+<div style="font-size:11px;font-weight:700;letter-spacing:.18em;color:${MUTED};text-transform:uppercase;margin:22px 0 8px;">Terms &amp; License</div>
+<div style="font-size:12px;line-height:1.7;color:${MUTED};margin:0 0 26px;">By paying this invoice the customer accepts the <a href="https://3sverse.com/#/eula" style="color:${ACCENT};text-decoration:underline;">End-User License Agreement</a> and the <a href="https://3sverse.com/#/terms" style="color:${ACCENT};text-decoration:underline;">Terms &amp; Conditions</a>. Licenses are per-PC, non-exclusive and non-transferable; keys activate on first run on the registered PC(s) and are delivered by email after payment is confirmed. Licenses are non-refundable once activated — genuine software defects are made right (see the <a href="https://3sverse.com/#/refund" style="color:${ACCENT};text-decoration:underline;">Refund Policy</a>). Customer details are processed as described in the <a href="https://3sverse.com/#/privacy" style="color:${ACCENT};text-decoration:underline;">Privacy Policy</a>. This invoice was issued electronically by 3S Verse (3sverse.com · Connect@3SVerse.com) and is valid without a signature.</div>`);
 
   /* footer */
   parts.push(`<div style="height:1px;background:${HAIR};"></div>

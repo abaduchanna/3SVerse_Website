@@ -55,6 +55,142 @@ const LEDGER_PATH_DEFAULT = "ledger/orders.json";
 const INBOX_DIR_DEFAULT = "ledger/orders_inbox";
 const CACHE_SECONDS = 300;
 
+/* ----------------------- customer invoice email ------------------------
+   The moment an order is filed into the ledger inbox, the worker emails
+   the CUSTOMER a complete invoice (order lines, total, payment terms and
+   the EULA / Terms / Privacy / Refund links) through EmailJS's REST API.
+
+   Enable by adding these Worker variables/secret-free public IDs (the
+   EmailJS public key is safe by design):
+     EMAILJS_SERVICE_ID   service_xxxxxxx
+     EMAILJS_TEMPLATE_ID  template_xxxxx (must render {{invoice_html}}
+                          with TRIPLE braces — see EMAILJS_SETUP.md)
+     EMAILJS_PUBLIC_KEY   the EmailJS account public key
+   While any of them is missing the email silently skips and the /order
+   response reports invoiceEmailed:false — the website then falls back to
+   its client-side EmailJS copy, so invoices never double-send. */
+const EMAILJS_SEND_URL = "https://api.emailjs.com/api/v1.0/email/send";
+
+const PRODUCT_NAMES = {
+  extractor: "VidaPay Incentive Extractor",
+  ordering: "VidaPay Device Ordering",
+  rebate: "VidaPay Rebate Filing",
+  bundle: "VidaPay Full Bundle",
+};
+const MODEL_LABELS = {
+  trial: "7-Day Free Trial",
+  monthly: "Monthly",
+  annual: "Annual",
+  lifetime: "Lifetime",
+};
+
+function escHtml(s) {
+  return String(s == null ? "" : s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function invoiceNumberFromRef(ref) {
+  return "INV-" + String(ref || "").toUpperCase().replace(/^3SV-/, "");
+}
+
+function buildInvoiceHtml(order) {
+  const itemRows = (order.items || [])
+    .map((it) => {
+      const name = PRODUCT_NAMES[it.productId] || it.productId;
+      const label = MODEL_LABELS[it.model] || it.model;
+      const detail =
+        it.productId === "bundle"
+          ? `${escHtml(label)} · ${it.pcs} PC${it.pcs === 1 ? "" : "s"} — 2 licenses of each tool (6 total)`
+          : `${escHtml(label)} · ${it.pcs} PC${it.pcs === 1 ? "" : "s"}`;
+      return `<tr>
+  <td style="padding:10px 0;border-bottom:1px solid #e6e4ee;font-size:14px;color:#16151d;">${escHtml(name)}<div style="font-size:12px;color:#6b6880;margin-top:2px;">${detail}</div></td>
+  <td style="padding:10px 0;border-bottom:1px solid #e6e4ee;text-align:center;font-size:13px;color:#16151d;">${Number(it.qty) || 1}</td>
+</tr>`;
+    })
+    .join("");
+  return `<div style="background:#f4f3f8;padding:20px 10px;font-family:-apple-system,'Segoe UI',Roboto,Arial,sans-serif;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:640px;margin:0 auto;background:#fff;border:1px solid #e6e4ee;border-top:3px solid #0e7c8c;border-radius:6px;">
+<tr><td style="padding:22px 28px;">
+  <table role="presentation" width="100%"><tr>
+    <td><div style="font-size:19px;font-weight:700;color:#16151d;">3S Verse</div><div style="font-size:10px;color:#6b6880;letter-spacing:.2em;text-transform:uppercase;margin-top:4px;">Dealer Automation Tools</div></td>
+    <td style="text-align:right;"><div style="font-size:18px;font-weight:700;color:#16151d;">INVOICE</div><div style="font-size:11px;color:#b45309;font-weight:700;">PAYMENT DUE</div></td>
+  </tr></table>
+  <div style="height:1px;background:#e6e4ee;margin:14px 0;"></div>
+  <table role="presentation" width="100%"><tr>
+    <td style="font-size:12px;color:#6b6880;line-height:1.8;">
+      Invoice no: <strong style="color:#16151d;">${escHtml(invoiceNumberFromRef(order.ref))}</strong><br/>
+      Order ref: <strong style="color:#16151d;">${escHtml(order.ref)}</strong><br/>
+      Date: ${escHtml(new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }))}<br/>
+      Pay by: ${escHtml(new Date(Date.now() + 7 * 86400000).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }))} (auto-cancels after)
+    </td>
+    <td style="text-align:right;font-size:12px;color:#6b6880;line-height:1.8;">
+      Bill to:<br/><strong style="color:#16151d;font-size:13px;">${escHtml(order.customer && order.customer.name)}</strong><br/>
+      ${escHtml(order.customer && order.customer.company)}${order.customer && order.customer.company ? "<br/>" : ""}${escHtml(order.customer && order.customer.email)}
+    </td>
+  </tr></table>
+  <table role="presentation" width="100%" style="margin-top:14px;">
+    <tr>
+      <th align="left" style="padding:8px 0;border-bottom:2px solid #16151d;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#6b6880;">Description</th>
+      <th align="center" style="padding:8px 0;border-bottom:2px solid #16151d;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#6b6880;">Qty</th>
+    </tr>
+    ${itemRows}
+  </table>
+  <table role="presentation" width="100%" style="margin-top:12px;"><tr>
+    <td style="font-size:12px;color:#6b6880;">Payment: bank transfer · Wise · PayPal · USDT</td>
+    <td style="text-align:right;font-size:15px;font-weight:800;color:#16151d;">Total: ${escHtml(order.totalLabel || "")}</td>
+  </tr></table>
+  <div style="height:1px;background:#e6e4ee;margin:16px 0 12px;"></div>
+  <div style="font-size:11.5px;line-height:1.7;color:#6b6880;">
+    <strong style="color:#16151d;">What happens next:</strong> reply to this email with your payment receipt and order
+    reference ${escHtml(order.ref)} — license keys and download links are delivered right after payment is confirmed.
+    Monthly/annual plans renew until cancelled; reply anytime to cancel or switch to lifetime.
+    <br/><br/>
+    <strong style="color:#16151d;">Terms &amp; license:</strong> by paying this invoice the customer accepts the
+    <a href="https://3sverse.com/#/eula" style="color:#0e7c8c;">End-User License Agreement</a> and the
+    <a href="https://3sverse.com/#/terms" style="color:#0e7c8c;">Terms &amp; Conditions</a>. Licenses are per-PC,
+    non-exclusive and non-transferable; keys activate on first run on the registered PC(s). Licenses are
+    non-refundable once activated — genuine defects are made right (see the
+    <a href="https://3sverse.com/#/refund" style="color:#0e7c8c;">Refund Policy</a>). Customer details are
+    processed as described in the <a href="https://3sverse.com/#/privacy" style="color:#0e7c8c;">Privacy Policy</a>.
+    Issued electronically by 3S Verse (3sverse.com · Connect@3SVerse.com) — valid without a signature.
+  </div>
+</td></tr></table></div>`;
+}
+
+async function sendCustomerInvoice(env, order) {
+  const serviceId = env.EMAILJS_SERVICE_ID;
+  const templateId = env.EMAILJS_TEMPLATE_ID;
+  const publicKey = env.EMAILJS_PUBLIC_KEY;
+  if (!serviceId || !templateId || !publicKey) return false;
+  if (!order.customer || !order.customer.email) return false;
+  try {
+    const res = await fetch(EMAILJS_SEND_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        service_id: serviceId,
+        template_id: templateId,
+        user_id: publicKey,
+        template_params: {
+          to_email: order.customer.email,
+          customer_name: order.customer.name || "",
+          invoice_no: invoiceNumberFromRef(order.ref),
+          order_ref: order.ref,
+          total_label: order.totalLabel || "",
+          invoice_html: buildInvoiceHtml(order),
+        },
+      }),
+    });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
 /* Trial builds live in the PUBLIC 3sverse-downloads repo (GitHub serves
    them directly). The /trial route puts the same Turnstile gate in front
    of those public links so scrapers/bots cannot hammer them at scale. */
@@ -273,7 +409,7 @@ function readText(v, max) {
   return typeof v === "string" ? v.trim().slice(0, max) : "";
 }
 
-const INBOX_PRODUCTS = { extractor: 1, ordering: 1, rebate: 1 };
+const INBOX_PRODUCTS = { extractor: 1, ordering: 1, rebate: 1, bundle: 1 };
 const INBOX_MODELS = { trial: 1, monthly: 1, annual: 1, lifetime: 1 };
 
 function sanitizeInboxOrder(body) {
@@ -294,7 +430,9 @@ function sanitizeInboxOrder(body) {
     if (!INBOX_PRODUCTS[productId]) return { error: "Unknown product." };
     if (!INBOX_MODELS[model]) return { error: "Unknown billing model." };
     if (!Number.isInteger(pcs) || pcs < 1 || pcs > 50) return { error: "Bad PC count." };
-    items.push({ productId, model, pcs, qty });
+    /* Bundle deal: every bundle line ships 2 licenses of EACH tool (6 keys
+       to issue). Recorded on the order so License Studio shows the rule. */
+    items.push({ productId, model, pcs, qty, ...(productId === "bundle" ? { bundleEach: 2 } : {}) });
   }
   const total = Number(body.total);
   return {
@@ -362,7 +500,12 @@ async function handleOrderPost(request, env) {
   if (res.status >= 400) {
     return jsonCors(request, 502, { ok: false, error: `Could not file the order (GitHub ${res.status}).` });
   }
-  return jsonCors(request, 200, { ok: true, ref: order.ref });
+  // Order is safely in the ledger — now email the customer their invoice.
+  // Best-effort and non-blocking for the response body: a slow mail relay
+  // never turns a filed order into an error for the buyer.
+  const invoiceNo = invoiceNumberFromRef(order.ref);
+  const invoiceEmailed = await sendCustomerInvoice(env, order);
+  return jsonCors(request, 200, { ok: true, ref: order.ref, invoiceNo, invoiceEmailed });
 }
 
 function validate(ledger, orderNo, product) {

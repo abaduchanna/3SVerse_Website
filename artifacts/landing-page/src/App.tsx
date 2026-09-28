@@ -82,6 +82,8 @@ import {
   type DealerReview,
 } from '@/lib/catalog';
 import { trialDownloadUrl } from '@/lib/catalog';
+import TrialGateModal from '@/components/TrialGateModal';
+import { savedTrialLead } from '@/lib/trialgate';
 import { TurnstileWidget } from '@/components/TurnstileWidget';
 
 const queryClient = new QueryClient();
@@ -1061,6 +1063,19 @@ const TOOLS = [
 function Tools() {
   const [active, setActive] = useState(0);
   const tool = TOOLS[active];
+  /* NO direct trial downloads — every EXE downloads only after the short
+     lead form (TrialGateModal) is submitted successfully. */
+  const [gateFor, setGateFor] = useState<{ product: string; label: string } | null>(null);
+  const startTrialDownload = (productId: string) => {
+    window.location.href = trialDownloadUrl(productId);
+  };
+  const requestTrialDownload = () => {
+    if (savedTrialLead()) {
+      startTrialDownload(tool.id);
+      return;
+    }
+    setGateFor({ product: tool.id, label: tool.title });
+  };
   return (
     <section id="tools" className="relative overflow-hidden py-28 lg:py-36">
       <div aria-hidden="true" className="pointer-events-none absolute left-1/2 top-24 h-[420px] w-[720px] -translate-x-1/2 rounded-full bg-[#6ee7ef]/[.05] blur-[130px]" />
@@ -1117,13 +1132,14 @@ function Tools() {
                     ))}
                   </div>
                   <div className="mt-8 flex flex-wrap items-center gap-3">
-                    <a
-                      href={trialDownloadUrl(tool.id)}
+                    <button
+                      type="button"
+                      onClick={requestTrialDownload}
                       data-testid={`button-download-${tool.id}`}
                       className="inline-flex items-center gap-2.5 rounded-xl border bg-white px-6 py-3 text-[14.5px] font-semibold text-[#0b0a10] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#f7f3e8]"
                     >
                       <Download className="h-4 w-4" /> Download free trial (.exe)
-                    </a>
+                    </button>
                     <a
                       href="#/order"
                       data-testid="link-order-status"
@@ -1149,6 +1165,14 @@ function Tools() {
             </AnimatePresence>
           </div>
         </Reveal>
+        <TrialGateModal
+          open={gateFor !== null}
+          productName={gateFor?.label ?? ''}
+          onClose={() => setGateFor(null)}
+          onUnlocked={() => {
+            if (gateFor) startTrialDownload(gateFor.product);
+          }}
+        />
         <RoiCalculator />
         <DealerStore />
         <DemoStrip />

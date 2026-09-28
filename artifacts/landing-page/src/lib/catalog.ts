@@ -255,6 +255,18 @@ export const PAID_DOWNLOAD = {
  */
 export const TURNSTILE_SITE_KEY = '';
 
+/**
+ * Full Bundle value deal — every bundle purchase includes TWO licenses of
+ * EACH tool (Extractor + Ordering + Rebate Filing) = 6 licenses total, at
+ * the single-bundle price. The storefront hides the PC picker on the bundle
+ * card and states the inclusion; invoices and order lines spell it out.
+ */
+export const BUNDLE_EACH = 2;
+
+export function bundleLicenseNote(): string {
+  return `includes ${BUNDLE_EACH} licenses of each tool — ${BUNDLE_EACH * 3} licenses total`;
+}
+
 export const MODELS: ModelOption[] = [
   { id: 'trial', label: '7-Day Free Trial', note: 'Full features, 7 days, 1 PC — no card needed' },
   { id: 'monthly', label: 'Monthly', note: '$89/mo per tool — cancel anytime' },
@@ -305,12 +317,12 @@ export const PRODUCTS: Product[] = [
   {
     id: 'bundle',
     name: 'VidaPay Full Bundle',
-    tagline: 'All three tools. One license. Best value.',
+    tagline: `All three tools. ${BUNDLE_EACH} licenses of each — ${BUNDLE_EACH * 3} licenses. Best value.`,
     features: [
-      'Extractor + Ordering + Rebate Filing',
-      'One license covers every tool',
+      `Extractor + Ordering + Rebate Filing — ${BUNDLE_EACH} licenses of each`,
+      `${BUNDLE_EACH * 3} licenses total, one price`,
+      'Every tool on every licensed PC',
       'Priority support',
-      'All three 3SVerse VidaPay workflow tools under one license',
     ],
     prices: { trial: 0, monthly: 149, annual: 999, lifetime: 2499 },
     launchPrices: { trial: 0, lifetime: 1499 },
