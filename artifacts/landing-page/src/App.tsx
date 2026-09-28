@@ -421,69 +421,6 @@ function ScrollTop() {
   );
 }
 
-/* Ambient pointer spotlight. Perf-critical: this used to call setState on
-   EVERY pointermove (re-rendering the tree + driving a framer-motion spring
-   per event) — the single biggest main-thread cost on the page. Now it
-   lerps in a requestAnimationFrame loop with direct style writes, idles
-   when the pointer stops, and is disabled for touch devices and
-   reduced-motion users. Visual output is unchanged. */
-function Spotlight() {
-  const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    if (window.matchMedia('(pointer: coarse)').matches) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    let raf = 0;
-    let visible = false;
-    const target = { x: -700, y: -700 };
-    const pos = { x: -700, y: -700 };
-    const tick = () => {
-      pos.x += (target.x - pos.x) * 0.14;
-      pos.y += (target.y - pos.y) * 0.14;
-      el.style.transform = `translate3d(${(pos.x - 320).toFixed(1)}px, ${(pos.y - 320).toFixed(1)}px, 0)`;
-      raf = visible ? requestAnimationFrame(tick) : 0;
-    };
-    const onMove = (e: PointerEvent) => {
-      if (e.pointerType === 'touch') return;
-      target.x = e.clientX;
-      target.y = e.clientY;
-      if (!visible) {
-        visible = true;
-        pos.x = target.x;
-        pos.y = target.y;
-        el.style.opacity = '1';
-      }
-      if (!raf) raf = requestAnimationFrame(tick);
-    };
-    const onLeave = () => {
-      visible = false;
-      el.style.opacity = '0';
-    };
-    window.addEventListener('pointermove', onMove, { passive: true });
-    window.addEventListener('pointerleave', onLeave);
-    return () => {
-      if (raf) cancelAnimationFrame(raf);
-      raf = 0;
-      window.removeEventListener('pointermove', onMove);
-      window.removeEventListener('pointerleave', onLeave);
-    };
-  }, []);
-  return (
-    <div
-      ref={ref}
-      aria-hidden="true"
-      className="pointer-events-none fixed left-0 top-0 z-[20] h-[640px] w-[640px] rounded-full opacity-0 transition-opacity duration-500 will-change-transform"
-      style={{
-        background:
-          'radial-gradient(circle, rgba(110,231,239,.10) 0%, rgba(228,75,215,.06) 42%, transparent 70%)',
-        filter: 'blur(6px)',
-        transform: 'translate3d(-700px, -700px, 0)',
-      }}
-    />
-  );
-}
-
 /* GPT-X button language: crisp white rectangle (primary) + quiet outlined
    twin (secondary). Brand colors live in the glow, not the fill. */
 function BtnWhite({ children, href = '#contact', testId, className = '' }: { children: ReactNode; href?: string; testId: string; className?: string }) {
@@ -2400,7 +2337,13 @@ function Footer() {
             </div>
             <div>
               <div className="font-mono-tech text-[10px] uppercase tracking-[.22em] text-muted-foreground">Support</div>
-              <a href={`mailto:${CONTACT_EMAIL}`} data-testid="link-footer-email" className="animate-jiggle mt-4 inline-block font-mono-tech text-[12px] tracking-wider text-brand-cyan dark:bg-none dark:bg-gradient-to-r dark:from-[#6ee7ef] dark:via-[#78a6ff] dark:to-[#e44bd7] dark:bg-clip-text dark:text-transparent">{CONTACT_EMAIL}</a>
+              <div className="mt-4 flex flex-col gap-2.5">
+                <a href="#faq" data-testid="link-footer-faq" className="text-[14px] font-light text-foreground/85 transition-colors hover:text-brand-cyan">FAQ</a>
+                <a href="#contact" data-testid="link-footer-contact" className="text-[14px] font-light text-foreground/85 transition-colors hover:text-brand-cyan">Contact</a>
+                <a href="#/order-status" data-testid="link-footer-order-status" className="text-[14px] font-light text-foreground/85 transition-colors hover:text-brand-cyan">Order status</a>
+                <a href="#/download" data-testid="link-footer-download-2" className="text-[14px] font-light text-foreground/85 transition-colors hover:text-brand-cyan">Download</a>
+                <a href={`mailto:${CONTACT_EMAIL}`} data-testid="link-footer-email" className="mt-1 inline-block font-mono-tech text-[12px] tracking-wider text-brand-cyan dark:bg-none dark:bg-gradient-to-r dark:from-[#6ee7ef] dark:via-[#78a6ff] dark:to-[#e44bd7] dark:bg-clip-text dark:text-transparent">{CONTACT_EMAIL}</a>
+              </div>
             </div>
           </div>
         </div>
@@ -2507,7 +2450,6 @@ function Home() {
   return (
     <div className="noise min-h-[100dvh] overflow-x-clip bg-background">
       <ScrollProgress />
-      <Spotlight />
       <ScrollTop />
       <WhatsAppFloat />
       <BrandCursor />
