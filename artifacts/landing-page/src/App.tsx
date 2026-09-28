@@ -1914,78 +1914,18 @@ function Reviews() {
           </div>
         ) : null}
 
-        {/* the review box — submissions land in the 3S Verse inbox, get
-            verified against license records, then get published */}
+        {/* dealer feedback — a short invite instead of a full-page form:
+            reviews come in by email/WhatsApp, get verified against license
+            records, and only verified ones are published here */}
         <Reveal delay={0.08}>
-          <div className="grid gap-10 rounded-3xl border border-border bg-card p-7 shadow-[0_30px_100px_rgba(0,0,0,.15)] dark:shadow-[0_30px_100px_rgba(0,0,0,.5)] sm:p-10 lg:grid-cols-[1fr_1.4fr]">
-            <div>
-              <h3 className="text-[24px] font-light leading-tight tracking-[-0.01em] text-foreground">Running a tool? <span className="text-brand-cyan">Leave a review.</span></h3>
-              <ol className="mt-6 space-y-4">
-                {[
-                  'Submit the form — takes a minute.',
-                  'We verify you against license records (your email is never published).',
-                  'Your review goes live with your name, store, and city. Critical reviews publish too.',
-                ].map((step, i) => (
-                  <li key={i} className="flex gap-3.5 text-[14px] font-light leading-6.5 text-foreground/75">
-                    <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-brand-magenta/40 font-mono-tech text-[10px] text-brand-cyan">{i + 1}</span>
-                    {step}
-                  </li>
-                ))}
-              </ol>
-              <p className="mt-6 font-mono-tech text-[10px] uppercase tracking-[.16em] text-muted-foreground">
-                Verified purchase badge · moderated by a human
-              </p>
-            </div>
-            <form onSubmit={submit} data-testid="form-review" className="min-w-0">
-              <div aria-hidden="true" className="pointer-events-none absolute -left-[9999px] h-px w-px overflow-hidden">
-                <label htmlFor="review-website">Leave this field empty</label>
-                <input id="review-website" name="website" tabIndex={-1} autoComplete="off" value={form.website} onChange={(event) => setForm((c) => ({ ...c, website: event.target.value }))} />
-              </div>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <label className="block font-mono-tech text-[11px] uppercase tracking-[.18em] text-muted-foreground">
-                  Name
-                  <input required maxLength={120} value={form.name} onChange={(e) => { setForm((c) => ({ ...c, name: e.target.value })); setStatus('idle'); }} data-testid="input-review-name" className="mt-2 w-full rounded-xl border border-border bg-foreground/[.03] px-4 py-3 font-sans text-[14px] normal-case tracking-normal text-foreground outline-none transition-colors placeholder:text-muted-foreground/50 focus:border-brand-cyan/70" placeholder="First and last name" />
-                </label>
-                <label className="block font-mono-tech text-[11px] uppercase tracking-[.18em] text-muted-foreground">
-                  Email <span className="normal-case text-muted-foreground/70">(not published)</span>
-                  <input required maxLength={254} type="email" value={form.email} onChange={(e) => { setForm((c) => ({ ...c, email: e.target.value })); setStatus('idle'); }} data-testid="input-review-email" autoComplete="email" className="mt-2 w-full rounded-xl border border-border bg-foreground/[.03] px-4 py-3 font-sans text-[14px] normal-case tracking-normal text-foreground outline-none transition-colors placeholder:text-muted-foreground/50 focus:border-brand-cyan/70" placeholder="Used only for verification" />
-                </label>
-                <label className="block font-mono-tech text-[11px] uppercase tracking-[.18em] text-muted-foreground">
-                  Store / city
-                  <input required maxLength={160} value={form.store} onChange={(e) => { setForm((c) => ({ ...c, store: e.target.value })); setStatus('idle'); }} data-testid="input-review-store" className="mt-2 w-full rounded-xl border border-border bg-foreground/[.03] px-4 py-3 font-sans text-[14px] normal-case tracking-normal text-foreground outline-none transition-colors placeholder:text-muted-foreground/50 focus:border-brand-cyan/70" placeholder="e.g. Total Wireless · Dallas, TX" />
-                </label>
-                <label className="block font-mono-tech text-[11px] uppercase tracking-[.18em] text-muted-foreground">
-                  Tool you use
-                  <select value={form.tool} onChange={(e) => { setForm((c) => ({ ...c, tool: e.target.value })); setStatus('idle'); }} data-testid="select-review-tool" className="mt-2 w-full appearance-none rounded-xl border border-border bg-foreground/[.03] px-4 py-3 font-sans text-[14px] normal-case tracking-normal text-foreground outline-none transition-colors focus:border-brand-cyan/70">
-                    {REVIEW_TOOLS.map((t) => <option key={t} className="bg-card">{t}</option>)}
-                  </select>
-                </label>
-                <label className="block font-mono-tech text-[11px] uppercase tracking-[.18em] text-muted-foreground sm:col-span-2">
-                  Rating
-                  <div className="mt-2 flex gap-2">
-                    {[['5', '5 — excellent'], ['4', '4 — good'], ['3', '3 — okay'], ['2', '2 — poor'], ['1', '1 — bad']].map(([v, label]) => (
-                      <button key={v} type="button" onClick={() => setForm((c) => ({ ...c, rating: v }))} data-testid={`review-rating-${v}`} aria-label={label} className={`flex h-10 flex-1 items-center justify-center rounded-xl border font-mono-tech text-[12px] transition-colors ${form.rating === v ? 'border-brand-cyan/70 bg-[#6ee7ef]/10 text-brand-cyan' : 'border-border bg-foreground/[.03] text-muted-foreground hover:border-foreground/25'}`}>
-                        {v}★
-                      </button>
-                    ))}
-                  </div>
-                </label>
-              </div>
-              <label className="mt-4 block font-mono-tech text-[11px] uppercase tracking-[.18em] text-muted-foreground">
-                Your experience
-                <textarea required maxLength={2000} rows={4} value={form.text} onChange={(e) => { setForm((c) => ({ ...c, text: e.target.value })); setStatus('idle'); }} data-testid="textarea-review-text" className="mt-2 w-full resize-y rounded-xl border border-border bg-foreground/[.03] px-4 py-3 font-sans text-[14px] normal-case tracking-normal text-foreground outline-none transition-colors placeholder:text-muted-foreground/50 focus:border-brand-cyan/70" placeholder="What did the tool change for your stores? Real numbers beat adjectives." />
-              </label>
-              {TURNSTILE_SITE_KEY && <TurnstileWidget key={cfResetCount} onToken={setCfToken} />}
-              <div className="mt-6 flex flex-wrap items-center gap-4">
-                <button type="submit" disabled={status === 'sending'} data-testid="button-review-submit" className="group inline-flex items-center justify-center gap-2.5 rounded-xl border bg-white px-6 py-3.5 text-[15px] font-semibold tracking-tight text-[#0b0a10] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#f7f3e8] disabled:cursor-wait disabled:opacity-70">
-                  {status === 'sending' ? 'Sending...' : 'Submit review'}
-                  <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-                </button>
-                <span aria-live="polite" className="font-mono-tech text-[10px] uppercase tracking-[.16em] text-muted-foreground">
-                  {status === 'success' ? 'Review received — thank you. It goes up after verification.' : status === 'error' ? `${note || 'Couldn’t send'}. Email ${CONTACT_EMAIL} directly.` : 'Verified against purchase records before publishing.'}
-                </span>
-              </div>
-            </form>
+          <div className="flex flex-col items-start justify-between gap-4 rounded-2xl border border-border bg-card p-6 sm:flex-row sm:items-center">
+            <p className="text-[14px] font-light leading-6.5 text-foreground/75">
+              <span className="font-medium text-foreground">Running a tool?</span>{' '}
+              Share your experience — email <a href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent('Dealer review')}`} className="underline decoration-foreground/30 underline-offset-2 hover:text-foreground">{CONTACT_EMAIL}</a> or send a WhatsApp message. Verified reviews publish here with your name and store.
+            </p>
+            {wa ? (
+              <a href={wa} target="_blank" rel="noopener noreferrer" className="inline-flex shrink-0 items-center gap-2 rounded-xl border border-input px-4 py-2.5 text-[13px] font-medium text-foreground transition-colors hover:border-brand-wa/60 hover:text-brand-wa"><MessageCircle className="h-4 w-4" /> WhatsApp</a>
+            ) : null}
           </div>
         </Reveal>
       </div>

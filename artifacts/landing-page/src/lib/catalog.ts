@@ -388,4 +388,13 @@ export interface DealerReview {
   date: string;
 }
 
-export const REVIEWS: DealerReview[] = [];
+export const REVIEWS: DealerReview[] = [
+  {
+    quote: 'Time saving tools, it\'s great for daily tasks.',
+    name: 'Reportify Solutions',
+    org: 'VidaPay Full Bundle · Houston, TX',
+    initials: 'RS',
+    stars: 4,
+    date: 'Sep 2026',
+  },
+];
