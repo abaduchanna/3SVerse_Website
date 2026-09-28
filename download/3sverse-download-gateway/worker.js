@@ -71,12 +71,6 @@ const CACHE_SECONDS = 300;
    its client-side EmailJS copy, so invoices never double-send. */
 const EMAILJS_SEND_URL = "https://api.emailjs.com/api/v1.0/email/send";
 
-const PRODUCT_NAMES = {
-  extractor: "VidaPay Incentive Extractor",
-  ordering: "VidaPay Device Ordering",
-  rebate: "VidaPay Rebate Filing",
-  bundle: "VidaPay Full Bundle",
-};
 const MODEL_LABELS = {
   trial: "7-Day Free Trial",
   monthly: "Monthly",
@@ -319,6 +313,7 @@ const PRODUCT_NAMES = {
   extractor: "VidaPay Incentive Extractor",
   ordering: "VidaPay Device Ordering",
   rebate: "VidaPay Rebate Filing",
+  bundle: "VidaPay Full Bundle",
 };
 const ALL_PRODUCTS = Object.keys(ASSET_MAP);
 
