@@ -10,32 +10,33 @@
  * right now — the builds re-publish on a fixed sync schedule.
  */
 import { useEffect, useState } from 'react';
-import { ArrowLeft, Check, FileDown, Loader2, ShieldCheck } from 'lucide-react';
-import { TRIAL_DOWNLOADS } from '@/lib/catalog';
+import { ArrowLeft, Check, FileDown, ShieldCheck } from 'lucide-react';
 
 const RELEASES_API = 'https://api.github.com/repos/abaduchanna/3SVerse_Downloads/releases/latest';
 const RELEASES_PAGE = 'https://github.com/abaduchanna/3SVerse_Downloads/releases/latest';
+/* Deterministic per-file URLs: GitHub redirects /releases/latest/download/<name>
+   to the newest release's asset — zero API calls, never rate-limited. The
+   buttons must render even when the GitHub API is exhausted (60 req/hr per
+   IP for anonymous callers); the API only enriches cards with live size and
+   SHA-256, and its absence never blocks a download. */
+const dlUrl = (name: string) =>
+  `https://github.com/abaduchanna/3SVerse_Downloads/releases/latest/download/${name}`;
 
-const LABELS: Record<string, string> = {
-  'VidaPay_Incentive_Extractor.exe': 'VidaPay Incentive Extractor — 7-day trial included',
-  'VidaPay_Device_Ordering.exe': 'VidaPay Device Ordering — 7-day trial included',
-  'VidaPay_Rebate_Filing.exe': 'VidaPay Rebate Filing — 7-day trial included',
-};
+const KNOWN_EXES: Array<{ name: string; label: string }> = [
+  { name: 'VidaPay_Incentive_Extractor.exe', label: 'VidaPay Incentive Extractor — 7-day trial included' },
+  { name: 'VidaPay_Device_Ordering.exe', label: 'VidaPay Device Ordering — 7-day trial included' },
+  { name: 'VidaPay_Rebate_Filing.exe', label: 'VidaPay Rebate Filing — 7-day trial included' },
+];
 
-interface Asset {
-  name: string;
-  size: number;
-  browser_download_url: string;
-  digest?: string;
-}
+interface AssetMeta { size?: number; digest?: string }
 
 function formatMB(bytes: number): string {
   return `${(bytes / 1048576).toFixed(1)} MB`;
 }
 
 export default function DownloadPage() {
-  const [assets, setAssets] = useState<Asset[] | null>(null);
-  const [failed, setFailed] = useState(false);
+  const [meta, setMeta] = useState<Record<string, AssetMeta> | null>(null);
+  const [metaFailed, setMetaFailed] = useState(false);
   const [publishedAt, setPublishedAt] = useState('');
 
   useEffect(() => {
@@ -51,17 +52,20 @@ export default function DownloadPage() {
         });
         clearTimeout(timeout);
         if (!res.ok) throw new Error('release fetch failed');
-        const data = (await res.json()) as { assets?: Asset[]; published_at?: string };
-        const list = (data.assets ?? []).filter((a) => a.name.endsWith('.exe'));
-        setAssets(list);
+        const data = (await res.json()) as { assets?: Array<AssetMeta & { name: string }>; published_at?: string };
+        const byName: Record<string, AssetMeta> = {};
+        for (const a of data.assets ?? []) {
+          if (a.name.endsWith('.exe')) byName[a.name] = { size: a.size, digest: a.digest };
+        }
+        setMeta(byName);
         if (data.published_at) setPublishedAt(new Date(data.published_at).toUTCString());
       } catch {
-        setFailed(true);
+        setMetaFailed(true);
       }
     })();
   }, []);
 
-  const bundle = TRIAL_DOWNLOADS['bundle'] ?? RELEASES_PAGE;
+  const bundle = RELEASES_PAGE;
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -94,64 +98,57 @@ export default function DownloadPage() {
           repository and re-published on a fixed sync schedule.
         </p>
 
-        {failed && (
+        {metaFailed && (
           <div className="mt-8 rounded-2xl border border-amber-400/30 bg-amber-400/[.06] p-5 text-[13.5px] leading-6 text-foreground">
-            Could not load the live file list. Get the installers directly from the{' '}
+            Live checksums and file sizes are temporarily unavailable (GitHub API limit hit on this network).
+            The installers below are always the current builds — download normally, and verify the SHA-256 on the{' '}
             <a className="text-brand-cyan hover:underline" href={RELEASES_PAGE} target="_blank" rel="noopener noreferrer">
               releases page
             </a>.
           </div>
         )}
 
-        {assets === null && !failed && (
-          <div className="mt-10 flex items-center gap-3 text-[13px] text-muted-foreground">
-            <Loader2 className="h-4 w-4 animate-spin" /> Loading current builds and checksums…
-          </div>
-        )}
-
-        {assets !== null && (
-          <div className="mt-10 space-y-4" data-testid="download-list">
-            {assets.map((asset) => {
-              const sha = (asset.digest ?? '').replace(/^sha256:/, '');
-              return (
-                <div
-                  key={asset.name}
-                  data-testid={`dl-${asset.name}`}
-                  className="rounded-2xl border border-border bg-card p-6"
-                >
-                  <div className="flex flex-wrap items-center justify-between gap-4">
-                    <div className="min-w-0">
-                      <div className="text-[15.5px] font-medium text-foreground">
-                        {LABELS[asset.name] ?? asset.name}
-                      </div>
-                      <div className="mt-1 font-mono-tech text-[10px] uppercase tracking-[.16em] text-muted-foreground">
-                        {asset.name} · {formatMB(asset.size)}
-                      </div>
+        <div className="mt-10 space-y-4" data-testid="download-list">
+          {KNOWN_EXES.map(({ name, label }) => {
+            const m = meta?.[name];
+            const sha = (m?.digest ?? '').replace(/^sha256:/, '');
+            return (
+              <div
+                key={name}
+                data-testid={`dl-${name}`}
+                className="rounded-2xl border border-border bg-card p-6"
+              >
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                  <div className="min-w-0">
+                    <div className="text-[15.5px] font-medium text-foreground">{label}</div>
+                    <div className="mt-1 font-mono-tech text-[10px] uppercase tracking-[.16em] text-muted-foreground">
+                      {name}{typeof m?.size === 'number' ? ` · ${formatMB(m.size)}` : ''}
                     </div>
-                    <a
-                      href={asset.browser_download_url}
-                      data-testid={`dl-button-${asset.name}`}
-                      className="inline-flex items-center gap-2 rounded-xl border bg-white px-5 py-3 text-[13.5px] font-semibold text-[#0b0a10] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#f7f3e8]"
-                    >
-                      <FileDown className="h-4 w-4" /> Download (.exe)
-                    </a>
                   </div>
-                  {sha ? (
-                    <div className="mt-4 border-t border-border pt-3">
-                      <div className="font-mono-tech text-[9px] uppercase tracking-[.18em] text-muted-foreground">
-                        SHA-256 — verify before running
-                      </div>
-                      <code
-                        data-testid={`sha-${asset.name}`}
-                        className="mt-1 block break-all font-mono-tech text-[11px] leading-5 text-foreground/85"
-                      >
-                        {sha}
-                      </code>
-                    </div>
-                  ) : null}
+                  <a
+                    href={dlUrl(name)}
+                    data-testid={`dl-button-${name}`}
+                    className="inline-flex items-center gap-2 rounded-xl border bg-white px-5 py-3 text-[13.5px] font-semibold text-[#0b0a10] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#f7f3e8]"
+                  >
+                    <FileDown className="h-4 w-4" /> Download (.exe)
+                  </a>
                 </div>
-              );
-            })}
+                {sha ? (
+                  <div className="mt-4 border-t border-border pt-3">
+                    <div className="font-mono-tech text-[9px] uppercase tracking-[.18em] text-muted-foreground">
+                      SHA-256 — verify before running
+                    </div>
+                    <code
+                      data-testid={`sha-${name}`}
+                      className="mt-1 block break-all font-mono-tech text-[11px] leading-5 text-foreground/85"
+                    >
+                      {sha}
+                    </code>
+                  </div>
+                ) : null}
+              </div>
+            );
+          })}
 
             <div className="rounded-2xl border border-border bg-card p-6">
               <div className="flex flex-wrap items-center justify-between gap-4">
@@ -171,7 +168,6 @@ export default function DownloadPage() {
               </div>
             </div>
           </div>
-        )}
 
         <div className="mt-10 rounded-2xl border border-brand-cyan/20 bg-[#6ee7ef]/[.04] p-6" data-testid="download-security">
           <div className="flex items-center gap-2.5">
