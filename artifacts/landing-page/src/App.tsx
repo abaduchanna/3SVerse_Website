@@ -72,6 +72,7 @@ import {
   PRODUCTS,
   REVIEWS,
   VIDEO_DEMO,
+  DEMOS,
   YOUTUBE_URL,
   formatUSD,
   perPcPrice,
@@ -1422,65 +1423,62 @@ function RoiCalculator() {
 }
 
 /* Demo strip — audit action #3: dealers need to SEE the tools working.
-   Paste a YouTube/Loom embed into VIDEO_DEMO.url in catalog.ts and the
-   iframe replaces the placeholder automatically. */
+   Both published YouTube demos render here as embeds; YOUTUBE_URL links the
+   channel. Watching the real workflow IS the sales pitch — no gates, no
+   "request a walkthrough" friction. */
 function DemoStrip() {
   const wa = whatsappLink();
   return (
     <div data-testid="demo-strip" className="mt-14 overflow-hidden rounded-3xl border border-border bg-card">
-      <div className="grid items-stretch lg:grid-cols-[1.05fr_1fr]">
-        <div className="p-8 sm:p-12">
-          <p className="flex items-center gap-2 font-mono-tech text-[10px] uppercase tracking-[.22em] text-brand-cyan"><PlayCircle className="h-3.5 w-3.5" /> {VIDEO_DEMO.kicker}</p>
-          <h3 className="mt-3 text-[clamp(1.6rem,2.4vw,2.2rem)] font-light leading-[1.1] tracking-[-0.02em] text-foreground">{VIDEO_DEMO.title}</h3>
-          <p className="mt-4 max-w-md text-[14px] font-light leading-7 text-foreground/75">{VIDEO_DEMO.note}</p>
-          <div className="mt-7 flex flex-wrap items-center gap-3">
-            <a
-              href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent('Send me the raw tool walkthrough')}`}
-              data-testid="demo-cta"
-              className="inline-flex items-center gap-2 rounded-xl border bg-white px-5 py-3 text-[13.5px] font-semibold text-[#0b0a10] transition-transform hover:scale-[1.02]"
-            >
-              <PlayCircle className="h-4 w-4" /> Get the raw walkthrough now
-            </a>
-            <a
-              href={LINKEDIN_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-xl border border-input px-5 py-3 text-[13.5px] font-medium text-foreground transition-colors hover:border-brand-cyan/60 hover:text-brand-cyan"
-            >
-              <Linkedin className="h-4 w-4" /> Follow on LinkedIn — demos post there first
-            </a>
-            {YOUTUBE_URL ? (
-              <a href={YOUTUBE_URL} target="_blank" rel="noopener noreferrer" aria-label="3S Verse on YouTube" className="inline-flex items-center gap-2 rounded-xl border border-input px-5 py-3 text-[13.5px] font-medium text-foreground transition-colors hover:border-brand-cyan/60 hover:text-brand-cyan"><Youtube className="h-4 w-4" /> YouTube</a>
-            ) : null}
-            {wa ? (
-              <a href={wa} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-xl border border-input px-5 py-3 text-[13.5px] font-medium text-foreground transition-colors hover:border-brand-wa/60 hover:text-brand-wa"><MessageCircle className="h-4 w-4" /> WhatsApp us</a>
-            ) : null}
-          </div>
-        </div>
-        <div className="relative min-h-[280px] border-t border-border bg-gradient-to-br from-card to-card lg:border-l lg:border-t-0">
-          {VIDEO_DEMO.url ? (
-            <iframe
-              src={VIDEO_DEMO.url}
-              title="3S Verse tool demo"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              className="absolute inset-0 h-full w-full"
-            />
-          ) : (
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-5 p-10 text-center">
-              <span className="relative flex h-20 w-20 items-center justify-center rounded-full border border-brand-cyan/40 bg-[#6ee7ef]/[.07]">
-                <PlayCircle className="h-9 w-9 text-brand-cyan" />
-                <span className="absolute -right-1 -top-1 flex h-4 w-4">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#e44bd7] opacity-60" />
-                  <span className="relative inline-flex h-4 w-4 rounded-full border-2 border-card bg-[#e44bd7]" />
-                </span>
-              </span>
-              <p className="max-w-[260px] font-mono-tech text-[10px] uppercase tracking-[.2em] leading-5 text-muted-foreground">
-                Full product demo in production — meanwhile the field guides below walk the exact workflows
-              </p>
+      <div className="p-8 pb-0 sm:p-12 sm:pb-0">
+        <p className="flex items-center gap-2 font-mono-tech text-[10px] uppercase tracking-[.22em] text-brand-cyan"><PlayCircle className="h-3.5 w-3.5" /> {VIDEO_DEMO.kicker}</p>
+        <h3 className="mt-3 text-[clamp(1.6rem,2.4vw,2.2rem)] font-light leading-[1.1] tracking-[-0.02em] text-foreground">{VIDEO_DEMO.title}</h3>
+        <p className="mt-4 max-w-2xl text-[14px] font-light leading-7 text-foreground/75">{VIDEO_DEMO.note}</p>
+      </div>
+      <div className="grid gap-6 p-8 sm:p-12 lg:grid-cols-2">
+        {DEMOS.map((demo) => (
+          <div key={demo.id} className="overflow-hidden rounded-2xl border border-border bg-background">
+            <div className="relative aspect-video w-full">
+              <iframe
+                src={`https://www.youtube.com/embed/${demo.id}`}
+                title={demo.title}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+                loading="lazy"
+                className="absolute inset-0 h-full w-full"
+              />
             </div>
-          )}
-        </div>
+            <div className="flex items-start justify-between gap-4 p-5">
+              <div>
+                <p className="text-[15px] font-medium leading-6 text-foreground">{demo.title}</p>
+                <p className="mt-1 text-[13px] font-light leading-6 text-foreground/70">{demo.blurb}</p>
+              </div>
+              <span className="shrink-0 rounded-full border border-border px-3 py-1 font-mono-tech text-[10px] uppercase tracking-[.14em] text-muted-foreground">{demo.dur}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="flex flex-wrap items-center gap-3 px-8 pb-8 sm:px-12 sm:pb-12">
+        <a
+          href={YOUTUBE_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          data-testid="demo-cta-youtube"
+          className="inline-flex items-center gap-2 rounded-xl border bg-white px-5 py-3 text-[13.5px] font-semibold text-[#0b0a10] transition-transform hover:scale-[1.02]"
+        >
+          <Youtube className="h-4 w-4" /> Watch on YouTube — @3SVerse
+        </a>
+        <a
+          href={LINKEDIN_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 rounded-xl border border-input px-5 py-3 text-[13.5px] font-medium text-foreground transition-colors hover:border-brand-cyan/60 hover:text-brand-cyan"
+        >
+          <Linkedin className="h-4 w-4" /> Follow on LinkedIn
+        </a>
+        {wa ? (
+          <a href={wa} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-xl border border-input px-5 py-3 text-[13.5px] font-medium text-foreground transition-colors hover:border-brand-wa/60 hover:text-brand-wa"><MessageCircle className="h-4 w-4" /> WhatsApp us</a>
+        ) : null}
       </div>
     </div>
   );
@@ -1904,7 +1902,8 @@ function Reviews() {
           </div>
         </Reveal>
 
-        {/* published reviews — or the honest empty state */}
+        {/* published reviews — the wall stays empty until a verified review
+            clears moderation; no placeholder noise for customers to read past */}
         {REVIEWS.length > 0 ? (
           <div className="grid gap-4 md:grid-cols-3">
             {REVIEWS.map((review) => (
@@ -1913,16 +1912,7 @@ function Reviews() {
               </Reveal>
             ))}
           </div>
-        ) : (
-          <Reveal delay={0.06}>
-            <div className="mb-14 rounded-2xl border border-dashed border-input bg-foreground/[.015] p-7 text-center" data-testid="reviews-empty">
-              <p className="text-[15px] font-light leading-7 text-foreground/75">
-                <span className="font-medium text-foreground">No published reviews yet.</span>{' '}
-                We would rather show an empty wall than a fake one. The first verified dealer reviews go up here the moment they clear verification — good or bad.
-              </p>
-            </div>
-          </Reveal>
-        )}
+        ) : null}
 
         {/* the review box — submissions land in the 3S Verse inbox, get
             verified against license records, then get published */}
@@ -2374,6 +2364,7 @@ function Contact() {
             {wa ? (
               <a href={wa} target="_blank" rel="noopener noreferrer" data-testid="link-contact-whatsapp" className="inline-flex items-center gap-2 whitespace-nowrap text-[13.5px] font-medium text-foreground/85 transition-colors hover:text-brand-wa"><MessageCircle className="h-4 w-4" /> WhatsApp</a>
             ) : null}
+            <a href={YOUTUBE_URL} target="_blank" rel="noopener noreferrer" data-testid="link-contact-youtube" className="inline-flex items-center gap-2 whitespace-nowrap text-[13.5px] font-medium text-foreground/85 transition-colors hover:text-brand-cyan"><Youtube className="h-4 w-4" /> YouTube</a>
             <a href={LINKEDIN_URL} target="_blank" rel="noopener noreferrer" data-testid="link-contact-linkedin" className="inline-flex items-center gap-2 whitespace-nowrap text-[13.5px] font-medium text-foreground/85 transition-colors hover:text-brand-cyan"><Linkedin className="h-4 w-4" /> LinkedIn</a>
             <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 whitespace-nowrap text-[13.5px] font-medium text-foreground/85 transition-colors hover:text-brand-magenta"><Instagram className="h-4 w-4" /> Instagram</a>
             <a href={FACEBOOK_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 whitespace-nowrap text-[13.5px] font-medium text-foreground/85 transition-colors hover:text-brand-periwinkle"><Facebook className="h-4 w-4" /> Facebook</a>

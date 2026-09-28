@@ -145,14 +145,30 @@ export function whatsappLink(): string | null {
  * "demo dropping soon" placeholder instead of an iframe.
  */
 export const VIDEO_DEMO = {
-  url: '',
+  url: 'https://www.youtube.com/embed/vwU8vkcCQWs',
   kicker: 'See it before you buy it',
   title: 'Watch the tools work.',
   note: 'Raw screen recordings — portal in, clean Excel out. No production polish, because the tools are the point.',
 } as const;
 
-/** Optional YouTube channel link — hidden from the UI while ''. */
-export const YOUTUBE_URL = '';
+/** Both published product demos — embedded on the landing page and linked on YouTube. */
+export const DEMOS = [
+  {
+    id: 'vwU8vkcCQWs',
+    title: 'VidaPay Rebate Filing — full walkthrough',
+    blurb: 'The complete rebate filing flow, step by step: pull claims, file them, track the money.',
+    dur: '19 min',
+  },
+  {
+    id: 'Eij45OnT-lw',
+    title: 'VidaPay Incentive Extractor — portal to Excel',
+    blurb: 'Incentive data pulled straight from the VidaPay portal into a clean spreadsheet.',
+    dur: '7:49',
+  },
+] as const;
+
+/** YouTube channel — @3SVerse. */
+export const YOUTUBE_URL = 'https://www.youtube.com/@3SVerse';
 
 /**
  * Official downloads — served from the PUBLIC 3SVerse_Downloads repo,
