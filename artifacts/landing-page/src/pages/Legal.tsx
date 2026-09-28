@@ -100,14 +100,16 @@ function Terms() {
           Place an order in the store and an invoice opens in your browser instantly (PDF-ready, emailed to you).
           Pay by bank transfer, Wise, PayPal or USDT. Once payment is confirmed, license keys plus download links
           arrive by email — usually within a few hours. Every plan includes every update while it is active;
-          lifetime includes updates for the life of the product.
+          lifetime (perpetual) includes 1 year of updates, then an optional $199/yr update plan — the installed
+          build keeps working either way.
         </p>
       </Section>
       <Section title="Plans">
         <p>
           Monthly and annual plans renew as stated on your invoice and can be cancelled by replying to the invoice
-          email before the next renewal date. Lifetime is a one-time payment with no renewals. Trials are the full
-          software for 7 days on one PC, no card required.
+          email before the next renewal date. Lifetime is a one-time payment with no renewals; it includes
+          1 year of updates, then an optional $199/yr update plan. Trials are the full software for 7 days on
+          one PC, no card required.
         </p>
       </Section>
       <Section title="Fair use of the tools">
@@ -256,26 +258,35 @@ function TermsTabs({ initialTab }: { initialTab: TermsTab }) {
 function Refund() {
   return (
     <>
-      <Section title="The guarantee">
+      <Section title="Evaluate first — the 7-day trial">
         <p>
-          Every license carries a <strong className="font-medium text-foreground">30-day money-back guarantee</strong>.
-          If a tool does not do what this site promises on your dealership&rsquo;s data, tell us within 30 days of
-          delivery and we refund you in full — <strong className="font-medium text-foreground">processed within 5
-          business days</strong>, back to the original payment method.
+          Every tool runs free for <strong className="font-medium text-foreground">7 days with full features on
+          1 PC — no card required</strong>. The trial is the evaluation window: run it on your dealership&rsquo;s
+          real data before paying anything.
         </p>
       </Section>
-      <Section title="How to request one">
+      <Section title="After activation">
+        <p>
+          Licenses are <strong className="font-medium text-foreground">non-refundable once activated</strong> —
+          the software delivers its value the moment it runs on your machines. If a tool is genuinely broken on
+          our side and we cannot ship a fix quickly, we make it right: defect resolutions are handled
+          case-by-case and fast, back to the original payment method.
+        </p>
+      </Section>
+      <Section title="Portal changes">
+        <p>
+          If a VidaPay portal change breaks a tool, we ship a compatibility fix. Monthly and annual licenses
+          always include updates; perpetual (lifetime) licenses include{' '}
+          <strong className="font-medium text-foreground">1 year of update coverage</strong>, then an optional
+          $199/yr update plan. An installed build keeps running either way — a portal change alone is not a
+          defect, but a tool we cannot fix within 30 days of your report is treated as one.
+        </p>
+      </Section>
+      <Section title="How to reach us">
         <p>
           Email <a className="text-brand-cyan hover:underline" href={`mailto:${EMAIL}`}>{EMAIL}</a> (or reply to
           your invoice email) with your order number and one line about what fell short. A short call is welcome
-          but never required — we do not interrogate refund requests.
-        </p>
-      </Section>
-      <Section title="What is covered">
-        <p>
-          All self-serve plans: monthly, annual, lifetime and the bundle, including first renewals requested
-          in error. If a VidaPay portal change breaks a tool and we cannot ship you a working fix within 30
-          days of your report, that window does not count against your 30 days — it pauses until the fix lands.
+          but never required.
         </p>
       </Section>
       <Section title="What is separate">
@@ -301,7 +312,7 @@ function Eula() {
       <Section title="1. The license">
         <p>
           A 3S Verse license grants the purchasing dealership a non-exclusive, non-transferable right to run the
-          licensed tool on the number of PCs purchased (seats), for the term purchased (monthly, annual or
+          licensed tool on the number of PCs purchased (seats), for the term purchased (monthly, annual, or perpetual
           lifetime). Each seat is machine-locked to the PC it is activated on.
         </p>
       </Section>
@@ -323,7 +334,9 @@ function Eula() {
       <Section title="4. Updates and portal changes">
         <p>
           Updates are included with every active plan and ship as normal installer updates. When the VidaPay
-          portal changes, we ship compatibility fixes to all plans at no charge. When the portal shows a security
+          portal changes, we ship compatibility fixes: monthly and annual plans always include them, perpetual
+          (lifetime) licenses include 1 year of coverage then an optional $199/yr update plan, and your installed
+          build keeps running either way. When the portal shows a security
           or verification step, the tool pauses and hands it to you — by design, nothing bypasses you.
         </p>
       </Section>

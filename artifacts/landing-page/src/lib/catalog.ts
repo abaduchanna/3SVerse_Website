@@ -30,7 +30,7 @@ export function modelBillingNote(model: ModelId): string {
     case 'annual':
       return 'per year · save 44% vs monthly';
     case 'lifetime':
-      return 'one-time payment · yours forever';
+      return 'one-time payment · perpetual license';
     default:
       return '7 days · 1 PC · no card needed';
   }
@@ -251,7 +251,7 @@ export const MODELS: ModelOption[] = [
   { id: 'trial', label: '7-Day Free Trial', note: 'Full features, 7 days, 1 PC — no card needed' },
   { id: 'monthly', label: 'Monthly', note: '$89/mo per tool — cancel anytime' },
   { id: 'annual', label: 'Annual', note: 'Save 44% vs monthly — every update included' },
-  { id: 'lifetime', label: 'Lifetime', note: 'Founding-customer launch price — pay once, yours forever, every update included.' },
+  { id: 'lifetime', label: 'Lifetime', note: 'Founding-customer launch price — pay once, runs forever. Includes 1 year of portal-change updates; after that an optional $199/yr update plan (your installed copy never stops working).' },
 ];
 
 export const PRODUCTS: Product[] = [

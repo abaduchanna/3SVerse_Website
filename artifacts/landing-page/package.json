@@ -79,5 +79,10 @@
     "@fontsource/dm-mono": "^5.3.0",
     "@fontsource/montserrat": "^5.3.0",
     "@netlify/blobs": "^11.0.3"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
   }
 }

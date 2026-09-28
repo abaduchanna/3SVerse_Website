@@ -739,7 +739,7 @@ function Hero() {
             <Reveal delay={0.32}>
               <div className="mt-14 flex flex-wrap gap-x-8 gap-y-3 border-t border-border pt-5 font-mono-tech text-[11px] uppercase tracking-[.18em] text-muted-foreground">
                 <span className="flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-[#c7ef70]" /> Free 7-day trial · no card</span>
-                <span className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-brand-cyan" /> 3 tools · one bundle license</span>
+                <span className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-brand-cyan" /> buy exactly what you need — or bundle all 3 and save 40%</span>
                 <span className="flex items-center gap-2"><ShieldCheck className="h-3.5 w-3.5 text-brand-magenta" /> Running in dealerships daily</span>
               </div>
             </Reveal>
@@ -803,7 +803,7 @@ const features = [
     description: 'Internal apps built to fit the way your stores actually run — commission trackers, order logs, audit sheets — shipped clean and documented, not another spreadsheet on a shared drive.',
     icon: Smartphone,
     color: 'magenta',
-    detail: ['Built for your workflow', 'Windows · web · mobile', 'Documented delivery scope'],
+    detail: ['Built for your workflow', 'Windows · web · mobile — scoped per project', 'Documented delivery scope'],
   },
   {
     index: '03',
@@ -1017,9 +1017,9 @@ function Outcomes() {
      its own "no invented praise" rule. These three are VERIFIABLE facts
      about the product and the purchase instead. */
   const stats = [
-    { value: '3 tools', label: 'Extractor · Device Ordering · Rebate Filing — one bundle license covers all', kind: 'bars' as const },
+    { value: '3 tools', label: 'Extractor · Device Ordering · Rebate Filing — bundle all 3 and save 40% vs per-tool pricing', kind: 'bars' as const },
     { value: '7 days', label: 'free full-software trial on every tool — no card, no feature locks', kind: 'rings' as const },
-    { value: '30 days', label: 'money-back guarantee on every purchase — no forms, no interrogation', kind: 'line' as const },
+    { value: '1 PC', label: 'per license key — machine-locked seats, no gray-market resale', kind: 'line' as const },
   ];
   return (
     <section id="outcomes" className="relative overflow-hidden py-28 lg:py-36">
@@ -1196,7 +1196,7 @@ function Tools() {
                     </a>
                   </div>
                   <p className="mt-3 text-[12.5px] font-light leading-5 text-muted-foreground">
-                    Windows 10/11 · the download always serves the newest build ·
+                    Windows 10/11 only · the download always serves the newest build ·
                     7-day trial built in, activate with your license key.
                   </p>
                 </div>
@@ -1527,15 +1527,15 @@ const FAQ_ITEMS: Array<{ q: string; a: string }> = [
   },
   {
     q: 'Is this a subscription?',
-    a: 'Only if you want it to be. Monthly is the cancel-anytime plan — $89/mo per tool. Annual is the same software billed yearly at a 44% discount. Lifetime is one payment and it is yours forever — no renewals, ever. Every plan includes every update; pick per tool, mix and match, and switch anytime by replying to your invoice email.',
+    a: 'Only if you want it to be. Monthly is the cancel-anytime plan — $89/mo per tool. Annual is the same software billed yearly at a 44% discount. Lifetime is one payment — a perpetual license that runs forever, with 1 year of updates included; after that an optional $199/yr update plan keeps you on the newest build. Pick per tool, mix and match, and switch anytime by replying to your invoice email.',
   },
   {
     q: 'What is the difference between the free trial and lifetime?',
-    a: 'The trial is the full software, free for 7 days on 1 PC — no card required, no feature locks. Lifetime is the same software with the clock removed: one payment, every future update, and support on WhatsApp and email.',
+    a: 'The trial is the full software, free for 7 days on 1 PC — no card required, no feature locks. Lifetime is the same software with the clock removed: one payment, perpetual license, 1 year of updates included (optional $199/yr after), and support on WhatsApp and email.',
   },
   {
     q: 'What happens when VidaPay updates their portal?',
-    a: 'Portals change — that is the reality of the job. Updates are included with every license, so when the portal moves, the tools move with it. When the portal shows a security or verification step, the tool pauses and hands it to you to approve, then continues the run instead of freezing mid-flow.',
+    a: 'Portals change — that is the reality of the job, and tracking portal changes is our core maintenance work. Monthly and annual licenses always include updates. Lifetime licenses include 1 year of update coverage, then an optional $199/yr update plan — and your installed build keeps working either way. When the portal shows a security or verification step, the tool pauses and hands it to you to approve, then continues the run instead of freezing mid-flow.',
   },
   {
     q: 'What do I need to run it?',
@@ -1547,7 +1547,7 @@ const FAQ_ITEMS: Array<{ q: string; a: string }> = [
   },
   {
     q: 'What if it does not work out for my dealership?',
-    a: 'Every license carries a 30-day money-back guarantee. If a tool does not do what this page promises on your dealership’s data, tell us within 30 days of delivery and we refund you in full — processed within 5 business days. The precise terms live in our refund policy.',
+    a: 'That is exactly what the free 7-day trial is for — full software, your real data, no card, before you pay anything. Once a license is activated it is non-refundable, because the value has already been delivered on your machines. Genuine defects on our side are made right, fast — the precise terms live in our refund policy.',
   },
   {
     q: 'Where does my dealership’s data end up?',
@@ -1722,8 +1722,8 @@ const TRUST_CARDS = [
   },
   {
     icon: Undo2,
-    title: '30-day money-back',
-    text: 'A full refund within 30 days of delivery if a tool does not do what this page promises on your dealership’s data — processed within 5 business days. Precise terms in the refund policy.',
+    title: 'Trial-first, then commit',
+    text: 'Every tool runs free for 7 days with full features on 1 PC — evaluate on your dealership’s real data before paying anything. Licenses are non-refundable once activated; genuine defects on our side are made right, fast.',
   },
   {
     icon: KeyRound,
@@ -1878,7 +1878,7 @@ function Reviews() {
               </h2>
             </div>
             <p className="max-w-sm text-[15px] font-light leading-7 text-foreground/75">
-              We publish zero anonymous quotes and zero paid testimonials. Every review below comes from a license holder we can point to in our records.
+              Every review below comes from a real license holder running our tools in their stores today — 100% verified, no anonymous quotes, no paid testimonials.
             </p>
           </div>
         </Reveal>

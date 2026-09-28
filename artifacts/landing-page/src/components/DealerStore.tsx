@@ -131,7 +131,7 @@ function LaunchBar() {
         </div>
       </div>
       <p className="mt-3 border-t border-border pt-3 text-[12px] font-light leading-5 text-muted-foreground">
-        {LAUNCH_OFFER.note} Every license also carries the 30-day money-back guarantee —{' '}
+        {LAUNCH_OFFER.note} Evaluate free for 7 days before you pay — licenses are non-refundable once activated, genuine defects are made right —{' '}
         <a href="#/refund" className="underline decoration-foreground/30 underline-offset-2 hover:text-foreground">refund policy</a>.
       </p>
     </div>
@@ -477,12 +477,12 @@ export default function DealerStore() {
           {LAUNCH_OFFER.active ? (
             <span className="text-brand-cyan">{LAUNCH_OFFER.label} — {LAUNCH_OFFER.note} </span>
           ) : null}
-          Start with the free 7-day trial. Then pay the way your cash flow likes: <span className="text-foreground">monthly $89, cancel anytime</span>, <span className="text-foreground">annual (save 44%)</span>, or <span className="text-foreground">one-time lifetime</span> — founding-customer pricing, pay once. USD billing — bank transfer, Wise, PayPal, or USDT. Keys are delivered after payment confirmation.
+          Start with the free 7-day trial. Then pay the way your cash flow likes: <span className="text-foreground">monthly $89, cancel anytime</span>, <span className="text-foreground">annual (save 44%)</span>, or <span className="text-foreground">one-time lifetime</span> — founding-customer pricing, pay once, runs forever. USD billing — bank transfer, Wise, PayPal, or USDT. Keys are delivered after payment confirmation.
         </p>
       </div>
       <div className="mb-8 flex flex-wrap items-center gap-x-6 gap-y-2.5 rounded-2xl border border-border bg-foreground/[.02] px-5 py-3.5 font-mono-tech text-[10px] uppercase tracking-[.16em] text-muted-foreground">
         <span className="flex items-center gap-2"><ShieldCheck className="h-3.5 w-3.5 text-brand-cyan" /> Secure SSL checkout</span>
-        <span className="flex items-center gap-2"><Undo2 className="h-3.5 w-3.5 text-brand-cyan" /> 30-day money-back guarantee</span>
+        <span className="flex items-center gap-2"><Undo2 className="h-3.5 w-3.5 text-brand-cyan" /> Free 7-day trial · no card</span>
         <span className="flex items-center gap-2"><Lock className="h-3.5 w-3.5 text-brand-cyan" /> Machine-locked licenses</span>
         <span className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-brand-cyan" /> PayPal protected</span>
         <span className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-brand-cyan" /> Support on WhatsApp &amp; email</span>
@@ -827,7 +827,7 @@ export default function DealerStore() {
                       reassurance at the point of purchase kills conversion) */}
                   <div className="flex flex-wrap items-center gap-x-3.5 gap-y-1 pt-1 text-[12px] font-medium text-muted-foreground">
                     <span className="flex items-center gap-1"><Lock className="h-3 w-3 text-brand-cyan" /> Secure payment</span>
-                    <span className="flex items-center gap-1"><Undo2 className="h-3 w-3 text-brand-cyan" /> 30-day money-back</span>
+                    <span className="flex items-center gap-1"><Undo2 className="h-3 w-3 text-brand-cyan" /> Free 7-day trial first</span>
                     <span className="flex items-center gap-1"><ShieldCheck className="h-3 w-3 text-brand-cyan" /> PayPal accepted</span>
                   </div>
                   {/* value line — audit: dealers compare daily costs, not
