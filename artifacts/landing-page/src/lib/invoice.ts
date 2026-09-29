@@ -228,7 +228,7 @@ export function renderInvoiceBody(data: InvoiceData): string {
   /* header */
   parts.push(`<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
   <td style="padding:30px 0 22px;">
-    <img src="${LOGO_URL}" alt="3S Verse" height="40" width="169" style="height:40px;width:auto;display:block;border:0;outline:none;" />
+    <img src="${LOGO_URL}" alt="3S Verse" height="40" width="179" style="height:40px;width:179px;display:block;border:0;outline:none;" />
     <div style="font-size:11px;color:${MUTED};letter-spacing:.2em;text-transform:uppercase;margin-top:9px;">Dealer Automation Tools</div>
   </td>
   <td style="padding:30px 0 22px;text-align:right;">

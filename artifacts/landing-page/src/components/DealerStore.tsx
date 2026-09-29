@@ -328,10 +328,20 @@ export default function DealerStore() {
       `<div onclick="window.print()" style="position:fixed;top:14px;right:14px;z-index:99;background:#0e7c8c;color:#fff;font:600 13px/1.2 -apple-system,'Segoe UI',Roboto,sans-serif;padding:11px 18px;border-radius:999px;cursor:pointer;box-shadow:0 8px 22px rgba(0,0,0,.28);">Save as PDF / Print</div>` +
         `<script>window.addEventListener('load',function(){setTimeout(function(){try{window.print()}catch(e){}},700);});</` + `script>`,
     );
-    const blob = new Blob([doc], { type: 'text/html;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    window.open(url, '_blank', 'noopener');
-    window.setTimeout(() => URL.revokeObjectURL(url), 60000);
+    /* Chrome refuses to render blob: URLs in a `noopener` popup ("Not
+       allowed to load local resource" — the invoice page stayed blank).
+       Open an about:blank tab first, sever the opener chain ourselves,
+       then write the document into it — same-origin, always renders. */
+    const win = window.open('', '_blank');
+    if (!win) {
+      // Popup blocked — fall back to the HTML download, which always works.
+      downloadInvoice();
+      return;
+    }
+    win.opener = null;
+    win.document.open();
+    win.document.write(doc);
+    win.document.close();
   };
 
   const submit = async (e: FormEvent) => {
