@@ -511,6 +511,29 @@ async function handleOrderPost(request, env) {
   // never turns a filed order into an error for the buyer.
   const invoiceNo = invoiceNumberFromRef(order.ref);
   const invoiceEmailed = await sendCustomerInvoice(env, order);
+  if (!invoiceEmailed) {
+    /* Flag the failure on the ledger order itself so the /ops dashboard
+       shows a "mail fail" chip — best effort, never blocks the response. */
+    try {
+      const gRes = await fetch(url, { headers: ghHeaders(env.LEDGER_WRITE_TOKEN) });
+      if (gRes.ok) {
+        const meta = await gRes.json();
+        const rec = JSON.parse(
+          new TextDecoder().decode(
+            Uint8Array.from(atob(String(meta.content || "").replace(/\s/g, "")), (c) => c.charCodeAt(0)),
+          ),
+        );
+        rec.invoiceEmailed = false;
+        await put({
+          message: `order ${order.ref} — invoice email failed (flagged by gateway)`,
+          content: btoa(unescape(encodeURIComponent(JSON.stringify(rec, null, 2)))),
+          sha: meta.sha,
+        });
+      }
+    } catch {
+      /* best effort */
+    }
+  }
   return jsonCors(request, 200, { ok: true, ref: order.ref, invoiceNo, invoiceEmailed });
 }
 
@@ -596,6 +619,335 @@ function errorPage(status, message) {
 <p style="color:#6b6880;font-size:12px;">3S Verse · Connect@3SVerse.com</p>
 </div></body></html>`,
     { status, headers: { "Content-Type": "text/html; charset=utf-8" } },
+  );
+}
+
+/* ------------------------------ ops dashboard ---------------------------
+   Private operator view of EVERYTHING the ledger holds, fully online:
+     ledger/orders_inbox/*.json  — orders filed live by this gateway
+     ledger/activations/*.json   — licenses issued by License Studio
+   /ops serves a key-gated shell page; the shell calls /ops/data with the
+   ops key (x-ops-key header) and joins orders ↔ licenses so each order
+   shows which license it received, when it was issued and when it
+   expires. No local files, no CSV clicks. Set the OPS_KEY variable. */
+const ACTIVATIONS_DIR_DEFAULT = "ledger/activations";
+const opsCache = new Map();
+
+async function opsCached(key, loader) {
+  const hit = opsCache.get(key);
+  if (hit && Date.now() - hit.at < 45000) return hit.data;
+  const data = await loader();
+  opsCache.set(key, { at: Date.now(), data });
+  return data;
+}
+
+async function opsLoadDir(env, dir) {
+  const repo = env.LEDGER_REPO || LEDGER_REPO_DEFAULT;
+  return opsCached("ops:" + dir, async () => {
+    const listUrl = `https://api.github.com/repos/${repo}/contents/${dir}?ref=main`;
+    const res = await fetch(listUrl, { headers: ghHeaders(env.GH_TOKEN) });
+    if (res.status === 404) return [];
+    if (!res.ok) throw new Error(`GitHub HTTP ${res.status} (${dir})`);
+    const items = await res.json();
+    const out = [];
+    for (const item of Array.isArray(items) ? items : []) {
+      const name = String(item.name || "");
+      if (!name.endsWith(".json")) continue;
+      try {
+        const fUrl = `https://api.github.com/repos/${repo}/contents/${dir}/${name}?ref=main`;
+        const fRes = await fetch(fUrl, { headers: ghHeaders(env.GH_TOKEN) });
+        if (!fRes.ok) continue;
+        const meta = await fRes.json();
+        const rec = JSON.parse(
+          new TextDecoder().decode(
+            Uint8Array.from(atob(String(meta.content || "").replace(/\s/g, "")), (c) => c.charCodeAt(0)),
+          ),
+        );
+        if (rec && typeof rec === "object") out.push(rec);
+      } catch {
+        /* skip unreadable file */
+      }
+    }
+    return out;
+  });
+}
+
+function opsKeyOk(request, url, env) {
+  const expected = String(env.OPS_KEY || "");
+  if (!expected) return false;
+  const given =
+    request.headers.get("x-ops-key") || url.searchParams.get("key") || "";
+  if (!given || given.length !== expected.length) return false;
+  let diff = 0;
+  for (let i = 0; i < expected.length; i++) {
+    diff |= given.charCodeAt(i) ^ expected.charCodeAt(i);
+  }
+  return diff === 0;
+}
+
+async function handleOpsData(request, env, url) {
+  const json = (status, obj) =>
+    new Response(JSON.stringify(obj), {
+      status,
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "no-store",
+      },
+    });
+  if (!env.OPS_KEY) {
+    return json(503, { ok: false, error: "OPS_KEY is not configured on this worker yet." });
+  }
+  if (rateLimited("opsauth", inboxIp(request), 10 * 60 * 1000, 30)) {
+    return json(429, { ok: false, error: "Too many attempts — try again later." });
+  }
+  if (!opsKeyOk(request, url, env)) {
+    return json(403, { ok: false, error: "Invalid ops key." });
+  }
+  if (!env.GH_TOKEN) {
+    return json(503, { ok: false, error: "GH_TOKEN missing on this worker." });
+  }
+  try {
+    const [orders, licenses] = await Promise.all([
+      opsLoadDir(env, env.INBOX_DIR || INBOX_DIR_DEFAULT),
+      opsLoadDir(env, env.ACTIVATIONS_DIR || ACTIVATIONS_DIR_DEFAULT),
+    ]);
+    return json(200, {
+      ok: true,
+      generatedAt: new Date().toISOString(),
+      orders,
+      licenses,
+    });
+  } catch (e) {
+    return json(502, { ok: false, error: String((e && e.message) || e) });
+  }
+}
+
+function opsShellPage() {
+  return new Response(
+    `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>3S Verse — Ops</title>
+<style>
+:root{--bg:#f4f3f8;--card:#fff;--bd:#e6e4ee;--teal:#0e7c8c;--tx:#16151d;--mut:#6b6880;--ok:#1f7a4d;--warn:#b45309;--bad:#b3261e}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.5 -apple-system,'Segoe UI',Roboto,Arial,sans-serif}
+.wrap{max-width:1180px;margin:0 auto;padding:18px 14px 60px}
+.bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.bar img{height:34px;display:block}
+.bar h1{font-size:18px;margin:0}
+.sub{color:var(--mut);font-size:11px;letter-spacing:.18em;text-transform:uppercase}
+.sp{flex:1}
+button{background:var(--card);border:1px solid var(--bd);color:var(--tx);border-radius:8px;padding:8px 14px;font:600 13px/1.4 inherit;cursor:pointer}
+button.pri{background:var(--teal);border-color:var(--teal);color:#fff}
+button:hover{filter:brightness(.96)}
+input,select{background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:8px 10px;font:13px/1.4 inherit;color:var(--tx)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(128px,1fr));gap:10px;margin-bottom:16px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:12px 14px}
+.card .k{color:var(--mut);font-size:10px;letter-spacing:.14em;text-transform:uppercase}
+.card .v{font-size:22px;font-weight:700;margin-top:2px}
+.sec{background:var(--card);border:1px solid var(--bd);border-radius:10px;margin-bottom:18px;overflow:hidden}
+.sec h2{font-size:13px;margin:0;padding:12px 14px;border-bottom:1px solid var(--bd);letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
+.tools{display:flex;gap:10px;flex-wrap:wrap;padding:10px 12px;border-bottom:1px solid var(--bd);align-items:center}
+.sc{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:920px}
+th{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);text-align:left;padding:9px 10px;border-bottom:2px solid var(--tx);white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--bd);vertical-align:top}
+tbody tr:hover td{background:#fafafd}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px}
+.mut{color:var(--mut)}
+.sm{font-size:12px}
+.chip{display:inline-block;border-radius:20px;padding:2px 9px;font-size:11px;font-weight:700;white-space:nowrap}
+.c-ok{background:#e5f4ec;color:var(--ok)}
+.c-warn{background:#fdf1df;color:var(--warn)}
+.c-bad{background:#fbe9e7;color:var(--bad)}
+.c-mut{background:#efedf5;color:var(--mut)}
+.c-teal{background:#e3f1f3;color:var(--teal)}
+#gate{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.gcard{background:var(--card);border:1px solid var(--bd);border-top:3px solid var(--teal);border-radius:10px;padding:30px 28px;max-width:380px;width:100%;text-align:center}
+.gcard img{height:44px;margin-bottom:10px}
+.gcard input{width:100%;margin:14px 0 8px;text-align:center}
+.err{color:var(--bad);font-size:12px;min-height:16px;margin-bottom:6px}
+.hint{color:var(--mut);font-size:11px;margin-top:12px}
+.lbl{font-size:11px;color:var(--mut);letter-spacing:.14em;text-transform:uppercase;margin-top:4px}
+</style></head><body>
+<div id="gate"><div class="gcard">
+<img src="https://3sverse.com/logo.png" alt="3S Verse">
+<div class="lbl">Dealer Automation Tools</div>
+<h2 style="margin:8px 0 2px">Ops Dashboard</h2>
+<div class="mut sm">Orders · Invoices · Licenses — live ledger</div>
+<input id="key" type="password" placeholder="Ops key" autocomplete="off">
+<div class="err" id="gerr"></div>
+<button class="pri" style="width:100%" onclick="unlock()">Unlock</button>
+<div class="hint">Private. The key is the OPS_KEY variable on the gateway worker.</div>
+</div></div>
+<div id="app" style="display:none">
+<div class="wrap">
+  <div class="bar">
+    <img src="https://3sverse.com/logo.png" alt="">
+    <div><h1>3S Verse — Ops</h1><div class="sub">Orders · Invoices · Licenses</div></div>
+    <div class="sp"></div>
+    <span class="mut sm" id="upd"></span>
+    <button onclick="loadData()">Refresh</button>
+    <button onclick="exportCsv('orders')">Orders CSV</button>
+    <button onclick="exportCsv('licenses')">Licenses CSV</button>
+    <button onclick="logout()">Log out</button>
+  </div>
+  <div class="cards" id="cards"></div>
+  <div class="sec">
+    <h2>Website orders — ledger/orders_inbox</h2>
+    <div class="tools">
+      <input id="q" placeholder="Search ref, name, email…" style="min-width:220px" oninput="renderOrders()">
+      <select id="fst" onchange="renderOrders()">
+        <option value="">All statuses</option>
+        <option value="pending">Pending</option>
+        <option value="fulfilled">Fulfilled</option>
+      </select>
+      <label class="sm mut"><input type="checkbox" id="auto" checked> auto-refresh 60s</label>
+    </div>
+    <div class="sc"><table id="tOrders"></table></div>
+  </div>
+  <div class="sec">
+    <h2>Issued licenses — ledger/activations</h2>
+    <div class="tools"><input id="ql" placeholder="Search key, customer…" style="min-width:220px" oninput="renderLic()"></div>
+    <div class="sc"><table id="tLic"></table></div>
+  </div>
+</div></div>
+<script>
+var KEY = sessionStorage.getItem('opsKey') || '';
+var DATA = null;
+var PNAME = {extractor:'Incentive Extractor',ordering:'Device Ordering',rebate:'Rebate Filing',bundle:'Full Bundle'};
+var MSHORT = {trial:'7-day trial',monthly:'monthly',annual:'annual',lifetime:'lifetime'};
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function money(s){var v=parseFloat(String(s||'').replace(/[^0-9.]/g,''));return isNaN(v)?0:v;}
+function inv(ref){return 'INV-'+String(ref||'').toUpperCase().replace(/^3SV-/,'');}
+function today(){return new Date().toISOString().slice(0,10);}
+function days(d){if(!d)return null;var t=Date.parse(d+'T00:00:00Z'),n=Date.parse(today()+'T00:00:00Z');return Math.round((t-n)/864e5);}
+function licById(id){if(!id)return null;var L=(DATA&&DATA.licenses)||[];for(var i=0;i<L.length;i++){if(L[i].license_id===id)return L[i];}return null;}
+function orderForLic(lid){var O=(DATA&&DATA.orders)||[];for(var i=0;i<O.length;i++){if(O[i].licenseId===lid)return O[i].ref;}return '';}
+function orderItems(rec){return (rec.items||[]).map(function(it){var n=PNAME[it.productId]||it.productId;var q=' ×'+(it.qty||1);var pcs=it.pcs?' · '+it.pcs+' PC':'';var be=it.bundleEach?' · '+it.bundleEach+' each':'';var m=(MSHORT[it.model]||it.model);return n+q+pcs+be+' ('+m+')';}).join('; ');}
+function licChip(l){if(!l)return '<span class="chip c-warn">no license yet</span>';var d=days(l.expires);if(l.expires&&d<0)return '<span class="chip c-bad">expired '+esc(l.expires)+'</span>';if(l.expires&&d<=30)return '<span class="chip c-warn">expires in '+d+'d</span>';if(l.expires)return '<span class="chip c-ok">till '+esc(l.expires)+'</span>';return '<span class="chip c-teal">lifetime</span>';}
+function unlock(){KEY=document.getElementById('key').value.trim();document.getElementById('gerr').textContent='';loadData();}
+function logout(){sessionStorage.removeItem('opsKey');location.reload();}
+function loadData(){
+  if(!KEY){return;}
+  fetch('/ops/data',{headers:{'x-ops-key':KEY}}).then(function(r){
+    if(r.status===403){sessionStorage.removeItem('opsKey');DATA=null;document.getElementById('app').style.display='none';document.getElementById('gate').style.display='flex';document.getElementById('gerr').textContent='Invalid ops key.';throw new Error('auth');}
+    if(!r.ok){throw new Error('HTTP '+r.status);}
+    return r.json();
+  }).then(function(j){
+    if(!j.ok){throw new Error(j.error||'unknown error');}
+    DATA=j;sessionStorage.setItem('opsKey',KEY);
+    document.getElementById('gate').style.display='none';
+    document.getElementById('app').style.display='block';
+    document.getElementById('gerr').textContent='';
+    document.getElementById('upd').textContent='updated '+new Date().toLocaleTimeString();
+    renderCards();renderOrders();renderLic();
+  }).catch(function(e){
+    if(e&&e.message!=='auth'){document.getElementById('gerr').textContent='Failed to load: '+e.message;}
+  });
+}
+function renderCards(){
+  var O=(DATA&&DATA.orders)||[],L=(DATA&&DATA.licenses)||[];
+  var pend=0,ful=0,revenue=0,act=0,exp=0,expn=0;
+  O.forEach(function(o){if(o.status==='fulfilled')ful++;else if(o.status==='pending')pend++;revenue+=money(o.totalLabel);});
+  L.forEach(function(l){var d=days(l.expires);if(l.expires&&d<0)exp++;else if(l.expires&&d<=30)expn++;else act++;});
+  var cards=[['Orders',O.length],['Pending',pend],['Fulfilled',ful],['Licenses',L.length],['Active',act],['Expiring ≤30d',expn],['Expired',exp],['Revenue','$'+revenue.toFixed(2)]];
+  document.getElementById('cards').innerHTML=cards.map(function(c){return '<div class="card"><div class="k">'+c[0]+'</div><div class="v">'+c[1]+'</div></div>';}).join('');
+}
+function renderOrders(){
+  var O=(DATA&&DATA.orders)||[];
+  var q=(document.getElementById('q').value||'').toLowerCase();
+  var st=document.getElementById('fst').value;
+  var rows=O.filter(function(o){
+    if(st&&o.status!==st)return false;
+    if(!q)return true;
+    var c=o.customer||{};
+    var hay=[o.ref,c.name,c.email,c.company,o.licenseId,inv(o.ref),orderItems(o)].join(' ').toLowerCase();
+    return hay.indexOf(q)>=0;
+  }).sort(function(a,b){return String(b.createdAt||'').localeCompare(String(a.createdAt||''));});
+  var h='<thead><tr><th>Order</th><th>Date</th><th>Customer</th><th>Items</th><th>Total</th><th>Invoice</th><th>License</th><th>Expiry</th><th>Status</th></tr></thead><tbody>';
+  if(!rows.length)h+='<tr><td colspan="9" class="mut">No orders match.</td></tr>';
+  rows.forEach(function(o){
+    var c=o.customer||{};
+    var l=licById(o.licenseId);
+    var stChip;
+    if(o.status==='fulfilled')stChip='<span class="chip c-ok">fulfilled</span>';
+    else if(o.status==='pending')stChip='<span class="chip c-warn">pending</span>';
+    else stChip='<span class="chip c-mut">'+esc(o.status||'?')+'</span>';
+    if(o.invoiceEmailed===false)stChip+=' <span class="chip c-bad" title="Invoice email failed">mail fail</span>';
+    h+='<tr>'
+      +'<td class="mono"><b>'+esc(o.ref)+'</b></td>'
+      +'<td class="sm">'+esc(String(o.createdAt||'').replace('T',' ').slice(0,16))+'</td>'
+      +'<td><b>'+esc(c.name||'-')+'</b>'+(c.company?'<div class="sm mut">'+esc(c.company)+'</div>':'')+'<div class="sm mut">'+esc(c.email||'')+'</div></td>'
+      +'<td class="sm">'+esc(orderItems(o))+'</td>'
+      +'<td class="mono">'+esc(o.totalLabel||'')+'</td>'
+      +'<td class="mono">'+esc(inv(o.ref))+'</td>'
+      +'<td class="mono sm">'+(o.licenseId?esc(o.licenseId):'<span class="mut">—</span>')+'</td>'
+      +'<td>'+licChip(o.licenseId?l:null)+'</td>'
+      +'<td>'+stChip+'</td>'
+      +'</tr>';
+  });
+  document.getElementById('tOrders').innerHTML=h+'</tbody>';
+}
+function renderLic(){
+  var L=(DATA&&DATA.licenses)||[];
+  var q=(document.getElementById('ql').value||'').toLowerCase();
+  var rows=L.filter(function(l){
+    if(!q)return true;
+    var hay=[l.license_id,l.customer,(l.products||[]).join(','),l.model].join(' ').toLowerCase();
+    return hay.indexOf(q)>=0;
+  }).sort(function(a,b){return String(b.issued_at||'').localeCompare(String(a.issued_at||''));});
+  var h='<thead><tr><th>License key</th><th>Customer</th><th>Products</th><th>Model</th><th>Seats</th><th>Issued</th><th>Expiry</th><th>Status</th><th>Order</th></tr></thead><tbody>';
+  if(!rows.length)h+='<tr><td colspan="9" class="mut">No licenses match.</td></tr>';
+  rows.forEach(function(l){
+    var d=days(l.expires);
+    var st;
+    if(l.expires&&d<0)st='<span class="chip c-bad">expired</span>';
+    else if(l.expires&&d<=30)st='<span class="chip c-warn">'+d+'d left</span>';
+    else st='<span class="chip c-ok">active</span>';
+    var prods=(l.products||[]).map(function(p){return PNAME[p]||p;}).join(', ');
+    var ref=orderForLic(l.license_id);
+    h+='<tr>'
+      +'<td class="mono"><b>'+esc(l.license_id)+'</b></td>'
+      +'<td class="sm">'+esc(l.customer||'-')+'</td>'
+      +'<td class="sm">'+esc(prods)+'</td>'
+      +'<td class="sm">'+esc(MSHORT[l.model]||l.model||'')+'</td>'
+      +'<td class="mono">'+esc(l.max_seats||1)+'</td>'
+      +'<td class="sm">'+esc(l.issued_at||'')+'</td>'
+      +'<td class="sm">'+(l.expires?esc(l.expires):'<span class="mut">never</span>')+'</td>'
+      +'<td>'+st+'</td>'
+      +'<td class="mono sm">'+(ref?'<a href="#" data-ref="'+esc(ref)+'">'+esc(ref)+'</a>':'<span class="mut">—</span>')+'</td>'
+      +'</tr>';
+  });
+  document.getElementById('tLic').innerHTML=h+'</tbody>';
+}
+function csvCell(v){v=String(v==null?'':v);return '"'+v.replace(/"/g,'""')+'"';}
+function exportCsv(kind){
+  var rows,head,name;
+  if(kind==='orders'){
+    head=['ref','created_at','status','customer','company','email','items','total','invoice_no','license_id','expires','messenger','notes'];
+    rows=((DATA&&DATA.orders)||[]).map(function(o){var l=licById(o.licenseId);var c=o.customer||{};return [o.ref,o.createdAt,o.status,c.name,c.company,c.email,orderItems(o),o.totalLabel,inv(o.ref),o.licenseId||'',(l&&l.expires)||'',c.messenger||'',c.notes||''];});
+    name='3sverse-orders.csv';
+  }else{
+    head=['license_id','customer','products','model','max_seats','issued_at','expires','status','order_ref'];
+    rows=((DATA&&DATA.licenses)||[]).map(function(l){return [l.license_id,l.customer,(l.products||[]).join(' '),l.model,l.max_seats,l.issued_at,l.expires,l.status,orderForLic(l.license_id)];});
+    name='3sverse-licenses.csv';
+  }
+  var txt='\\ufeff'+head.join(',')+'\\n'+rows.map(function(r){return r.map(csvCell).join(',');}).join('\\n');
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([txt],{type:'text/csv'}));
+  a.download=name;document.body.appendChild(a);a.click();a.remove();
+}
+document.getElementById('key').addEventListener('keydown',function(ev){if(ev.key==='Enter')unlock();});
+document.addEventListener('click',function(ev){
+  var t=ev.target;
+  if(t&&t.getAttribute&&t.getAttribute('data-ref')){ev.preventDefault();document.getElementById('q').value=t.getAttribute('data-ref');renderOrders();window.scrollTo({top:0,behavior:'smooth'});}
+});
+setInterval(function(){if(DATA&&document.getElementById('auto').checked)loadData();},60000);
+if(KEY)loadData();
+</script></body></html>`,
+    { headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" } },
   );
 }
 
@@ -693,6 +1045,14 @@ export default {
         return challengePage(request, env, url.pathname + "?product=" + encodeURIComponent(tproduct));
       }
       return Response.redirect(target, 302);
+    }
+
+    /* Operator dashboard (private): key-gated shell + JSON feed. */
+    if (url.pathname === "/ops" || url.pathname === "/ops/") {
+      return opsShellPage();
+    }
+    if (url.pathname === "/ops/data") {
+      return handleOpsData(request, env, url);
     }
 
     if (url.pathname !== "/download") {
