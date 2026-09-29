@@ -110,7 +110,7 @@ function buildInvoiceHtml(order) {
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:640px;margin:0 auto;background:#fff;border:1px solid #e6e4ee;border-top:3px solid #0e7c8c;border-radius:6px;">
 <tr><td style="padding:22px 28px;">
   <table role="presentation" width="100%"><tr>
-    <td><div style="font-size:19px;font-weight:700;color:#16151d;">3S Verse</div><div style="font-size:10px;color:#6b6880;letter-spacing:.2em;text-transform:uppercase;margin-top:4px;">Dealer Automation Tools</div></td>
+    <td><img src="https://3sverse.com/logo.png" alt="3S Verse" height="40" style="height:40px;width:auto;display:block;border:0;outline:none;" /><div style="font-size:10px;color:#6b6880;letter-spacing:.2em;text-transform:uppercase;margin-top:6px;">Dealer Automation Tools</div></td>
     <td style="text-align:right;"><div style="font-size:18px;font-weight:700;color:#16151d;">INVOICE</div><div style="font-size:11px;color:#b45309;font-weight:700;">PAYMENT DUE</div></td>
   </tr></table>
   <div style="height:1px;background:#e6e4ee;margin:14px 0;"></div>
@@ -164,11 +164,22 @@ async function sendCustomerInvoice(env, order) {
   try {
     const res = await fetch(EMAILJS_SEND_URL, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        /* EmailJS API sits behind Cloudflare bot rules: server-side calls
+           (this Worker) must look like a browser session or they get 403
+           code 1010. These three headers are the proven pass. */
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+        "Origin": "https://dashboard.emailjs.com",
+        "Referer": "https://dashboard.emailjs.com/",
+      },
       body: JSON.stringify({
         service_id: serviceId,
         template_id: templateId,
         user_id: publicKey,
+        /* Server-side REST calls authenticate with the private key
+           (accessToken). The public key alone is only for the browser SDK. */
+        ...(env.EMAILJS_PRIVATE_KEY ? { accessToken: env.EMAILJS_PRIVATE_KEY } : {}),
         template_params: {
           to_email: order.customer.email,
           customer_name: order.customer.name || "",
