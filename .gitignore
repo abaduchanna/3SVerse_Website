@@ -75,3 +75,7 @@ download/
 upload/
 scripts/
 worklog.md
+
+# local secrets — never commit (PAT lives in bridge_mem/Pat_Key)
+.secrets/
+*.pem

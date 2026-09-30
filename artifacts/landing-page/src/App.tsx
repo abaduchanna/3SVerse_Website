@@ -16,6 +16,10 @@ const DownloadPage = lazy(() => import('@/pages/DownloadPage'));
    pattern as the legal views (static-safe on GitHub Pages). */
 const AboutPage = lazy(() => import('@/pages/About'));
 const PricingPage = lazy(() => import('@/pages/Pricing'));
+/* Invoice Studio — seller-only (password gate inside the page; no nav or
+   footer link). Static-safe: the gate is client-side SHA-256, the page
+   renders fine on GitHub Pages. */
+const InvoiceStudioPage = lazy(() => import('@/pages/InvoiceStudio'));
 import DealerStore from '@/components/DealerStore';
 // NOTE: /order/:id + /admin routes were removed — they depended on the
 // Netlify server functions, which are dormant since the GitHub Pages deploy.
@@ -2567,6 +2571,7 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/order" component={OrderStatusPage} />
       <Route path="/order/:id" component={OrderStatusPage} />
+      <Route path="/invoice" component={InvoiceStudioPage} />
       <Route component={NotFound} />
     </Switch>
   );
