@@ -2,10 +2,11 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import NotFound from '@/pages/not-found';
-/* Invoice Studio was REMOVED from the public site on purpose — it is the
-   seller's private tool. The page component, its #/invoice hash route and
-   the /invoice URL shortcut were all taken out; the seller invoices from
-   the desktop tooling instead. Nothing on the public site links to it. */
+/* Invoice Studio — the seller's private tool (restored by user request).
+   The page component lives at the #/invoice hash route (static-safe on
+   GitHub Pages); the /invoice URL shortcut maps through the 404 shim.
+   Gated by a seller password INSIDE the page — nothing on the public site
+   links to it. */
 const OrderStatusPage = lazy(() => import('@/pages/OrderStatus'));
 /* Policy, security and download pages — same hash-routing pattern so they
    stay static-safe on GitHub Pages; deep links like /privacy redirect
@@ -2642,6 +2643,20 @@ function App() {
         </div>
       }>
         <OrderStatusPage />
+      </Suspense>
+    );
+  }
+  // #/invoice — Invoice Studio (seller-only, password-gated inside the
+  // page). Hash-routed like the views above; the /invoice path shortcut
+  // maps here via the GitHub Pages 404 shim.
+  if (hash.startsWith('#/invoice')) {
+    return (
+      <Suspense fallback={
+        <div className="grid min-h-screen place-items-center bg-background text-sm text-muted-foreground" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+          Loading…
+        </div>
+      }>
+        <InvoiceStudioPage />
       </Suspense>
     );
   }

@@ -569,7 +569,7 @@
            mapped onto their hash-routed views (trial -> #/download, order ->
            #/order), and ANY other unknown path goes back to the landing page
            instead of sitting on a dead splash screen. */
-        var m = location.pathname.replace(/\/+$/, '').toLowerCase().match(/^\/(privacy|terms|refund|eula|security|download|order|trial)$/);
+        var m = location.pathname.replace(/\/+$/, '').toLowerCase().match(/^\/(privacy|terms|refund|eula|security|download|order|trial|invoice)$/);
         if (m) {
           var view = m[1] === 'trial' ? 'download' : m[1];
           location.replace(location.origin + '/#/' + view + location.search);
