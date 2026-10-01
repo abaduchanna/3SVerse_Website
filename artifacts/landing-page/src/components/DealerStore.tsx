@@ -3,6 +3,7 @@ import {
   BadgePercent,
   Check,
   Copy,
+  CreditCard,
   Download,
   FileText,
   KeyRound,
@@ -32,6 +33,7 @@ import {
   formatUSD,
   isRecurringModel,
   listPrice,
+  lsCheckoutUrl,
   modelBillingNote,
   modelPriceSuffix,
   nextVolumeTier,
@@ -906,13 +908,25 @@ export default function DealerStore() {
                             : `${formatUSD(perPcPrice(product, sel.model, sel.pcs))} per PC · ${modelBillingNote(sel.model)}`}
                       </p>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => addLine(product.id)}
-                      className="inline-flex items-center gap-2 rounded-xl border bg-white px-4 py-2.5 text-[13.5px] font-semibold text-[#0b0a10] transition-transform hover:scale-[1.02]"
-                    >
-                      <Plus className="h-4 w-4" /> Add
-                    </button>
+                    <div className="flex items-center gap-2">
+                      {lsCheckoutUrl(product.id, sel.model) ? (
+                        <a
+                          href={lsCheckoutUrl(product.id, sel.model)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 rounded-xl border bg-white px-4 py-2.5 text-[13.5px] font-semibold text-[#0b0a10] transition-transform hover:scale-[1.02]"
+                        >
+                          <CreditCard className="h-4 w-4" /> Buy now
+                        </a>
+                      ) : null}
+                      <button
+                        type="button"
+                        onClick={() => addLine(product.id)}
+                        className="inline-flex items-center gap-2 rounded-xl border bg-white px-4 py-2.5 text-[13.5px] font-semibold text-[#0b0a10] transition-transform hover:scale-[1.02]"
+                      >
+                        <Plus className="h-4 w-4" /> Add
+                      </button>
+                    </div>
                   </div>
                   {/* trust row — right under the buy decision (audit: zero
                       reassurance at the point of purchase kills conversion) */}

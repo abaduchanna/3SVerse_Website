@@ -267,6 +267,36 @@ export function bundleLicenseNote(): string {
   return `includes ${BUNDLE_EACH} licenses of each tool — ${BUNDLE_EACH * 3} licenses total`;
 }
 
+/**
+ * Lemon Squeezy hosted checkout URLs — the AUTOMATED sales path.
+ *
+ * Key format: `${productId}:${model}`. The store card renders a "Buy now"
+ * button whenever a URL exists for the selected product + model. Card,
+ * PayPal, Apple Pay and Google Pay are handled on Lemon Squeezy's SSL page,
+ * and the 3sverse-webhooks worker (LS webhook -> branded invoice email ->
+ * paid -> Ed25519 key -> private ledger) delivers license keys AUTOMATICALLY
+ * right after payment — no manual step.
+ *
+ * The manual "Add + Place order" flow (bank transfer / Wise / PayPal / USDT
+ * receipt) stays available for every product: it is the fallback while the
+ * LS store is in test mode (identity verification pending) and the path for
+ * PC-volume quotes.
+ *
+ * Phase 2: when the 9 per-tool SKUs are created in the LS dashboard, add
+ * their buy URLs here in the same way — the Buy now buttons appear with no
+ * further code changes (the store card checks this map at render time).
+ */
+export const LS_CHECKOUT: Record<string, string> = {
+  'bundle:monthly': 'https://3sverse.lemonsqueezy.com/checkout/buy/80da7503-568b-4f88-aa5e-282f6e7f369f',
+  'bundle:annual': 'https://3sverse.lemonsqueezy.com/checkout/buy/1f853e1d-3929-42fe-9c17-1fc1005e3323',
+  'bundle:lifetime': 'https://3sverse.lemonsqueezy.com/checkout/buy/3faf5a1e-5c57-4c41-9939-f869bf7a7805',
+};
+
+/** LS hosted-checkout URL for a product+model, '' when not automated yet. */
+export function lsCheckoutUrl(productId: string, model: string): string {
+  return LS_CHECKOUT[`${productId}:${model}`] ?? '';
+}
+
 export const MODELS: ModelOption[] = [
   { id: 'trial', label: '7-Day Free Trial', note: 'Full features, 7 days, 1 PC — no card needed' },
   { id: 'monthly', label: 'Monthly', note: '$89/mo per tool — cancel anytime' },
