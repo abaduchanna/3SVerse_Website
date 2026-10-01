@@ -884,8 +884,13 @@ export default function DealerStore() {
                       <span className="min-w-0 flex-1">{TRIAL_DOWNLOAD.label}</span>
                     </button>
                   ) : null}
-                  <div className="flex items-end justify-between border-t border-border pt-4">
-                    <div>
+                  {/* price + actions — buttons live on their OWN full-width row
+                      below the price (audit fix: inside xl:grid-cols-4 cards the
+                      old one-line price+buttons flex squeezed "Buy now" onto two
+                      lines and clipped "+ Add" past the card edge; a dedicated
+                      row with flex-1 + nowrap can never distort at any width) */}
+                  <div className="border-t border-border pt-4">
+                    <div className="min-w-0">
                       {pct > 0 ? (
                         <p className="mb-1.5 inline-flex items-center gap-1.5 rounded-md bg-[#6ee7ef]/10 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[.12em] text-brand-cyan">
                           <BadgePercent className="h-3 w-3" /> {LAUNCH_OFFER.label} −{pct}%
@@ -908,23 +913,23 @@ export default function DealerStore() {
                             : `${formatUSD(perPcPrice(product, sel.model, sel.pcs))} per PC · ${modelBillingNote(sel.model)}`}
                       </p>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="mt-3.5 flex items-stretch gap-2">
                       {lsCheckoutUrl(product.id, sel.model) ? (
                         <a
                           href={lsCheckoutUrl(product.id, sel.model)}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 rounded-xl border bg-white px-4 py-2.5 text-[13.5px] font-semibold text-[#0b0a10] transition-transform hover:scale-[1.02]"
+                          className="flex flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-xl border bg-white px-4 py-2.5 text-[13.5px] font-semibold text-[#0b0a10] transition-transform hover:scale-[1.02]"
                         >
-                          <CreditCard className="h-4 w-4" /> Buy now
+                          <CreditCard className="h-4 w-4 shrink-0" /> Buy now
                         </a>
                       ) : null}
                       <button
                         type="button"
                         onClick={() => addLine(product.id)}
-                        className="inline-flex items-center gap-2 rounded-xl border bg-white px-4 py-2.5 text-[13.5px] font-semibold text-[#0b0a10] transition-transform hover:scale-[1.02]"
+                        className="flex flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-xl border bg-white px-4 py-2.5 text-[13.5px] font-semibold text-[#0b0a10] transition-transform hover:scale-[1.02]"
                       >
-                        <Plus className="h-4 w-4" /> Add
+                        <Plus className="h-4 w-4 shrink-0" /> Add
                       </button>
                     </div>
                   </div>
