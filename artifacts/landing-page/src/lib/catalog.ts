@@ -282,14 +282,28 @@ export function bundleLicenseNote(): string {
  * LS store is in test mode (identity verification pending) and the path for
  * PC-volume quotes.
  *
- * Phase 2: when the 9 per-tool SKUs are created in the LS dashboard, add
- * their buy URLs here in the same way — the Buy now buttons appear with no
- * further code changes (the store card checks this map at render time).
+ * Phase 2 (DONE): all 9 per-tool SKUs are live in the LS store too — every
+ * product card's Buy now button routes to Lemon Squeezy's hosted checkout,
+ * and the 3sverse-webhooks worker maps each variant to the right plan
+ * (per-tool keys license only that tool; bundle keys license all three).
  */
 export const LS_CHECKOUT: Record<string, string> = {
+  /* Full Bundle (products 1398182 / 1398230 / 1398455) */
   'bundle:monthly': 'https://3sverse.lemonsqueezy.com/checkout/buy/80da7503-568b-4f88-aa5e-282f6e7f369f',
   'bundle:annual': 'https://3sverse.lemonsqueezy.com/checkout/buy/1f853e1d-3929-42fe-9c17-1fc1005e3323',
   'bundle:lifetime': 'https://3sverse.lemonsqueezy.com/checkout/buy/3faf5a1e-5c57-4c41-9939-f869bf7a7805',
+  /* VidaPay Incentive Extractor (products 1401829 / 1401851 / 1401866) */
+  'extractor:monthly': 'https://3sverse.lemonsqueezy.com/checkout/buy/e5ec5e53-8c5f-4b46-b496-a8117e914393',
+  'extractor:annual': 'https://3sverse.lemonsqueezy.com/checkout/buy/1f15d00e-dbf7-48f6-89ca-a2d74ffe443b',
+  'extractor:lifetime': 'https://3sverse.lemonsqueezy.com/checkout/buy/df1795e4-5b3c-4ebf-9638-6aa00b05570b',
+  /* VidaPay Device Ordering (products 1401875 / 1401877 / 1401881) */
+  'ordering:monthly': 'https://3sverse.lemonsqueezy.com/checkout/buy/0e9319e8-55c0-472c-b7ee-53747da798d3',
+  'ordering:annual': 'https://3sverse.lemonsqueezy.com/checkout/buy/186f2a4a-9938-47ec-88df-0ceadf716d9c',
+  'ordering:lifetime': 'https://3sverse.lemonsqueezy.com/checkout/buy/8da806e8-ae23-42da-9a7b-ef5bbc2e39df',
+  /* VidaPay Rebate Filing (products 1401884 / 1401888 / 1401892) */
+  'rebate:monthly': 'https://3sverse.lemonsqueezy.com/checkout/buy/7f60b1b1-2298-4c6f-bfb9-506b23050a4b',
+  'rebate:annual': 'https://3sverse.lemonsqueezy.com/checkout/buy/715d91bb-44f3-4eb7-b71d-6b5d2ea7b144',
+  'rebate:lifetime': 'https://3sverse.lemonsqueezy.com/checkout/buy/1adc2258-e305-4307-b6c3-4f2c28420e32',
 };
 
 /** LS hosted-checkout URL for a product+model, '' when not automated yet. */
