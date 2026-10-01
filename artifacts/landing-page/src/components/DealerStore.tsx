@@ -913,25 +913,42 @@ export default function DealerStore() {
                             : `${formatUSD(perPcPrice(product, sel.model, sel.pcs))} per PC · ${modelBillingNote(sel.model)}`}
                       </p>
                     </div>
-                    <div className="mt-3.5 flex items-stretch gap-2">
-                      {lsCheckoutUrl(product.id, sel.model) ? (
-                        <a
-                          href={lsCheckoutUrl(product.id, sel.model)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-xl border bg-white px-4 py-2.5 text-[13.5px] font-semibold text-[#0b0a10] transition-transform hover:scale-[1.02]"
+                    {/* two SELF-EXPLANATORY paths (owner-audit: bare "+ Add" read
+                        as a cart button while it is really the manual bank/USDT
+                        invoice order — renamed + hover titles + one-line hint so
+                        instant vs manual is obvious at a glance) */}
+                    {sel.model !== 'trial' ? (
+                      <>
+                        <div className="mt-3.5 flex items-stretch gap-2">
+                          {lsCheckoutUrl(product.id, sel.model) ? (
+                            <a
+                              href={lsCheckoutUrl(product.id, sel.model)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              title="Card, PayPal, Apple Pay, Google Pay — license key emailed automatically in minutes"
+                              className="flex flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-xl border bg-white px-4 py-2.5 text-[13.5px] font-semibold text-[#0b0a10] transition-transform hover:scale-[1.02]"
+                            >
+                              <CreditCard className="h-4 w-4 shrink-0" /> Buy now
+                            </a>
+                          ) : null}
+                          <button
+                            type="button"
+                            onClick={() => addLine(product.id)}
+                            title="Bank transfer, Wise, PayPal or USDT — a short order form opens, invoice emailed, key delivered after payment clears"
+                            className="flex flex-1 items-center justify-center whitespace-nowrap rounded-xl border bg-white px-4 py-2.5 text-[13.5px] font-semibold text-[#0b0a10] transition-transform hover:scale-[1.02]"
+                          >
+                            Bank/USDT
+                          </button>
+                        </div>
+                        <p
+                          data-testid={`buy-hint-${product.id}`}
+                          className="pt-1.5 text-[11.5px] leading-4 text-muted-foreground"
                         >
-                          <CreditCard className="h-4 w-4 shrink-0" /> Buy now
-                        </a>
-                      ) : null}
-                      <button
-                        type="button"
-                        onClick={() => addLine(product.id)}
-                        className="flex flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-xl border bg-white px-4 py-2.5 text-[13.5px] font-semibold text-[#0b0a10] transition-transform hover:scale-[1.02]"
-                      >
-                        <Plus className="h-4 w-4 shrink-0" /> Add
-                      </button>
-                    </div>
+                          Buy now = instant key (card/PayPal) · Bank/USDT = invoice order, key after
+                          payment clears.
+                        </p>
+                      </>
+                    ) : null}
                   </div>
                   {/* trust row — right under the buy decision (audit: zero
                       reassurance at the point of purchase kills conversion) */}
