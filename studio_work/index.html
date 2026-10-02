@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#0b0a11" />
+<title>License Studio</title>
+<style>
+  :root { color-scheme: dark; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, 'Segoe UI', Roboto, sans-serif;
+    background: #0b0a11; color: #e8e6f0; min-height: 100vh;
+    padding: 18px 16px 90px;
+  }
+  .mono { font-family: 'DM Mono', ui-monospace, 'Cascadia Mono', Menlo, monospace; }
+  header { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+  .logo-dot { width: 26px; height: 26px; border-radius: 8px;
+    background: conic-gradient(from 210deg, #6ee7ef, #e44bd7, #78a6ff, #6ee7ef); }
+  header h1 { font-size: 15px; font-weight: 600; letter-spacing: .16em; }
+  header .sub { font-size: 9px; letter-spacing: .28em; color: #8b87a0; margin-top: 2px; }
+  .card {
+    background: #131019; border: 1px solid #2a2536; border-radius: 16px;
+    padding: 16px; margin-bottom: 14px;
+  }
+  .card h2 { font-size: 10px; letter-spacing: .24em; color: #6ee7ef; margin-bottom: 12px; font-weight: 500; }
+  label { display: block; font-size: 10px; letter-spacing: .14em; color: #8b87a0; margin: 10px 0 5px; }
+  input[type=text], input[type=number], input[type=date], select {
+    width: 100%; background: #0b0a11; border: 1px solid #2f2a3e; color: #e8e6f0;
+    border-radius: 10px; padding: 11px 12px; font-size: 14px; outline: none;
+  }
+  input:focus, select:focus { border-color: #6ee7ef; }
+  textarea { width: 100%; background: #0b0a11; border: 1px solid #2f2a3e; color: #e8e6f0;
+    border-radius: 10px; padding: 11px 12px; font-size: 12px; font-family: ui-monospace, monospace;
+    min-height: 84px; outline: none; }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    border: none; border-radius: 12px; padding: 13px 18px; font-size: 13px; font-weight: 700;
+    cursor: pointer; letter-spacing: .04em; width: 100%; margin-top: 12px;
+  }
+  .btn-primary { background: linear-gradient(90deg, #6ee7ef, #e44bd7); color: #0b0a11; }
+  .btn-ghost { background: transparent; border: 1px solid #2f2a3e; color: #b9b5cc; font-weight: 500; }
+  .btn-row { display: flex; gap: 10px; }
+  .btn-row .btn { margin-top: 12px; }
+  .chips { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 4px; }
+  .chip { position: relative; display: flex; align-items: center; gap: 8px;
+    border: 1px solid #2f2a3e; border-radius: 10px; padding: 10px 11px; cursor: pointer;
+    font-size: 11.5px; color: #b9b5cc; }
+  .chip input { accent-color: #e44bd7; }
+  .chip.on { border-color: #e44bd7; color: #fff; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .row { display: flex; gap: 10px; align-items: flex-end; }
+  .row > div { flex: 1; }
+  #pubkey { font-size: 10.5px; color: #78efb5; word-break: break-all; line-height: 1.5;
+    background: #0b0a11; border: 1px solid #234536; border-radius: 8px; padding: 8px 10px; }
+  .pubwrap { display: flex; flex-direction: column; gap: 8px; }
+  #out_key { font-size: 21px; letter-spacing: .06em; color: #6ee7ef; word-break: break-all;
+    background: #0b0a11; border: 1px dashed #2f6a68; border-radius: 12px; padding: 14px; text-align: center; }
+  #out_meta { font-size: 10px; color: #8b87a0; letter-spacing: .12em; margin-top: 8px; text-align: center; }
+  .hidden { display: none !important; }
+  .jrow { display: flex; justify-content: space-between; gap: 8px; padding: 7px 0;
+    border-bottom: 1px solid #201c2b; font-size: 11px; }
+  .jrow.empty { color: #5f5b73; justify-content: center; }
+  .jkey { color: #6ee7ef; }
+  .jcust { color: #b9b5cc; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .jmodel { color: #e44bd7; }
+  .warn { background: #241a12; border: 1px solid #7c4a1d; color: #f0b06a; border-radius: 10px;
+    padding: 10px 12px; font-size: 11.5px; line-height: 1.5; margin-bottom: 12px; }
+  #toast { position: fixed; left: 16px; right: 16px; bottom: 24px; z-index: 50;
+    border: 1px solid #10b981; color: #d7fff0; border-radius: 12px; padding: 12px 14px;
+    font-size: 12.5px; text-align: center; opacity: 0; pointer-events: none;
+    transform: translateY(12px); transition: all .25s ease; }
+  #toast.show { opacity: 1; transform: translateY(0); }
+  footer { text-align: center; font-size: 9px; letter-spacing: .2em; color: #4e4a61; margin-top: 22px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo-dot"></div>
+  <div>
+    <h1 class="mono">LICENSE STUDIO</h1>
+    <div class="sub mono">3SVERSE · MOBILE</div>
+  </div>
+</header>
+
+<!-- SETUP -->
+<section id="setup" class="card" style="display:none">
+  <h2>MASTER KEY SETUP</h2>
+  <div class="warn">
+    Ye app license keys SIGN karti hai. Master key (Keys/license_private.key ka 64-hex)
+    paste karo — ya NAYI key banao (sirf tab jab purani keys cancel karni hon).
+  </div>
+  <label>MASTER KEY (64 HEX)</label>
+  <textarea id="seed_input" placeholder="license_private.key ka content yahan paste karo"></textarea>
+  <button class="btn btn-primary" onclick="setupImport()">IMPORT &amp; START</button>
+  <button class="btn btn-ghost" onclick="setupGenerate()">Nayi key generate karo (reset)</button>
+</section>
+
+<!-- MAIN -->
+<div id="main" style="display:none">
+  <section class="card">
+    <h2>MASTER KEY · ACTIVE</h2>
+    <div class="pubwrap">
+      <div id="pubkey" class="mono">—</div>
+      <div class="btn-row">
+        <button class="btn btn-ghost" style="margin-top:0" onclick="exportSeed()">Copy key</button>
+        <button class="btn btn-ghost" style="margin-top:0" onclick="setupWipe()">Forget</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>ISSUE LICENSE</h2>
+    <label>CUSTOMER / DEALER</label>
+    <input type="text" id="customer" placeholder="e.g. Mississippi Store" />
+
+    <label>PRODUCTS</label>
+    <div class="chips">
+      <label class="chip"><input type="checkbox" id="p_ordering" checked /> Device Ordering</label>
+      <label class="chip"><input type="checkbox" id="p_extractor" checked /> Incentive Extractor</label>
+      <label class="chip"><input type="checkbox" id="p_rebate" checked /> Rebate Filing</label>
+      <label class="chip"><input type="checkbox" id="p_bundle" onclick="toggleBundle(this)" /> All-in-one Bundle</label>
+    </div>
+
+    <div class="grid2" style="margin-top:10px">
+      <div>
+        <label>PLAN</label>
+        <select id="plan" onchange="onPlanChange()">
+          <option value="lifetime">Lifetime</option>
+          <option value="annual">Annual (365d)</option>
+          <option value="monthly">Monthly (30d)</option>
+          <option value="trial">Trial (7d)</option>
+        </select>
+      </div>
+      <div>
+        <label>MAX SEATS</label>
+        <input type="number" id="seats" value="1" min="1" />
+      </div>
+    </div>
+
+    <div class="row" style="margin-top:10px">
+      <div>
+        <label>ISSUED</label>
+        <input type="date" id="issued_date" />
+      </div>
+      <div id="expires_row">
+        <label>EXPIRES</label>
+        <input type="date" id="expires" />
+      </div>
+    </div>
+
+    <label>MACHINE PIN (optional)</label>
+    <input type="text" id="machine_pin" placeholder="khaali chhodo = koi pin nahi" />
+
+    <button class="btn btn-primary" onclick="generate()">GENERATE + SIGN</button>
+  </section>
+
+  <section class="card" id="result">
+    <h2>RESULT</h2>
+    <div id="out_key" class="mono">—</div>
+    <div id="out_meta" class="mono">form bharna aur GENERATE dabao</div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" style="margin-top:10px" onclick="copyKey()">Copy key</button>
+      <button class="btn btn-ghost" style="margin-top:10px" onclick="downloadLic()">.lic file</button>
+    </div>
+    <button class="btn btn-ghost" onclick="shareLic()">Share (WhatsApp etc.)</button>
+  </section>
+
+  <section class="card">
+    <h2>JOURNAL · <span id="jcount">0</span> ISSUED</h2>
+    <div id="journal"></div>
+    <button class="btn btn-ghost" onclick="exportJournal()">Journal export (JSON)</button>
+  </section>
+</div>
+
+<div id="toast"></div>
+<footer class="mono">3SVERSE · <span id="year"></span> · DEVELOPED BY WWW.3SVERSE.COM</footer>
+<script src="app.js"></script>
+</body>
+</html>
