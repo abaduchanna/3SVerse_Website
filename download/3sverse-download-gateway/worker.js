@@ -1159,7 +1159,28 @@ tbody tr:hover td{background:var(--hov)}
 .err{color:var(--bad);font-size:12px;min-height:16px;margin-bottom:6px}
 .hint{color:var(--mut);font-size:11px;margin-top:12px}
 .lbl{font-size:11px;color:var(--mut);letter-spacing:.14em;text-transform:uppercase;margin-top:4px}
+/* Animated brand background - same spiral + orb artwork as the Studio app
+   and the 3sverse.com hero/footer (user order: "ops dashboard main bhi yehi
+   dal do animate kardo"). Sits behind the gate and the dashboard; the
+   spiral slowly spins, the orb floats. Respect reduced motion. */
+#bgart{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+#bgart img{position:absolute}
+.bg-ring{right:-22vw;top:-16vh;width:min(56vw,720px);opacity:.45;animation:bgspin 120s linear infinite}
+.bg-ring-light{display:none;right:-22vw;top:-16vh;width:min(56vw,720px);opacity:.3;animation:bgspin 120s linear infinite}
+.bg-orb{left:-9vw;bottom:-24vh;width:min(34vw,440px);opacity:.45;animation:bgfloat 9s ease-in-out infinite}
+body[data-theme="light"] .bg-ring{display:none}
+body[data-theme="light"] .bg-ring-light{display:block}
+body[data-theme="light"] .bg-orb{opacity:.3}
+@keyframes bgspin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes bgfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-20px)}}
+@media (prefers-reduced-motion:reduce){#bgart img{animation:none}}
+#gate,.wrap{position:relative;z-index:1}
 </style></head><body>
+<div id="bgart" aria-hidden="true">
+<img class="bg-ring" src="https://3sverse.com/shapes/shape-v1.webp" alt="">
+<img class="bg-ring-light" src="https://3sverse.com/shapes/shape-v1-solid.webp?v=7" alt="">
+<img class="bg-orb" src="https://3sverse.com/shapes/shape-v3.webp" alt="">
+</div>
 <div id="gate"><div class="gcard">
 <img src="https://3sverse.com/logo.png" alt="3S Verse">
 <div class="lbl">Dealer Automation Tools</div>
