@@ -252,6 +252,7 @@ function challengePage(request, env, nextUrl) {
   const sep = nextUrl.includes("?") ? "&" : "?";
   const html = `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">` +
     `<meta name="viewport" content="width=device-width, initial-scale=1">` +
+    `<link rel="icon" href="https://3sverse.com/favicon.ico?v=2">` +
     `<title>3S Verse — quick check</title>` +
     `<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer><\/script>` +
     `</head><body style="font-family:Arial,sans-serif;background:#f4f3f8;padding:40px;text-align:center;">` +
@@ -573,7 +574,7 @@ function validate(ledger, orderNo, product) {
 /* -------------------------------- pages -------------------------------- */
 function infoPage() {
   return new Response(
-    `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>3S Verse — Downloads</title></head>
+    `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><link rel="icon" href="https://3sverse.com/favicon.ico?v=2"><title>3S Verse — Downloads</title></head>
 <body style="font-family:Arial,sans-serif;background:#f4f3f8;padding:40px;text-align:center;">
 <div style="max-width:520px;margin:0 auto;background:#fff;border:1px solid #e6e4ee;border-radius:12px;padding:32px;">
 <h1 style="margin:0 0 8px;font-size:20px;">3S Verse — Customer Downloads</h1>
@@ -597,7 +598,7 @@ function bundlePage(orderNo, products) {
     )
     .join("\n");
   return new Response(
-    `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>3S Verse — Your downloads</title></head>
+    `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><link rel="icon" href="https://3sverse.com/favicon.ico?v=2"><title>3S Verse — Your downloads</title></head>
 <body style="font-family:Arial,sans-serif;background:#f4f3f8;padding:40px;text-align:center;">
 <div style="max-width:520px;margin:0 auto;background:#fff;border:1px solid #e6e4ee;border-radius:12px;padding:32px;">
 <h1 style="margin:0 0 6px;font-size:20px;">Order ${orderNo} — your software</h1>
@@ -611,7 +612,7 @@ ${buttons}
 
 function errorPage(status, message) {
   return new Response(
-    `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>3S Verse — Download</title></head>
+    `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><link rel="icon" href="https://3sverse.com/favicon.ico?v=2"><title>3S Verse — Download</title></head>
 <body style="font-family:Arial,sans-serif;background:#f4f3f8;padding:40px;text-align:center;">
 <div style="max-width:520px;margin:0 auto;background:#fff;border:1px solid #fecaca;border-radius:12px;padding:32px;">
 <h1 style="margin:0 0 8px;font-size:20px;color:#b91c1c;">Download unavailable</h1>
@@ -1115,6 +1116,7 @@ function opsShellPage() {
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>3S Verse — Ops</title>
+<link rel="icon" href="https://3sverse.com/favicon.ico?v=2">
 <style>
 :root{--bg:#0b1020;--card:#141b38;--bd:#2b3561;--teal:#22b8c9;--tx:#e8ecf7;--mut:#9aa4c0;--ok:#5ee39a;--warn:#ffcf70;--bad:#ff9b93;--hov:#1a2246;--chipok:#12301f;--chipwarn:#33270e;--chipbad:#3a1518;--chipmut:#23283b;--chipteal:#0e2f36;--thead:#e8ecf7}
 body[data-theme="light"]{--bg:#f4f3f8;--card:#fff;--bd:#e6e4ee;--teal:#0e7c8c;--tx:#16151d;--mut:#6b6880;--ok:#1f7a4d;--warn:#b45309;--bad:#b3261e;--hov:#fafafd;--chipok:#e5f4ec;--chipwarn:#fdf1df;--chipbad:#fbe9e7;--chipmut:#efedf5;--chipteal:#e3f1f3;--thead:#16151d}
@@ -1160,26 +1162,34 @@ tbody tr:hover td{background:var(--hov)}
 .hint{color:var(--mut);font-size:11px;margin-top:12px}
 .lbl{font-size:11px;color:var(--mut);letter-spacing:.14em;text-transform:uppercase;margin-top:4px}
 /* Animated brand background - same spiral + orb artwork as the Studio app
-   and the 3sverse.com hero/footer (user order: "ops dashboard main bhi yehi
-   dal do animate kardo"). Sits behind the gate and the dashboard; the
-   spiral slowly spins, the orb floats. Respect reduced motion. */
+   and the 3sverse.com hero/footer. Speeds matched to the site (user order:
+   "spiral ki speed hero jitni, orb website wala"): ring floats 16px over
+   12s while its image spins once per 120s (hero speed); the orb floats
+   12px over 13s and rotates once per 140s - exactly the site values.
+   Float runs on the wrapper, spin on the img (same split as the site).
+   Respect reduced motion. */
 #bgart{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0}
-#bgart img{position:absolute}
-.bg-ring{right:-22vw;top:-16vh;width:min(56vw,720px);opacity:.45;animation:bgspin 120s linear infinite}
-.bg-ring-light{display:none;right:-22vw;top:-16vh;width:min(56vw,720px);opacity:.3;animation:bgspin 120s linear infinite}
-.bg-orb{left:-9vw;bottom:-24vh;width:min(34vw,440px);opacity:.45;animation:bgfloat 9s ease-in-out infinite}
+#bgart>div{position:absolute;will-change:transform}
+#bgart img{position:relative;display:block;width:100%;height:auto;will-change:transform}
+.bg-ring{right:-22vw;top:-16vh;width:min(56vw,720px);opacity:.45;animation:bgfloatR 12s ease-in-out infinite}
+.bg-ring img{animation:bgspin 120s linear infinite}
+.bg-ring-light{display:none;right:-22vw;top:-16vh;width:min(56vw,720px);opacity:.3;animation:bgfloatR 12s ease-in-out infinite}
+.bg-ring-light img{animation:bgspin 120s linear infinite}
+.bg-orb{left:-9vw;bottom:-24vh;width:min(34vw,440px);opacity:.45;animation:bgfloatO 13s ease-in-out infinite}
+.bg-orb img{animation:bgspin 140s linear infinite}
 body[data-theme="light"] .bg-ring{display:none}
 body[data-theme="light"] .bg-ring-light{display:block}
 body[data-theme="light"] .bg-orb{opacity:.3}
 @keyframes bgspin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-@keyframes bgfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-20px)}}
-@media (prefers-reduced-motion:reduce){#bgart img{animation:none}}
+@keyframes bgfloatR{0%,100%{transform:translateY(-16px)}50%{transform:translateY(16px)}}
+@keyframes bgfloatO{0%,100%{transform:translateY(-12px)}50%{transform:translateY(12px)}}
+@media (prefers-reduced-motion:reduce){#bgart>div,#bgart img{animation:none}}
 #gate,.wrap{position:relative;z-index:1}
 </style></head><body>
 <div id="bgart" aria-hidden="true">
-<img class="bg-ring" src="https://3sverse.com/shapes/shape-v1.webp" alt="">
-<img class="bg-ring-light" src="https://3sverse.com/shapes/shape-v1-solid.webp?v=7" alt="">
-<img class="bg-orb" src="https://3sverse.com/shapes/shape-v3.webp" alt="">
+<div class="bg-ring"><img src="https://3sverse.com/shapes/shape-v1.webp" alt=""></div>
+<div class="bg-ring-light"><img src="https://3sverse.com/shapes/shape-v1-solid.webp?v=7" alt=""></div>
+<div class="bg-orb"><img src="https://3sverse.com/shapes/shape-v3.webp" alt=""></div>
 </div>
 <div id="gate"><div class="gcard">
 <img src="https://3sverse.com/logo.png" alt="3S Verse">
