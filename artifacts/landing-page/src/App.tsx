@@ -508,7 +508,7 @@ function Nav() {
     <header className="fixed left-0 right-0 top-0 z-40 border-b border-border bg-background/75 backdrop-blur-xl">
       <div className="mx-auto flex h-[76px] max-w-7xl items-center justify-between px-5 lg:px-8">
         <a href="#top" data-testid="link-brand" aria-label="3S Verse — back to top" className="shrink-0">
-          <img src="/logo-240.png" alt="3S Verse" width={240} height={57} className="h-5 w-auto object-contain" />
+          <img src="/logo-240.png" alt="3S Verse" width={240} height={57} className="h-7 w-auto object-contain" />
         </a>
         <nav className="hidden items-center gap-7 xl:flex">
           {navItems.map((item) => (
@@ -571,7 +571,7 @@ function OpsPanel() {
     >
       <div className="flex items-center justify-between border-b border-border px-5 py-3.5">
         <div className="flex items-center gap-3">
-          <img src="/logo-240.png" alt="" width={240} height={57} className="h-3 w-auto opacity-90" />
+          <img src="/logo-240.png" alt="" width={240} height={57} className="h-4 w-auto opacity-90" />
           <span className="font-mono-tech text-[10px] tracking-[.22em] text-muted-foreground">VIDAPAY INCENTIVE EXTRACTOR</span>
         </div>
         <div className="flex items-center gap-3 font-mono-tech text-[10px] text-brand-cyan">
@@ -2413,7 +2413,7 @@ function Footer() {
       <div className="mx-auto max-w-7xl px-5 py-14 lg:px-8">
         <div className="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between">
           <div className="max-w-sm">
-            <img src="/logo-240.png" alt="3S Verse" width={240} height={57} className="h-5 w-auto" />
+            <img src="/logo-240.png" alt="3S Verse" width={240} height={57} className="h-7 w-auto" />
             <p className="mt-5 text-[14px] font-light leading-7 text-foreground/75">
               VidaPay dealer tools and custom dealership automation — built by people who have run wireless retail operations themselves.
             </p>
