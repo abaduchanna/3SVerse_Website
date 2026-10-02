@@ -155,7 +155,7 @@ function buildInvoiceHtml(order) {
 </td></tr></table></div>`;
 }
 
-async function sendCustomerInvoice(env, order) {
+async function sendCustomerInvoice(env, order, htmlOverride = null) {
   const serviceId = env.EMAILJS_SERVICE_ID;
   const templateId = env.EMAILJS_TEMPLATE_ID;
   const publicKey = env.EMAILJS_PUBLIC_KEY;
@@ -186,7 +186,7 @@ async function sendCustomerInvoice(env, order) {
           invoice_no: invoiceNumberFromRef(order.ref),
           order_ref: order.ref,
           total_label: order.totalLabel || "",
-          invoice_html: buildInvoiceHtml(order),
+          invoice_html: htmlOverride || buildInvoiceHtml(order),
         },
       }),
     });
@@ -722,6 +722,256 @@ async function handleOpsData(request, env, url) {
   }
 }
 
+/* ------------------ ops: .lic build + mail (v2 ops) ---------------------
+   GET  /ops/lic?license_id=VP3S-…  → signed .lic file download (x-ops-key).
+   POST /ops/maillic {license_id}   → email the key + .lic content to the
+   linked order's customer (same EmailJS relay as the invoice).
+   The .lic payload is rebuilt from the live ledger record and its Ed25519
+   signature is VERIFIED against the seller-published public keys
+   (ledger/config.json) in both machine-pinned and unpinned variants — the
+   variant that verifies is the one served, so pinned keys (issue-time
+   "machine" field) and legacy-pointer records both come out byte-correct. */
+const pubKeyCache = { at: 0, keys: [] };
+
+function hexToBytes(h) {
+  const s = String(h || "").replace(/[^0-9a-fA-F]/g, "");
+  const out = new Uint8Array(Math.floor(s.length / 2));
+  for (let i = 0; i < out.length; i++) out[i] = parseInt(s.substr(i * 2, 2), 16);
+  return out;
+}
+
+async function sellerPubKeys(env) {
+  if (pubKeyCache.keys.length && Date.now() - pubKeyCache.at < 600000) {
+    return pubKeyCache.keys;
+  }
+  const repo = env.LEDGER_REPO || LEDGER_REPO_DEFAULT;
+  const res = await fetch(
+    `https://api.github.com/repos/${repo}/contents/ledger/config.json?ref=main`,
+    { headers: ghHeaders(env.GH_TOKEN) },
+  );
+  if (!res.ok) throw new Error(`seller keys HTTP ${res.status}`);
+  const meta = await res.json();
+  const cfg = JSON.parse(
+    new TextDecoder().decode(
+      Uint8Array.from(atob(String(meta.content || "").replace(/\s/g, "")), (c) => c.charCodeAt(0)),
+    ),
+  );
+  pubKeyCache.keys = (cfg.pub_keys || []).map(hexToBytes).filter((k) => k.length === 32);
+  pubKeyCache.at = Date.now();
+  return pubKeyCache.keys;
+}
+
+function licensePayload(rec, withMachine) {
+  const p = {
+    license_id: String(rec.license_id || "").trim(),
+    customer: String(rec.customer || ""),
+    products: Array.isArray(rec.products) ? rec.products.slice() : [],
+    model: String(rec.model || "lifetime"),
+    max_seats: Math.max(1, parseInt(rec.max_seats, 10) || 1),
+    issued_at: String(rec.issued_at || ""),
+  };
+  if (withMachine && rec.mid_code) p.machine = String(rec.mid_code);
+  if (p.model === "expiry") p.expires = String(rec.expires || "");
+  const sorted = {};
+  for (const k of Object.keys(p).sort()) sorted[k] = p[k];
+  return sorted;
+}
+
+async function sigVerifyOk(pubBytes, sigBytes, msgBytes) {
+  try {
+    const key = await crypto.subtle.importKey(
+      "raw", pubBytes, { name: "Ed25519" }, false, ["verify"]);
+    return await crypto.subtle.verify({ name: "Ed25519" }, key, sigBytes, msgBytes);
+  } catch {
+    return false;
+  }
+}
+
+async function fetchActivationRecord(env, key) {
+  const repo = env.LEDGER_REPO || LEDGER_REPO_DEFAULT;
+  const res = await fetch(
+    `https://api.github.com/repos/${repo}/contents/ledger/activations/${encodeURIComponent(key)}.json?ref=main`,
+    { headers: ghHeaders(env.GH_TOKEN) },
+  );
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error(`GitHub HTTP ${res.status}`);
+  const meta = await res.json();
+  return JSON.parse(
+    new TextDecoder().decode(
+      Uint8Array.from(atob(String(meta.content || "").replace(/\s/g, "")), (c) => c.charCodeAt(0)),
+    ),
+  );
+}
+
+async function buildLicFile(env, rec) {
+  const pubs = await sellerPubKeys(env);
+  if (!(pubs || []).length) {
+    throw new Error("No seller public keys published (ledger/config.json).");
+  }
+  const sigB64 = String(rec.lic_sig || "");
+  const sigBytes = Uint8Array.from(atob(sigB64), (c) => c.charCodeAt(0));
+  for (const withMachine of [false, true]) {
+    const payload = licensePayload(rec, withMachine);
+    const msg = new TextEncoder().encode(JSON.stringify(payload));
+    for (const pub of pubs) {
+      if (await sigVerifyOk(pub, sigBytes, msg)) {
+        return Object.assign({}, payload, { sig: sigB64 });
+      }
+    }
+  }
+  throw new Error("License signature did not verify - refresh and retry.");
+}
+
+async function handleOpsLic(request, env, url) {
+  const json = (status, obj) =>
+    new Response(JSON.stringify(obj), {
+      status,
+      headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" },
+    });
+  if (!opsKeyOk(request, url, env)) {
+    return json(403, { ok: false, error: "Invalid ops key." });
+  }
+  if (!env.GH_TOKEN) return json(503, { ok: false, error: "GH_TOKEN missing on this worker." });
+  const key = (url.searchParams.get("license_id") || "").trim().toUpperCase();
+  if (!/^VP3S-/.test(key)) return json(400, { ok: false, error: "license_id must look like VP3S-…." });
+  let rec;
+  try {
+    rec = await fetchActivationRecord(env, key);
+  } catch (e) {
+    return json(502, { ok: false, error: String((e && e.message) || e) });
+  }
+  if (!rec) return json(404, { ok: false, error: "License not found in the ledger." });
+  let lic;
+  try {
+    lic = await buildLicFile(env, rec);
+  } catch (e) {
+    return json(500, { ok: false, error: String((e && e.message) || e) });
+  }
+  return new Response(JSON.stringify(lic, null, 2), {
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+      "Cache-Control": "no-store",
+      "Content-Disposition": `attachment; filename="${key}.lic"`,
+    },
+  });
+}
+
+function buildLicenseDeliveryHtml(order, lic) {
+  const key = escHtml(lic.license_id || "");
+  const name = escHtml((order && order.customer && order.customer.name) || "there");
+  const ref = escHtml((order && order.ref) || "-");
+  const prods = ((lic.products || [])
+    .map((p) => ({ extractor: "Incentive Extractor", ordering: "Device Ordering", rebate: "Rebate Filing", bundle: "Full Bundle" }[p] || p))
+    .join(", ")) || "3S Verse tools";
+  const licJson = escHtml(JSON.stringify(lic, null, 2));
+  const exp = lic.expires
+    ? `Valid till <strong style="color:#16151d;">${escHtml(lic.expires)}</strong>`
+    : "Lifetime license";
+  return `<div style="max-width:640px;margin:0 auto;background:#fff;border:1px solid #e6e4ee;border-top:3px solid #0e7c8c;border-radius:6px;font-family:-apple-system,'Segoe UI',Roboto,Arial,sans-serif;color:#16151d;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="padding:22px 26px 8px;">
+  <tr><td>
+    <div style="font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#6b6880;">3S Verse — license delivery</div>
+    <h2 style="margin:6px 0 2px;font-size:19px;">Your license keys are ready, ${name}</h2>
+    <div style="font-size:12px;color:#6b6880;">Order <strong style="color:#16151d;">${ref}</strong> · ${escHtml(prods)} · ${exp}</div>
+  </td></tr>
+</table>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="padding:6px 26px;">
+  <tr><td style="background:#f4f3f8;border:1px solid #e6e4ee;border-radius:8px;padding:16px;text-align:center;">
+    <div style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#6b6880;">License key</div>
+    <div class="mono" style="font-size:20px;font-weight:800;letter-spacing:.06em;padding:8px 0;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;">${key}</div>
+    <div style="font-size:11.5px;color:#6b6880;">Type this key into the app's activation window (one PC). It activates on first run on the registered PC.</div>
+  </td></tr>
+</table>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="padding:8px 26px 4px;">
+  <tr><td style="font-size:12px;color:#16151d;padding-bottom:6px;"><strong>License file (.lic) — no typing needed:</strong> copy the block below into a plain-text file named <span class="mono" style="font-family:ui-monospace,Menlo,Consolas,monospace;">${key}.lic</span>, then press <em>“Select License File…”</em> in the app's activation window and pick it.</td></tr>
+  <tr><td><pre style="background:#f4f3f8;border:1px solid #e6e4ee;border-radius:8px;padding:12px 14px;font-size:10.5px;line-height:1.5;overflow-x:auto;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#16151d;white-space:pre-wrap;word-break:break-all;">${licJson}</pre></td></tr>
+</table>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="padding:4px 26px 20px;">
+  <tr><td style="font-size:11.5px;line-height:1.7;color:#6b6880;">
+    <strong style="color:#16151d;">Downloads:</strong> your order status page on 3sverse.com always serves the newest build — open it with your order reference ${ref} and use the download buttons.<br>
+    Questions? Reply to this email or write to <a href="mailto:Connect@3SVerse.com" style="color:#0e7c8c;">Connect@3SVerse.com</a>.<br><br>
+    Issued electronically by 3S Verse (3sverse.com) — licenses are per-PC and non-transferable; keys activate on first run on the registered PC(s).
+  </td></tr>
+</table>
+</div>`;
+}
+
+async function handleOpsMailLic(request, env) {
+  const url = new URL(request.url);
+  const json = (status, obj) =>
+    new Response(JSON.stringify(obj), {
+      status,
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "no-store",
+        "Access-Control-Allow-Origin": "*",
+      },
+    });
+  if (request.method === "OPTIONS") {
+    return new Response(null, { status: 204, headers: { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "x-ops-key,content-type", "Access-Control-Allow-Methods": "POST,OPTIONS" } });
+  }
+  if (request.method !== "POST") return json(405, { ok: false, error: "Method not allowed." });
+  if (!opsKeyOk(request, url, env)) return json(403, { ok: false, error: "Invalid ops key." });
+  if (!env.GH_TOKEN) return json(503, { ok: false, error: "GH_TOKEN missing on this worker." });
+  let body = {};
+  try { body = await request.json(); } catch { /* empty body */ }
+  const key = String(body.license_id || "").trim().toUpperCase();
+  if (!/^VP3S-/.test(key)) return json(400, { ok: false, error: "license_id must look like VP3S-…." });
+  let rec;
+  try {
+    rec = await fetchActivationRecord(env, key);
+  } catch (e) {
+    return json(502, { ok: false, error: String((e && e.message) || e) });
+  }
+  if (!rec) return json(404, { ok: false, error: "License not found in the ledger." });
+  let lic;
+  try {
+    lic = await buildLicFile(env, rec);
+  } catch (e) {
+    return json(500, { ok: false, error: String((e && e.message) || e) });
+  }
+  let orders = [];
+  try {
+    orders = await opsLoadDir(env, env.INBOX_DIR || INBOX_DIR_DEFAULT);
+  } catch { /* orders optional */ }
+  const order = (orders || []).find((o) => String(o.licenseId || "").toUpperCase() === key) || null;
+  const toEmail = (order && order.customer && order.customer.email)
+    || String(rec.customer || "").match(/[\w.+-]+@[\w-]+\.[\w.]+/)?.[0] || "";
+  if (!toEmail) {
+    return json(400, { ok: false, error: "No customer email found - link this license to its order first." });
+  }
+  const mailOrder = order || { ref: "-", customer: { name: rec.customer, email: toEmail }, totalLabel: "" };
+  const emailed = await sendCustomerInvoice(env, mailOrder, buildLicenseDeliveryHtml(mailOrder, lic));
+  if (emailed && order && order.ref && String(order.ref).startsWith("3SV-")) {
+    /* best-effort flag on the order so /ops shows the key went out */
+    try {
+      const repo = env.LEDGER_REPO || LEDGER_REPO_DEFAULT;
+      const dir = env.INBOX_DIR || INBOX_DIR_DEFAULT;
+      const gRes = await fetch(`https://api.github.com/repos/${repo}/contents/${dir}/${encodeURIComponent(order.ref)}.json?ref=main`, { headers: ghHeaders(env.LEDGER_WRITE_TOKEN || env.GH_TOKEN) });
+      if (gRes.ok) {
+        const meta = await gRes.json();
+        const rec2 = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(String(meta.content || "").replace(/\s/g, "")), (c) => c.charCodeAt(0))));
+        rec2.keyMailed = true;
+        await fetch(`https://api.github.com/repos/${repo}/contents/${dir}/${encodeURIComponent(order.ref)}.json`, {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${env.LEDGER_WRITE_TOKEN || env.GH_TOKEN}`,
+            Accept: "application/vnd.github+json",
+            "Content-Type": "application/json",
+            "User-Agent": "3sverse-download-gateway",
+          },
+          body: JSON.stringify({
+            message: `order ${order.ref} — license key + .lic mailed`,
+            content: btoa(unescape(encodeURIComponent(JSON.stringify(rec2, null, 2)))),
+            sha: meta.sha,
+          }),
+        });
+      }
+    } catch { /* best effort */ }
+  }
+  return json(200, { ok: true, emailed, to: toEmail, license_id: key });
+}
+
 function opsShellPage() {
   return new Response(
     `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
@@ -729,7 +979,8 @@ function opsShellPage() {
 <meta name="robots" content="noindex,nofollow">
 <title>3S Verse — Ops</title>
 <style>
-:root{--bg:#f4f3f8;--card:#fff;--bd:#e6e4ee;--teal:#0e7c8c;--tx:#16151d;--mut:#6b6880;--ok:#1f7a4d;--warn:#b45309;--bad:#b3261e}
+:root{--bg:#0b1020;--card:#141b38;--bd:#2b3561;--teal:#22b8c9;--tx:#e8ecf7;--mut:#9aa4c0;--ok:#5ee39a;--warn:#ffcf70;--bad:#ff9b93;--hov:#1a2246;--chipok:#12301f;--chipwarn:#33270e;--chipbad:#3a1518;--chipmut:#23283b;--chipteal:#0e2f36;--thead:#e8ecf7}
+body[data-theme="light"]{--bg:#f4f3f8;--card:#fff;--bd:#e6e4ee;--teal:#0e7c8c;--tx:#16151d;--mut:#6b6880;--ok:#1f7a4d;--warn:#b45309;--bad:#b3261e;--hov:#fafafd;--chipok:#e5f4ec;--chipwarn:#fdf1df;--chipbad:#fbe9e7;--chipmut:#efedf5;--chipteal:#e3f1f3;--thead:#16151d}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.5 -apple-system,'Segoe UI',Roboto,Arial,sans-serif}
 .wrap{max-width:1180px;margin:0 auto;padding:18px 14px 60px}
@@ -751,18 +1002,19 @@ input,select{background:var(--card);border:1px solid var(--bd);border-radius:8px
 .tools{display:flex;gap:10px;flex-wrap:wrap;padding:10px 12px;border-bottom:1px solid var(--bd);align-items:center}
 .sc{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:13px;min-width:920px}
-th{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);text-align:left;padding:9px 10px;border-bottom:2px solid var(--tx);white-space:nowrap}
+th{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);text-align:left;padding:9px 10px;border-bottom:2px solid var(--thead);white-space:nowrap}
 td{padding:9px 10px;border-bottom:1px solid var(--bd);vertical-align:top}
-tbody tr:hover td{background:#fafafd}
+tbody tr:hover td{background:var(--hov)}
 .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px}
 .mut{color:var(--mut)}
 .sm{font-size:12px}
 .chip{display:inline-block;border-radius:20px;padding:2px 9px;font-size:11px;font-weight:700;white-space:nowrap}
-.c-ok{background:#e5f4ec;color:var(--ok)}
-.c-warn{background:#fdf1df;color:var(--warn)}
-.c-bad{background:#fbe9e7;color:var(--bad)}
-.c-mut{background:#efedf5;color:var(--mut)}
-.c-teal{background:#e3f1f3;color:var(--teal)}
+.c-ok{background:var(--chipok);color:var(--ok)}
+.c-warn{background:var(--chipwarn);color:var(--warn)}
+.c-bad{background:var(--chipbad);color:var(--bad)}
+.c-mut{background:var(--chipmut);color:var(--mut)}
+.c-teal{background:var(--chipteal);color:var(--teal)}
+.mini{padding:4px 10px;border-radius:7px;font-size:11px;font-weight:700;white-space:nowrap}
 #gate{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
 .gcard{background:var(--card);border:1px solid var(--bd);border-top:3px solid var(--teal);border-radius:10px;padding:30px 28px;max-width:380px;width:100%;text-align:center}
 .gcard img{height:44px;margin-bottom:10px}
@@ -788,6 +1040,7 @@ tbody tr:hover td{background:#fafafd}
     <div><h1>3S Verse — Ops</h1><div class="sub">Orders · Invoices · Licenses</div></div>
     <div class="sp"></div>
     <span class="mut sm" id="upd"></span>
+    <button id="thbtn" onclick="toggleTheme()" title="Dark / light">🌙</button>
     <button onclick="loadData()">Refresh</button>
     <button onclick="exportCsv('orders')">Orders CSV</button>
     <button onclick="exportCsv('licenses')">Licenses CSV</button>
@@ -816,6 +1069,25 @@ tbody tr:hover td{background:#fafafd}
 <script>
 var KEY = sessionStorage.getItem('opsKey') || '';
 var DATA = null;
+function applyTheme(t){document.body.setAttribute('data-theme',t);var b=document.getElementById('thbtn');if(b)b.textContent=(t==='dark'?'🌙':'☀️');try{localStorage.setItem('opsTheme',t);}catch(e){}}
+function toggleTheme(){applyTheme((document.body.getAttribute('data-theme')==='dark')?'light':'dark');}
+(function(){var t=null;try{t=localStorage.getItem('opsTheme');}catch(e){}applyTheme(t||'dark');})();
+function dlLic(key){
+  fetch('/ops/lic?license_id='+encodeURIComponent(key),{headers:{'x-ops-key':KEY}})
+    .then(function(r){if(!r.ok)return r.json().then(function(j){throw new Error(j.error||('HTTP '+r.status));});return r.text();})
+    .then(function(txt){var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:'application/octet-stream'}));a.download=key+'.lic';document.body.appendChild(a);a.click();a.remove();})
+    .catch(function(e){alert('.lic download fail: '+e.message);});
+}
+function mailLic(key){
+  if(!confirm('Mail the license key + .lic content to the customer?'))return;
+  fetch('/ops/maillic',{method:'POST',headers:{'x-ops-key':KEY,'Content-Type':'application/json'},body:JSON.stringify({license_id:key})})
+    .then(function(r){return r.json().then(function(j){return {st:r.status,j:j};});})
+    .then(function(x){
+      if(x.j&&x.j.ok){alert(x.j.emailed?('Key + .lic content mailed to '+(x.j.to||'the customer')):'Mail relay failed - check the EMAILJS bindings.');}
+      else{alert('Mail fail: '+((x.j&&x.j.error)||('HTTP '+x.st)));}
+    })
+    .catch(function(e){alert('Mail fail: '+e.message);});
+}
 var PNAME = {extractor:'Incentive Extractor',ordering:'Device Ordering',rebate:'Rebate Filing',bundle:'Full Bundle'};
 var MSHORT = {trial:'7-day trial',monthly:'monthly',annual:'annual',lifetime:'lifetime'};
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
@@ -898,8 +1170,8 @@ function renderLic(){
     var hay=[l.license_id,l.customer,(l.products||[]).join(','),l.model].join(' ').toLowerCase();
     return hay.indexOf(q)>=0;
   }).sort(function(a,b){return String(b.issued_at||'').localeCompare(String(a.issued_at||''));});
-  var h='<thead><tr><th>License key</th><th>Customer</th><th>Products</th><th>Model</th><th>Seats</th><th>Issued</th><th>Expiry</th><th>Status</th><th>Order</th></tr></thead><tbody>';
-  if(!rows.length)h+='<tr><td colspan="9" class="mut">No licenses match.</td></tr>';
+  var h='<thead><tr><th>License key</th><th>Customer</th><th>Products</th><th>Model</th><th>Seats</th><th>Issued</th><th>Expiry</th><th>Status</th><th>Order</th><th>Actions</th></tr></thead><tbody>';
+  if(!rows.length)h+='<tr><td colspan="10" class="mut">No licenses match.</td></tr>';
   rows.forEach(function(l){
     var d=days(l.expires);
     var st;
@@ -918,6 +1190,7 @@ function renderLic(){
       +'<td class="sm">'+(l.expires?esc(l.expires):'<span class="mut">never</span>')+'</td>'
       +'<td>'+st+'</td>'
       +'<td class="mono sm">'+(ref?'<a href="#" data-ref="'+esc(ref)+'">'+esc(ref)+'</a>':'<span class="mut">—</span>')+'</td>'
+      +'<td style="white-space:nowrap"><button class="mini" onclick="dlLic(&quot;'+esc(l.license_id)+'&quot;)" title="Download the signed .lic file">⬇ .lic</button> <button class="mini" onclick="mailLic(&quot;'+esc(l.license_id)+'&quot;)" title="Email the key + .lic content to the customer">✉ Mail</button></td>'
       +'</tr>';
   });
   document.getElementById('tLic').innerHTML=h+'</tbody>';
@@ -1053,6 +1326,12 @@ export default {
     }
     if (url.pathname === "/ops/data") {
       return handleOpsData(request, env, url);
+    }
+    if (url.pathname === "/ops/lic") {
+      return handleOpsLic(request, env, url);
+    }
+    if (url.pathname === "/ops/maillic") {
+      return handleOpsMailLic(request, env);
     }
 
     if (url.pathname !== "/download") {
