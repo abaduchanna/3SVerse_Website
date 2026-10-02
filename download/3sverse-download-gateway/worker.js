@@ -685,6 +685,143 @@ function opsKeyOk(request, url, env) {
   return diff === 0;
 }
 
+/* ------------------ ops: ledger write proxy (Studio) --------------------
+   The License Studio talks to the private ledger THROUGH this worker so
+   the PC app never needs a GitHub PAT of its own: GitHub tokens expire
+   (fine-grained ones MUST), and every expiry used to brick the Studio
+   until a full rebuild. The only long-lived client credential is
+   LEDGER_PROXY_KEY - a random string WE control, it never expires - and
+   the GitHub token lives server-side where it rotates with one secret
+   update, no app rebuild.
+
+   GET    /ops/ledger?path=ledger/activations/KEY.json → {ok, kind:"file", data, sha}
+   GET    /ops/ledger?path=ledger/activations          → {ok, kind:"dir", items:[…]}
+   GET    /ops/ledger?path=ledger/gone.json            → {ok, kind:"missing"}
+   PUT    /ops/ledger?path=…  body {data, sha?, message} → {ok, sha}  (create/update)
+   DELETE /ops/ledger?path=…  body {sha, message}        → {ok}         (remove)
+
+   Auth: x-lkey header = LEDGER_PROXY_KEY (constant-time compare). Paths
+   are hard-scoped to ledger/…json (no .., no backslash, json only).
+*/
+function ledgerKeyOk(request, env) {
+  const expected = String(env.LEDGER_PROXY_KEY || "");
+  if (!expected) return false;
+  const given = request.headers.get("x-lkey") || "";
+  if (!given || given.length !== expected.length) return false;
+  let diff = 0;
+  for (let i = 0; i < expected.length; i++) {
+    diff |= given.charCodeAt(i) ^ expected.charCodeAt(i);
+  }
+  return diff === 0;
+}
+
+function ledgerSafePath(raw) {
+  const p = String(raw || "").trim().replace(/^\/+/, "");
+  if (!p.startsWith("ledger/")) return null;
+  if (p.includes("..") || p.includes("\\") || p.includes("//")) return null;
+  if (!/^[A-Za-z0-9._\-/]+$/.test(p)) return null;
+  return p;
+}
+
+function ledgerToken(env) {
+  return String(env.LEDGER_WRITE_TOKEN || "").trim();
+}
+
+function b64Utf8(s) {
+  const bytes = new TextEncoder().encode(String(s));
+  let bin = "";
+  for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+  return btoa(bin);
+}
+
+async function handleOpsLedger(request, env, url) {
+  const json = (status, obj) =>
+    new Response(JSON.stringify(obj), {
+      status,
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "no-store",
+      },
+    });
+  if (!env.LEDGER_PROXY_KEY) {
+    return json(503, { ok: false, error: "LEDGER_PROXY_KEY is not configured on this worker yet." });
+  }
+  if (!ledgerKeyOk(request, env)) {
+    // Brute-force guard only punishes BAD keys; valid traffic is never throttled.
+    if (rateLimited("lkeyauth", inboxIp(request), 10 * 60 * 1000, 30)) {
+      return json(429, { ok: false, error: "Too many attempts — try again later." });
+    }
+    return json(403, { ok: false, error: "Invalid ledger proxy key." });
+  }
+  const tok = ledgerToken(env);
+  if (!tok) return json(503, { ok: false, error: "No ledger GitHub token on this worker." });
+  const repo = env.LEDGER_REPO || LEDGER_REPO_DEFAULT;
+  const path = ledgerSafePath(url.searchParams.get("path"));
+  if (!path) return json(400, { ok: false, error: "Bad path (ledger/*.json only)." });
+
+  try {
+    if (request.method === "GET") {
+      const res = await fetch(
+        `https://api.github.com/repos/${repo}/contents/${path}?ref=main`,
+        { headers: ghHeaders(tok) },
+      );
+      if (res.status === 404) return json(200, { ok: true, kind: "missing" });
+      if (!res.ok) return json(502, { ok: false, error: `GitHub HTTP ${res.status}` });
+      const body = await res.json();
+      if (Array.isArray(body)) {
+        return json(200, {
+          ok: true,
+          kind: "dir",
+          items: body.map((it) => ({
+            name: it.name, sha: it.sha, type: it.type, size: it.size,
+          })),
+        });
+      }
+      let data = null;
+      try {
+        data = JSON.parse(new TextDecoder().decode(
+          Uint8Array.from(atob(String(body.content || "").replace(/\s/g, "")), (c) => c.charCodeAt(0)),
+        ));
+      } catch { data = null; }
+      return json(200, { ok: true, kind: "file", data, sha: body.sha });
+    }
+
+    if (request.method === "PUT" || request.method === "DELETE") {
+      let req = {};
+      try { req = await request.json(); } catch { req = {}; }
+      const ghBody = {
+        message: String(req.message || `${request.method === "PUT" ? "update" : "remove"} ${path}`)
+          .replace(/[\r\n]+/g, " ").slice(0, 200),
+      };
+      if (request.method === "PUT") {
+        if (req.data === undefined || req.data === null) {
+          return json(400, { ok: false, error: "Missing data." });
+        }
+        ghBody.content = b64Utf8(JSON.stringify(req.data, null, 2));
+        if (req.sha) ghBody.sha = String(req.sha);
+      } else {
+        if (!req.sha) return json(400, { ok: false, error: "Missing sha for delete." });
+        ghBody.sha = String(req.sha);
+      }
+      const res = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
+        method: request.method,
+        headers: ghHeaders(tok),
+        body: JSON.stringify(ghBody),
+      });
+      if (res.status === 404) return json(200, { ok: false, ghStatus: 404, error: "GitHub HTTP 404" });
+      if (res.status === 409 || res.status === 422) {
+        return json(200, { ok: false, ghStatus: res.status, error: `GitHub HTTP ${res.status}` });
+      }
+      if (!res.ok) return json(200, { ok: false, ghStatus: res.status, error: `GitHub HTTP ${res.status}` });
+      const body = await res.json();
+      return json(200, { ok: true, sha: body && body.content ? body.content.sha : "" });
+    }
+    return json(405, { ok: false, error: "Method not allowed." });
+  } catch (e) {
+    return json(502, { ok: false, error: String((e && e.message) || e) });
+  }
+}
+
 async function handleOpsData(request, env, url) {
   const json = (status, obj) =>
     new Response(JSON.stringify(obj), {
@@ -1326,6 +1463,9 @@ export default {
     }
     if (url.pathname === "/ops/data") {
       return handleOpsData(request, env, url);
+    }
+    if (url.pathname === "/ops/ledger") {
+      return handleOpsLedger(request, env, url);
     }
     if (url.pathname === "/ops/lic") {
       return handleOpsLic(request, env, url);
