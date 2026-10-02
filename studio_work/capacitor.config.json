@@ -1,0 +1,8 @@
+{
+	"appId": "com.threesverse.licensestudio",
+	"appName": "License Studio",
+	"webDir": "www",
+	"server": {
+		"androidScheme": "https"
+	}
+}
