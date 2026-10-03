@@ -252,6 +252,7 @@ function challengePage(request, env, nextUrl) {
   const sep = nextUrl.includes("?") ? "&" : "?";
   const html = `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">` +
     `<meta name="viewport" content="width=device-width, initial-scale=1">` +
+    `<link rel="icon" href="https://3sverse.com/favicon.ico?v=2">` +
     `<title>3S Verse — quick check</title>` +
     `<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer><\/script>` +
     `</head><body style="font-family:Arial,sans-serif;background:#f4f3f8;padding:40px;text-align:center;">` +
@@ -573,7 +574,7 @@ function validate(ledger, orderNo, product) {
 /* -------------------------------- pages -------------------------------- */
 function infoPage() {
   return new Response(
-    `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>3S Verse — Downloads</title></head>
+    `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><link rel="icon" href="https://3sverse.com/favicon.ico?v=2"><title>3S Verse — Downloads</title></head>
 <body style="font-family:Arial,sans-serif;background:#f4f3f8;padding:40px;text-align:center;">
 <div style="max-width:520px;margin:0 auto;background:#fff;border:1px solid #e6e4ee;border-radius:12px;padding:32px;">
 <h1 style="margin:0 0 8px;font-size:20px;">3S Verse — Customer Downloads</h1>
@@ -597,7 +598,7 @@ function bundlePage(orderNo, products) {
     )
     .join("\n");
   return new Response(
-    `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>3S Verse — Your downloads</title></head>
+    `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><link rel="icon" href="https://3sverse.com/favicon.ico?v=2"><title>3S Verse — Your downloads</title></head>
 <body style="font-family:Arial,sans-serif;background:#f4f3f8;padding:40px;text-align:center;">
 <div style="max-width:520px;margin:0 auto;background:#fff;border:1px solid #e6e4ee;border-radius:12px;padding:32px;">
 <h1 style="margin:0 0 6px;font-size:20px;">Order ${orderNo} — your software</h1>
@@ -611,7 +612,7 @@ ${buttons}
 
 function errorPage(status, message) {
   return new Response(
-    `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>3S Verse — Download</title></head>
+    `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><link rel="icon" href="https://3sverse.com/favicon.ico?v=2"><title>3S Verse — Download</title></head>
 <body style="font-family:Arial,sans-serif;background:#f4f3f8;padding:40px;text-align:center;">
 <div style="max-width:520px;margin:0 auto;background:#fff;border:1px solid #fecaca;border-radius:12px;padding:32px;">
 <h1 style="margin:0 0 8px;font-size:20px;color:#b91c1c;">Download unavailable</h1>
@@ -683,6 +684,143 @@ function opsKeyOk(request, url, env) {
     diff |= given.charCodeAt(i) ^ expected.charCodeAt(i);
   }
   return diff === 0;
+}
+
+/* ------------------ ops: ledger write proxy (Studio) --------------------
+   The License Studio talks to the private ledger THROUGH this worker so
+   the PC app never needs a GitHub PAT of its own: GitHub tokens expire
+   (fine-grained ones MUST), and every expiry used to brick the Studio
+   until a full rebuild. The only long-lived client credential is
+   LEDGER_PROXY_KEY - a random string WE control, it never expires - and
+   the GitHub token lives server-side where it rotates with one secret
+   update, no app rebuild.
+
+   GET    /ops/ledger?path=ledger/activations/KEY.json → {ok, kind:"file", data, sha}
+   GET    /ops/ledger?path=ledger/activations          → {ok, kind:"dir", items:[…]}
+   GET    /ops/ledger?path=ledger/gone.json            → {ok, kind:"missing"}
+   PUT    /ops/ledger?path=…  body {data, sha?, message} → {ok, sha}  (create/update)
+   DELETE /ops/ledger?path=…  body {sha, message}        → {ok}         (remove)
+
+   Auth: x-lkey header = LEDGER_PROXY_KEY (constant-time compare). Paths
+   are hard-scoped to ledger/…json (no .., no backslash, json only).
+*/
+function ledgerKeyOk(request, env) {
+  const expected = String(env.LEDGER_PROXY_KEY || "");
+  if (!expected) return false;
+  const given = request.headers.get("x-lkey") || "";
+  if (!given || given.length !== expected.length) return false;
+  let diff = 0;
+  for (let i = 0; i < expected.length; i++) {
+    diff |= given.charCodeAt(i) ^ expected.charCodeAt(i);
+  }
+  return diff === 0;
+}
+
+function ledgerSafePath(raw) {
+  const p = String(raw || "").trim().replace(/^\/+/, "");
+  if (!p.startsWith("ledger/")) return null;
+  if (p.includes("..") || p.includes("\\") || p.includes("//")) return null;
+  if (!/^[A-Za-z0-9._\-/]+$/.test(p)) return null;
+  return p;
+}
+
+function ledgerToken(env) {
+  return String(env.LEDGER_WRITE_TOKEN || "").trim();
+}
+
+function b64Utf8(s) {
+  const bytes = new TextEncoder().encode(String(s));
+  let bin = "";
+  for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+  return btoa(bin);
+}
+
+async function handleOpsLedger(request, env, url) {
+  const json = (status, obj) =>
+    new Response(JSON.stringify(obj), {
+      status,
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "no-store",
+      },
+    });
+  if (!env.LEDGER_PROXY_KEY) {
+    return json(503, { ok: false, error: "LEDGER_PROXY_KEY is not configured on this worker yet." });
+  }
+  if (!ledgerKeyOk(request, env)) {
+    // Brute-force guard only punishes BAD keys; valid traffic is never throttled.
+    if (rateLimited("lkeyauth", inboxIp(request), 10 * 60 * 1000, 30)) {
+      return json(429, { ok: false, error: "Too many attempts — try again later." });
+    }
+    return json(403, { ok: false, error: "Invalid ledger proxy key." });
+  }
+  const tok = ledgerToken(env);
+  if (!tok) return json(503, { ok: false, error: "No ledger GitHub token on this worker." });
+  const repo = env.LEDGER_REPO || LEDGER_REPO_DEFAULT;
+  const path = ledgerSafePath(url.searchParams.get("path"));
+  if (!path) return json(400, { ok: false, error: "Bad path (ledger/*.json only)." });
+
+  try {
+    if (request.method === "GET") {
+      const res = await fetch(
+        `https://api.github.com/repos/${repo}/contents/${path}?ref=main`,
+        { headers: ghHeaders(tok) },
+      );
+      if (res.status === 404) return json(200, { ok: true, kind: "missing" });
+      if (!res.ok) return json(502, { ok: false, error: `GitHub HTTP ${res.status}` });
+      const body = await res.json();
+      if (Array.isArray(body)) {
+        return json(200, {
+          ok: true,
+          kind: "dir",
+          items: body.map((it) => ({
+            name: it.name, sha: it.sha, type: it.type, size: it.size,
+          })),
+        });
+      }
+      let data = null;
+      try {
+        data = JSON.parse(new TextDecoder().decode(
+          Uint8Array.from(atob(String(body.content || "").replace(/\s/g, "")), (c) => c.charCodeAt(0)),
+        ));
+      } catch { data = null; }
+      return json(200, { ok: true, kind: "file", data, sha: body.sha });
+    }
+
+    if (request.method === "PUT" || request.method === "DELETE") {
+      let req = {};
+      try { req = await request.json(); } catch { req = {}; }
+      const ghBody = {
+        message: String(req.message || `${request.method === "PUT" ? "update" : "remove"} ${path}`)
+          .replace(/[\r\n]+/g, " ").slice(0, 200),
+      };
+      if (request.method === "PUT") {
+        if (req.data === undefined || req.data === null) {
+          return json(400, { ok: false, error: "Missing data." });
+        }
+        ghBody.content = b64Utf8(JSON.stringify(req.data, null, 2));
+        if (req.sha) ghBody.sha = String(req.sha);
+      } else {
+        if (!req.sha) return json(400, { ok: false, error: "Missing sha for delete." });
+        ghBody.sha = String(req.sha);
+      }
+      const res = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
+        method: request.method,
+        headers: ghHeaders(tok),
+        body: JSON.stringify(ghBody),
+      });
+      if (res.status === 404) return json(200, { ok: false, ghStatus: 404, error: "GitHub HTTP 404" });
+      if (res.status === 409 || res.status === 422) {
+        return json(200, { ok: false, ghStatus: res.status, error: `GitHub HTTP ${res.status}` });
+      }
+      if (!res.ok) return json(200, { ok: false, ghStatus: res.status, error: `GitHub HTTP ${res.status}` });
+      const body = await res.json();
+      return json(200, { ok: true, sha: body && body.content ? body.content.sha : "" });
+    }
+    return json(405, { ok: false, error: "Method not allowed." });
+  } catch (e) {
+    return json(502, { ok: false, error: String((e && e.message) || e) });
+  }
 }
 
 async function handleOpsData(request, env, url) {
@@ -978,6 +1116,7 @@ function opsShellPage() {
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>3S Verse — Ops</title>
+<link rel="icon" href="https://3sverse.com/favicon.ico?v=2">
 <style>
 :root{--bg:#0b1020;--card:#141b38;--bd:#2b3561;--teal:#22b8c9;--tx:#e8ecf7;--mut:#9aa4c0;--ok:#5ee39a;--warn:#ffcf70;--bad:#ff9b93;--hov:#1a2246;--chipok:#12301f;--chipwarn:#33270e;--chipbad:#3a1518;--chipmut:#23283b;--chipteal:#0e2f36;--thead:#e8ecf7}
 body[data-theme="light"]{--bg:#f4f3f8;--card:#fff;--bd:#e6e4ee;--teal:#0e7c8c;--tx:#16151d;--mut:#6b6880;--ok:#1f7a4d;--warn:#b45309;--bad:#b3261e;--hov:#fafafd;--chipok:#e5f4ec;--chipwarn:#fdf1df;--chipbad:#fbe9e7;--chipmut:#efedf5;--chipteal:#e3f1f3;--thead:#16151d}
@@ -1022,7 +1161,36 @@ tbody tr:hover td{background:var(--hov)}
 .err{color:var(--bad);font-size:12px;min-height:16px;margin-bottom:6px}
 .hint{color:var(--mut);font-size:11px;margin-top:12px}
 .lbl{font-size:11px;color:var(--mut);letter-spacing:.14em;text-transform:uppercase;margin-top:4px}
+/* Animated brand background - same spiral + orb artwork as the Studio app
+   and the 3sverse.com hero/footer. Speeds matched to the site (user order:
+   "spiral ki speed hero jitni, orb website wala"): ring floats 16px over
+   12s while its image spins once per 120s (hero speed); the orb floats
+   12px over 13s and rotates once per 140s - exactly the site values.
+   Float runs on the wrapper, spin on the img (same split as the site).
+   Respect reduced motion. */
+#bgart{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+#bgart>div{position:absolute;will-change:transform}
+#bgart img{position:relative;display:block;width:100%;height:auto;will-change:transform}
+.bg-ring{right:-22vw;top:-16vh;width:min(56vw,720px);opacity:.45;animation:bgfloatR 12s ease-in-out infinite}
+.bg-ring img{animation:bgspin 120s linear infinite}
+.bg-ring-light{display:none;right:-22vw;top:-16vh;width:min(56vw,720px);opacity:.3;animation:bgfloatR 12s ease-in-out infinite}
+.bg-ring-light img{animation:bgspin 120s linear infinite}
+.bg-orb{left:-9vw;bottom:-24vh;width:min(34vw,440px);opacity:.45;animation:bgfloatO 13s ease-in-out infinite}
+.bg-orb img{animation:bgspin 140s linear infinite}
+body[data-theme="light"] .bg-ring{display:none}
+body[data-theme="light"] .bg-ring-light{display:block}
+body[data-theme="light"] .bg-orb{opacity:.3}
+@keyframes bgspin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes bgfloatR{0%,100%{transform:translateY(-16px)}50%{transform:translateY(16px)}}
+@keyframes bgfloatO{0%,100%{transform:translateY(-12px)}50%{transform:translateY(12px)}}
+@media (prefers-reduced-motion:reduce){#bgart>div,#bgart img{animation:none}}
+#gate,.wrap{position:relative;z-index:1}
 </style></head><body>
+<div id="bgart" aria-hidden="true">
+<div class="bg-ring"><img src="https://3sverse.com/shapes/shape-v1.webp" alt=""></div>
+<div class="bg-ring-light"><img src="https://3sverse.com/shapes/shape-v1-solid.webp?v=7" alt=""></div>
+<div class="bg-orb"><img src="https://3sverse.com/shapes/shape-v3.webp" alt=""></div>
+</div>
 <div id="gate"><div class="gcard">
 <img src="https://3sverse.com/logo.png" alt="3S Verse">
 <div class="lbl">Dealer Automation Tools</div>
@@ -1326,6 +1494,9 @@ export default {
     }
     if (url.pathname === "/ops/data") {
       return handleOpsData(request, env, url);
+    }
+    if (url.pathname === "/ops/ledger") {
+      return handleOpsLedger(request, env, url);
     }
     if (url.pathname === "/ops/lic") {
       return handleOpsLic(request, env, url);
