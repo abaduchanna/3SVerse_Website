@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type FormEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import {
   BadgePercent,
   Check,
@@ -151,6 +151,9 @@ export default function DealerStore() {
     ),
   );
   const [lines, setLines] = useState<Line[]>([]);
+  // Bank/USDT click -> order form (cart) renders further down the page;
+  // auto-scroll it into view so the customer sees the order happen (owner order 2026-10-05).
+  const orderFormRef = useRef<HTMLFormElement | null>(null);
   const [form, setForm] = useState({ name: '', email: '', company: '', messenger: '', notes: '' });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -259,6 +262,11 @@ export default function DealerStore() {
       }
       return [...prev, { productId, model: sel.model, pcs: sel.pcs, qty: 1 }];
     });
+    // The "Your order" form only renders once lines exist — give React a
+    // beat to mount it, then smooth-scroll the customer down to the cart.
+    window.setTimeout(() => {
+      orderFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 150);
   };
 
   const changeQty = (index: number, delta: number) => {
@@ -986,8 +994,9 @@ export default function DealerStore() {
 
       {!result && lines.length > 0 ? (
         <form
+          ref={orderFormRef}
           onSubmit={submit}
-          className="mt-8 rounded-3xl border border-border bg-card p-6 sm:p-8"
+          className="mt-8 scroll-mt-24 rounded-3xl border border-border bg-card p-6 sm:p-8"
         >
           <p className="mb-4 text-[13px] font-medium uppercase tracking-[.14em] text-muted-foreground">
             Your order
