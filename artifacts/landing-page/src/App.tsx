@@ -654,7 +654,7 @@ function Hero() {
           <div className="relative z-10">
             <Reveal>
               <div className="mb-7 flex items-center gap-3 font-mono-tech text-[10px] uppercase tracking-[.3em] text-brand-cyan">
-                <Sparkles className="h-3.5 w-3.5 text-brand-magenta" /> VidaPay tools · Wireless dealers
+                <Sparkles className="h-3.5 w-3.5 text-brand-magenta" /> VidaPay tools · Total Wireless dealers · Tcetra-ready
               </div>
             </Reveal>
             <Reveal delay={0.08}>
@@ -1181,6 +1181,97 @@ function Tools() {
         <RoiCalculator />
         <DealerStore />
         <DemoStrip />
+      </div>
+    </section>
+  );
+}
+
+/* SEO audience section (owner order 2026-10-05): rank for the searches
+   wireless retail dealers actually type — VidaPay, Tcetra, Total Wireless,
+   rebate/incentive/device ordering, inventory, dashboards, store operations.
+   Every line is a real capability — natural copy, no keyword stuffing. */
+const AUDIENCE_CARDS: Array<{ icon: typeof Store; title: string; body: string; testId: string }> = [
+  {
+    icon: ClipboardCheck,
+    title: 'VidaPay rebate filing & claims',
+    body: 'Extract, file, and track every rebate, spiff, and claim your stores earn. Built for the VidaPay portal workflows Total Wireless dealers run daily — per-claim status from filed to PAID.',
+    testId: 'aud-rebate-filing',
+  },
+  {
+    icon: FileSpreadsheet,
+    title: 'VidaPay incentive extraction',
+    body: 'The VidaPay Incentive Dashboard Extractor pulls activations, incentives, and spiffs straight into a clean Excel workbook — no screenshots, no retyping, no missed spiffs.',
+    testId: 'aud-incentive-extraction',
+  },
+  {
+    icon: ShoppingCart,
+    title: 'VidaPay device ordering',
+    body: 'Device orders for every store in one guided submit — per-store quantities, the right SKU in the right store, zero guesswork and zero re-orders.',
+    testId: 'aud-device-ordering',
+  },
+  {
+    icon: Boxes,
+    title: 'Inventory audit & aging',
+    body: 'Inventory audits and aging reports across every location — see what is sitting, what is moving, and what is quietly costing you money each month.',
+    testId: 'aud-inventory',
+  },
+  {
+    icon: BarChart3,
+    title: 'Operations dashboards',
+    body: 'One live operations dashboard per store or across the whole district — KPIs built from the portal data you already extract, on screen or in Excel.',
+    testId: 'aud-dashboards',
+  },
+  {
+    icon: Store,
+    title: 'Retail & multi-store operations',
+    body: 'Built by people who actually ran wireless retail stores — back-office operations for a single prepaid store up to a whole district of dealerships.',
+    testId: 'aud-retail-ops',
+  },
+];
+
+function Audience() {
+  return (
+    <section id="solutions" className="relative overflow-hidden py-28 lg:py-36">
+      <div className="mx-auto max-w-7xl px-5 lg:px-8">
+        <Reveal>
+          <div className="mb-14 max-w-3xl">
+            <div className="mb-6 font-mono-tech text-[10px] uppercase tracking-[.3em] text-brand-cyan">
+              Who it is for
+            </div>
+            <h2 className="text-[clamp(2rem,4.6vw,3.2rem)] font-light leading-[1.1] tracking-[-0.02em] text-foreground">
+              Built for wireless retail operations —{' '}
+              <span className="font-normal text-brand-cyan">rebate claims to device orders</span>
+            </h2>
+            <p className="mt-5 text-[16px] font-light leading-7 text-foreground/70">
+              3S Verse serves Total Wireless dealers and MVNO retail teams that live in the
+              VidaPay portal and the Tcetra dashboard every day. If your front office does it
+              twice a week, one of these fits.
+            </p>
+          </div>
+        </Reveal>
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {AUDIENCE_CARDS.map((card) => (
+            <Reveal key={card.testId}>
+              <div
+                data-testid={card.testId}
+                className="h-full rounded-3xl border border-border bg-card p-7 transition-colors hover:border-brand-cyan/40"
+              >
+                <card.icon className="h-5 w-5 text-brand-cyan" />
+                <h3 className="mt-4 text-[16px] font-medium leading-6 text-foreground">{card.title}</h3>
+                <p className="mt-2.5 text-[13.5px] font-light leading-6 text-muted-foreground">{card.body}</p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+        <Reveal>
+          <p className="mx-auto mt-12 max-w-4xl text-center text-[13px] font-light leading-6 text-muted-foreground">
+            Searching for a faster way through the Tcetra dashboard or the VidaPay portal?
+            Whether the job is rebate claims, incentive reports, device ordering, inventory
+            audits, or day-to-day store operations, the 3S Verse tools were built on the same
+            retail back-office workflows your dealership runs — start free and see a real run
+            on your own store data within days.
+          </p>
+        </Reveal>
       </div>
     </section>
   );
@@ -2554,6 +2645,7 @@ function Home() {
         <HowItWorks />
         <Outcomes />
         <Tools />
+        <Audience />
         <Compare />
         <Guides />
         <Faq />

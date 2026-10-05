@@ -74,25 +74,25 @@ const ROUTES = {
     shim: "#/security",
   },
   about: {
-    title: "About — 3S Verse",
+    title: "About — VidaPay Tools for Wireless Retail Dealers — 3S Verse",
     description:
-      "Operator-built VidaPay dealer tools: local-first software that runs on your PC under your own login. Our mission, how we work and what we build — in plain English.",
+      "Operator-built VidaPay dealer tools: rebate filing, incentive extraction, device ordering and store operations software for Total Wireless retail — local-first, runs on your PC under your own login. Our mission and how we work, in plain English.",
     robots: "index,follow",
     canonical: `${SITE}/about/`,
     shim: "#/about",
   },
   pricing: {
-    title: "Pricing — 3S Verse",
+    title: "Pricing — VidaPay Rebate, Incentive & Device Ordering Tools — 3S Verse",
     description:
-      "Per-PC pricing for the VidaPay dealer tools — free 7-day trial built into every download, lifetime one-time or monthly/annual plans, 30-day money-back guarantee.",
+      "Per-PC pricing for the VidaPay dealer tools wireless retail stores run on — rebate claim filing, incentive extraction, device ordering. Free 7-day trial built into every download, lifetime one-time or monthly/annual plans, 30-day money-back guarantee.",
     robots: "index,follow",
     canonical: `${SITE}/pricing/`,
     shim: "#/pricing",
   },
   download: {
-    title: "Download Free Trials — 3S Verse",
+    title: "Download Free Trials — VidaPay Rebate, Incentive & Ordering Tools — 3S Verse",
     description:
-      "Free trials of every VidaPay workflow tool for wireless dealers — run each one on your own dealership data before you pay a cent.",
+      "Free trials of every VidaPay workflow tool for Total Wireless dealers and retail store operations — rebate filing, incentive extraction, device ordering, inventory audits. Run each one on your own dealership data before you pay a cent.",
     robots: "index,follow",
     canonical: `${SITE}/download/`,
     shim: "#/download",
@@ -106,9 +106,9 @@ const ROUTES = {
     shim: null, // wouter serves /order at the real path — no hash redirect
   },
   trial: {
-    title: "Download Free Trials — 3S Verse",
+    title: "Download Free Trials — VidaPay Rebate, Incentive & Ordering Tools — 3S Verse",
     description:
-      "Free trials of every VidaPay workflow tool for wireless dealers — run each one on your own dealership data before you pay a cent.",
+      "Free trials of every VidaPay workflow tool for Total Wireless dealers and retail store operations — rebate filing, incentive extraction, device ordering, inventory audits. Run each one on your own dealership data before you pay a cent.",
     robots: "index,follow",
     canonical: `${SITE}/download/`, // alias -> merge into /download/
     shim: "#/download",
