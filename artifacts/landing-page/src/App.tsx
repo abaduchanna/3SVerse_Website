@@ -660,11 +660,11 @@ function Hero() {
             </Reveal>
             <Reveal delay={0.08}>
               <h1 className="text-[clamp(2.4rem,8.5vw,4.6rem)] font-light leading-[1.06] tracking-[-0.03em] text-foreground">
-                The tools your
+                Stop doing by hand
                 <br />
-                dealership runs on —
+                what a tool can do
                 <br />
-                <span className="font-normal text-brand-cyan">built by operators.</span>
+                <span className="font-normal text-brand-cyan">in 60 seconds.</span>
               </h1>
             </Reveal>
             <Reveal delay={0.16}>
@@ -1011,7 +1011,7 @@ const TOOLS = [
     id: 'extractor',
     tab: 'VidaPay Incentive Extractor',
     title: 'VidaPay Incentive Extractor',
-    blurb: 'Every rebate, spiff, and incentive pulled straight out of the VidaPay portal into one clean sheet. No screenshots, no retyping — built to reduce missed incentives and manual transcription for the front office that reconciles VidaPay every week.',
+    blurb: 'Every rebate, spiff, and incentive pulled straight out of the VidaPay portal into one clean sheet in under 60 seconds. No screenshots, no retyping — built to reduce missed incentives and manual transcription for the front office that reconciles VidaPay every week.',
     chips: [
       { icon: FileSpreadsheet, label: 'Rebate tracking' },
       { icon: ClipboardCheck, label: 'Claim matching' },
@@ -1195,13 +1195,13 @@ const AUDIENCE_CARDS: Array<{ icon: typeof Store; title: string; body: string; t
   {
     icon: ClipboardCheck,
     title: 'VidaPay rebate filing & claims',
-    body: 'Extract, file, and track every rebate, spiff, and claim your stores earn. Built for the VidaPay portal workflows Total Wireless dealers run daily — per-claim status from filed to PAID.',
+    body: 'Rebates are money you already earned — extract, file, and track every rebate, spiff, and claim your stores earn, with per-claim status from filed to PAID. Built for the VidaPay portal workflows Total Wireless dealers run daily.',
     testId: 'aud-rebate-filing',
   },
   {
     icon: FileSpreadsheet,
     title: 'VidaPay incentive extraction',
-    body: 'The VidaPay Incentive Dashboard Extractor pulls activations, incentives, and spiffs straight into a clean Excel workbook — no screenshots, no retyping, no missed spiffs.',
+    body: 'The VidaPay Incentive Dashboard Extractor pulls activations, incentives, and spiffs straight into a clean Excel workbook in under 60 seconds — no screenshots, no retyping, no missed spiffs. What used to take 45 minutes now takes about one.',
     testId: 'aud-incentive-extraction',
   },
   {
@@ -1524,7 +1524,7 @@ function DemoStrip() {
           data-testid="demo-cta-youtube"
           className="inline-flex items-center gap-2 rounded-xl border bg-white px-5 py-3 text-[13.5px] font-semibold text-[#0b0a10] transition-transform hover:scale-[1.02]"
         >
-          <Youtube className="h-4 w-4" /> Watch on YouTube — @3SVerse
+          <Youtube className="h-4 w-4" /> Watch the demos on YouTube — @3SVerse
         </a>
         <a
           href={LINKEDIN_URL}

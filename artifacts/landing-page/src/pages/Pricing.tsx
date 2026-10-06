@@ -75,7 +75,7 @@ function PlanCard({ product, featured }: { product: Product; featured?: boolean 
             Launch Offer — <s className="opacity-70">{formatUSD(list)}</s> ({off}% off)
           </span>
         ) : (
-          <span>Lifetime license</span>
+          <span>Lifetime — pay once, keep it forever</span>
         )}
         <span>
           or {formatUSD(product.prices.monthly)}/mo &middot; {formatUSD(product.prices.annual)}/yr

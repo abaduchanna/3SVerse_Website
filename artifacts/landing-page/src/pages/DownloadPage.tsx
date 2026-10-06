@@ -10,7 +10,7 @@
  * right now — the builds re-publish on a fixed sync schedule.
  */
 import { useEffect, useState } from 'react';
-import { ArrowLeft, Check, FileDown, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, Check, FileDown, KeyRound, ShieldCheck } from 'lucide-react';
 import TrialGateModal from '@/components/TrialGateModal';
 import { savedTrialLead } from '@/lib/trialgate';
 
@@ -29,6 +29,12 @@ const KNOWN_EXES: Array<{ name: string; label: string }> = [
   { name: 'VidaPay_Device_Ordering.exe', label: 'VidaPay Device Ordering — 7-day trial included' },
   { name: 'VidaPay_Rebate_Filing.exe', label: 'VidaPay Rebate Filing — 7-day trial included' },
 ];
+
+/* Audit 4.5: a 60-second "how to activate your key in 3 steps" video on the
+   download page eliminates ~90% of activation support requests. Record it
+   (Loom or YouTube), paste the embed URL here — the card renders the video
+   automatically. '' keeps the written steps as the fallback. */
+const ACTIVATION_VIDEO_URL = '';
 
 interface AssetMeta { size?: number; digest?: string }
 
@@ -123,6 +129,12 @@ export default function DownloadPage() {
           repository and re-published on a fixed sync schedule.
         </p>
 
+        <div className="mt-7 flex flex-wrap gap-x-7 gap-y-2.5 border-t border-border pt-5 font-mono-tech text-[11px] uppercase tracking-[.16em] text-muted-foreground">
+          <span className="flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-[#c7ef70]" /> No credit card · no sign-up · just download</span>
+          <span className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-brand-cyan" /> Always the latest version — automatically</span>
+          <span className="flex items-center gap-2"><ShieldCheck className="h-3.5 w-3.5 text-brand-cyan" /> Your license is protected — it&apos;s yours</span>
+        </div>
+
         {metaFailed && (
           <div className="mt-8 rounded-2xl border border-amber-400/30 bg-amber-400/[.06] p-5 text-[13.5px] leading-6 text-foreground">
             Live checksums and file sizes are temporarily unavailable (GitHub API limit hit on this network).
@@ -195,6 +207,39 @@ export default function DownloadPage() {
               </div>
             </div>
           </div>
+
+        <div className="mt-10 rounded-2xl border border-border bg-card p-6" data-testid="download-activation">
+          <div className="flex items-center gap-2.5">
+            <KeyRound className="h-4 w-4 text-brand-cyan" />
+            <h2 className="text-[15px] font-medium text-foreground">Activate your key in 3 steps</h2>
+          </div>
+          <ol className="mt-3 space-y-2 text-[13.5px] font-light leading-6 text-foreground/75">
+            <li>1. Run the installer — it opens as a free 7-day trial, no sign-up.</li>
+            <li>2. Buy a license key — it arrives by email, usually within a few hours of your order.</li>
+            <li>3. Paste the key into the app&apos;s Activate box — that PC is unlocked permanently.</li>
+          </ol>
+          {ACTIVATION_VIDEO_URL ? (
+            <div className="mt-4 overflow-hidden rounded-xl border border-border">
+              <div className="relative aspect-video w-full">
+                <iframe
+                  src={ACTIVATION_VIDEO_URL}
+                  title="How to activate your license key in 3 steps"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                  loading="lazy"
+                  className="absolute inset-0 h-full w-full"
+                />
+              </div>
+            </div>
+          ) : (
+            <p className="mt-3 text-[12.5px] leading-5 text-muted-foreground">
+              One license = one PC, always. Moving to a new PC? Deactivate from the app (bottom-right) and activate the
+              same key there — full details in the{' '}
+              <a href="https://3sverse.com/#faq" className="text-brand-cyan hover:underline">FAQ</a>. Stuck? WhatsApp
+              support answers same-day on business days.
+            </p>
+          )}
+        </div>
 
         <TrialGateModal
           open={gateFor !== null}
