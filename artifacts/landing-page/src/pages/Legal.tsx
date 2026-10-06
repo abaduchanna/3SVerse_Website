@@ -99,7 +99,8 @@ function Terms() {
         <p>
           Place an order in the store and an invoice opens in your browser instantly (PDF-ready, emailed to you).
           Pay by bank transfer, Wise, PayPal or USDT. Once payment is confirmed, license keys plus download links
-          arrive by email — usually within a few hours. Every plan includes every update while it is active;
+          arrive by email — within 2 business hours on business days (US Central); orders paid after hours ship
+          first thing the next morning. Every plan includes every update while it is active;
           lifetime (perpetual) includes 1 year of updates, then an optional $199/yr update plan — the installed
           build keeps working either way.
         </p>

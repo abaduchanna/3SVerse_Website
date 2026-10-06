@@ -507,7 +507,11 @@ function Nav() {
   const [open, setOpen] = useState(false);
   return (
     <header className="fixed left-0 right-0 top-0 z-40 border-b border-border bg-background/75 backdrop-blur-xl">
-      <div className="mx-auto flex h-[76px] max-w-7xl items-center justify-between px-5 lg:px-8">
+      {/* Audit v4 overlap fix: 9 nav items + logo + actions (~1400px) physically
+          overflow a max-w-7xl (1280px) container — justify-between collapses to zero
+          gap and the logo touches "What we offer" (owner screenshot). Wider header
+          container + a hard flex gap guarantees separation at every 2xl+ width. */}
+      <div className="mx-auto flex h-[76px] max-w-[1680px] items-center justify-between gap-8 px-5 lg:px-8">
         <a href="#top" data-testid="link-brand" aria-label="3SVerse — back to top" className="shrink-0">
           <img src="/logo-240.png" alt="3SVerse" width={240} height={57} className="h-7 w-auto object-contain" />
         </a>
@@ -722,6 +726,12 @@ function IntegrateSection() {
             </h2>
             <p className="mt-7 max-w-lg text-[16px] font-light leading-8 text-foreground/75">
               Need something the three tools don&apos;t do? We build custom automation around how your dealership already works — VidaPay portal data into clean spreadsheets, reports your back office trusts, workflows that run without retyping. No rip-and-replace, no six-month projects — it starts saving hours from week one.
+            </p>
+            {/* Audit v4 #5: "contact us" with no price anchor is a stop sign — a floor
+                number keeps interested dealers in the funnel. OWNER: adjust the $1,500
+                floor here if the real starting number changes. */}
+            <p className="mt-5 text-[13.5px] leading-6 text-foreground/85" data-testid="custom-automation-anchor">
+              Custom projects <span className="font-medium text-brand-cyan">typically start at $1,500</span> — scoped after a free call.
             </p>
             <div className="mt-10">
               <BtnWhite href="#contact" testId="button-integrate-start">Ask about a custom build</BtnWhite>
@@ -1379,7 +1389,9 @@ function Compare() {
    from the catalog (volume tiers included) so the numbers match the store. */
 function RoiCalculator() {
   const bundle = PRODUCTS.find((p) => p.id === 'bundle')!;
-  const [stores, setStores] = useState(3);
+  /* Audit v4 #4: default = 1 store (the median visitor), not 3 — a single-store
+     dealer must see their own realistic number first, then add stores. */
+  const [stores, setStores] = useState(1);
   const [lossPerStore, setLossPerStore] = useState(1000);
 
   const monthlyLoss = stores * lossPerStore;
@@ -1441,7 +1453,8 @@ function RoiCalculator() {
               Running 10 or more stores? Message us — district pricing with central billing and
               priority support. Results vary by dealership: the presets are a conservative /
               typical / upside scenario range, and payback = bundle price ÷ your estimated
-              monthly recovery.
+              monthly recovery. If the math does not work for your dealership, the trial is free
+              and you owe us nothing.
             </p>
           </div>
         </div>
@@ -1600,8 +1613,12 @@ const FAQ_ITEMS: Array<{ q: string; a: string }> = [
     a: 'A Windows 10 or 11 PC, your VidaPay dealer login, and Excel for the outputs. That is the whole checklist — install, activate with the key we email you, and run.',
   },
   {
+    q: 'Windows shows a security warning when I run the tool. Is it safe?',
+    a: 'Yes — the warning is normal for independently published software. 3SVerse is a small developer, not a big publisher, so Windows SmartScreen asks on first run: click More info, then Run anyway. Your VidaPay credentials and extracted data never leave your PC, the download page shows the SHA-256 checksum so you can verify the file, and the full source is public on GitHub.',
+  },
+  {
     q: 'How do payment and delivery work?',
-    a: 'Place the order and a proper invoice opens in your browser instantly (PDF-ready, emailed to you). Pay by bank transfer, Wise, PayPal, or USDT, share the receipt, and your license keys plus download links arrive — usually within a few hours.',
+    a: 'Place the order and a proper invoice opens in your browser instantly (PDF-ready, emailed to you). Pay by bank transfer, Wise, PayPal, or USDT, share the receipt, and your license keys plus download links arrive — within 2 business hours on business days (US Central). Paid after hours or on a weekend? Your key ships first thing the next morning.',
   },
   {
     q: 'What if it does not work out for my dealership?',

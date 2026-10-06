@@ -10,7 +10,7 @@
  * right now — the builds re-publish on a fixed sync schedule.
  */
 import { useEffect, useState } from 'react';
-import { ArrowLeft, Check, FileDown, KeyRound, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, Check, FileDown, KeyRound, ShieldAlert, ShieldCheck } from 'lucide-react';
 import TrialGateModal from '@/components/TrialGateModal';
 import { savedTrialLead } from '@/lib/trialgate';
 
@@ -126,7 +126,8 @@ export default function DownloadPage() {
           Windows 10/11, your VidaPay dealer login, and Excel for the outputs — that is the whole checklist.
           Each download is the full software: it runs as a 7-day trial on one PC, and the license key you
           buy unlocks it permanently — no second installer. Builds are hosted in our controlled public
-          repository and re-published on a fixed sync schedule.
+          repository and re-published on a fixed sync schedule. Not sure it fits your setup? Run the free
+          trial on your actual store data — you will know within the first session, no card, no guesswork.
         </p>
 
         <div className="mt-7 flex flex-wrap gap-x-7 gap-y-2.5 border-t border-border pt-5 font-mono-tech text-[11px] uppercase tracking-[.16em] text-muted-foreground">
@@ -208,6 +209,63 @@ export default function DownloadPage() {
             </div>
           </div>
 
+        {/* Audit v4 #1 (fix first): the single biggest abandonment point for non-technical
+            users is the Windows SmartScreen warning on first run of an unsigned download.
+            Call it out BEFORE it happens — exact dialog mock + the 2-click pass, framed
+            confidently, not apologetically. Swap the mock for a real annotated screenshot
+            anytime by replacing this block. */}
+        <div className="mt-10 rounded-2xl border border-border bg-card p-6" data-testid="download-smartscreen">
+          <div className="flex items-center gap-2.5">
+            <ShieldAlert className="h-4 w-4 text-brand-cyan" />
+            <h2 className="text-[15px] font-medium text-foreground">
+              Windows will show a security warning on first run — that is normal.
+            </h2>
+          </div>
+          <p className="mt-3 text-[13.5px] font-light leading-6 text-foreground/75">
+            3SVerse is a small independent developer, not a big publisher — so Windows SmartScreen
+            asks before an independently published installer runs. It is a one-time, 2-second pass,
+            not a problem with the file. This is the exact dialog you will see:
+          </p>
+          <div
+            aria-hidden="true"
+            className="mx-auto mt-5 max-w-md overflow-hidden rounded-xl border border-[#cfcfcf] bg-white text-left shadow-[0_16px_44px_rgba(0,0,0,.3)]"
+          >
+            <div className="px-4 pt-3 text-[11.5px] text-[#6b6b6b]">VidaPay Incentive Extractor</div>
+            <div className="flex gap-3.5 px-4 pb-3 pt-2.5">
+              <ShieldAlert className="mt-0.5 h-8 w-8 shrink-0 text-[#0f6cbd]" />
+              <div>
+                <p className="text-[13.5px] font-semibold leading-5 text-[#1b1b1b]">Windows protected your PC</p>
+                <p className="mt-1 text-[12px] leading-5 text-[#5f5f5f]">
+                  Microsoft Defender SmartScreen prevented an unrecognized app from starting. Running this app
+                  might put your PC at risk.
+                </p>
+                <p className="mt-1.5 text-[11.5px] leading-4 text-[#8a8a8a]">Publisher: Unknown publisher</p>
+              </div>
+            </div>
+            <div className="flex items-center justify-between border-t border-[#ececec] px-4 py-3">
+              <span className="text-[12.5px] font-medium text-[#0f6cbd] underline">More info</span>
+              <span className="rounded-[4px] bg-[#0f6cbd] px-4 py-1.5 text-[12.5px] font-medium text-white">Run anyway</span>
+            </div>
+          </div>
+          <div className="mx-auto mt-3 flex max-w-md flex-wrap items-center justify-between gap-x-6 gap-y-1.5 text-[12.5px] text-foreground/85">
+            <span>
+              <span className="font-mono-tech font-semibold text-brand-cyan">1.</span> Click{' '}
+              <span className="font-medium text-foreground">More info</span> — the warning expands
+            </span>
+            <span>
+              <span className="font-mono-tech font-semibold text-brand-cyan">2.</span> Click{' '}
+              <span className="font-medium text-foreground">Run anyway</span> — the tool opens
+            </span>
+          </div>
+          <p className="mt-3 text-[12.5px] leading-5 text-muted-foreground">
+            Why it happens: big publishers pay for code-signing certificates, independent developers do not —
+            so SmartScreen flags any publisher it does not recognize. The tools are safe to run: your VidaPay
+            credentials and extracted data never leave your PC, the SHA-256 checksum above lets you verify the
+            file byte for byte, and the full source is public on GitHub if you want to see exactly what the
+            tools do.
+          </p>
+        </div>
+
         <div className="mt-10 rounded-2xl border border-border bg-card p-6" data-testid="download-activation">
           <div className="flex items-center gap-2.5">
             <KeyRound className="h-4 w-4 text-brand-cyan" />
@@ -215,7 +273,7 @@ export default function DownloadPage() {
           </div>
           <ol className="mt-3 space-y-2 text-[13.5px] font-light leading-6 text-foreground/75">
             <li>1. Run the installer — it opens as a free 7-day trial, no sign-up.</li>
-            <li>2. Buy a license key — it arrives by email, usually within a few hours of your order.</li>
+            <li>2. Buy a license key — it arrives by email within 2 business hours on business days (US Central); after-hours orders ship first thing next morning.</li>
             <li>3. Paste the key into the app&apos;s Activate box — that PC is unlocked permanently.</li>
           </ol>
           {ACTIVATION_VIDEO_URL ? (

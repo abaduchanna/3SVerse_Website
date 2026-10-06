@@ -62,7 +62,7 @@ const EMAILJS_TEMPLATE_SUBJECT = 'Invoice {{invoice_no}} — 3SVerse (order {{or
 const EMAILJS_TEMPLATE_CONTENT = `Hi {{customer_name}},
 
 Your 3SVerse invoice is ready — total {{total_label}}.
-Pay within the due window shown on the invoice (bank transfer, Wise, PayPal, or USDT). After payment we deliver your license keys within a few hours.
+Pay within the due window shown on the invoice (bank transfer, Wise, PayPal, or USDT). After payment we deliver your license keys within 2 business hours on business days (US Central) — after-hours orders ship first thing next morning.
 
 {{{invoice_html}}}
 

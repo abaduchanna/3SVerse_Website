@@ -120,7 +120,10 @@ export interface Product {
 export const LAUNCH_OFFER = {
   active: true,
   label: 'Launch Offer',
-  note: 'Launch pricing ends Oct 31, 2026 — honored to the minute. List prices return Nov 1, no extension.',
+  /* Audit v4 #3: urgency needs stakes — show the exact after-price so the customer
+     sees what they save by deciding today. Rendered under the countdown strip, in
+     the storefront, and on the Pricing page. */
+  note: 'Launch pricing ends Oct 31, 2026 — honored to the minute. On Nov 1, lifetime returns to list: $1,299 / $1,499 / $1,699 per tool ($2,499 bundle). No extension.',
   /** ISO deadline for launch pricing — the storefront counts down to it.
    *  Flip `active` to false (or clear endsAt) when the promo ends. */
   endsAt: '2026-10-31T23:59:59-05:00',

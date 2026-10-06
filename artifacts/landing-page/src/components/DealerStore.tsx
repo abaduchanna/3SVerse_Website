@@ -621,7 +621,8 @@ export default function DealerStore() {
         {!PAID_DOWNLOAD.gatewayUrl ? (
           <p className="mt-2 text-[12px] text-muted-foreground">
             Press the button and your email app opens the request to {PAID_DOWNLOAD.contactEmail}{' '}
-            — we verify your order number and reply with your download link, usually within a few hours.
+            — we verify your order number and reply with your download link within 2 business hours
+            on business days (US Central); after-hours orders go out first thing next morning.
           </p>
         ) : null}
       </div>
@@ -660,7 +661,8 @@ export default function DealerStore() {
             </li>
             <li className="flex gap-2.5">
               <span className="font-mono-tech text-brand-cyan">3.</span> Your license key(s) +
-              download links are delivered — usually within a few hours.
+              download links are delivered — within 2 business hours on business days (US Central),
+              first thing next morning for after-hours orders.
             </li>
           </ol>
           <div className="mb-6 flex flex-wrap items-center gap-3 rounded-xl border border-brand-cyan/20 bg-[#6ee7ef]/[.05] px-4 py-3">
