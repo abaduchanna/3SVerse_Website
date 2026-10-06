@@ -1,6 +1,6 @@
 /**
  * Download page (#/download, deep link /download) — the branded download
- * destination for the official VidaPay tool installers.
+ * destination for the official portable VidaPay Windows executables.
  *
  * One build per tool: it opens as a free 7-day trial and a license key
  * unlocks the full version, so trial users and paid customers download
@@ -127,14 +127,14 @@ export default function DownloadPage() {
         </h1>
         <p className="mt-5 text-[15px] font-light leading-7 text-foreground/75">
           Windows 10/11, your VidaPay dealer login, and Excel for the outputs — that is the whole checklist.
-          Each download is the full software: it runs as a 7-day trial on one PC, and the license key you
-          buy unlocks it permanently — no second installer. Builds are hosted in our controlled public
+          Each portable .exe is the full software: open it directly with no installation. It runs as a 7-day
+          trial on one PC, and the license key activates the plan you buy — there is no second download. Builds are hosted in our controlled public
           repository and re-published on a fixed sync schedule. Not sure it fits your setup? Run the free
           trial on your actual store data — you will know within the first session, no card, no guesswork.
         </p>
 
         <div className="mt-7 flex flex-wrap gap-x-7 gap-y-2.5 border-t border-border pt-5 font-mono-tech text-[11px] uppercase tracking-[.16em] text-muted-foreground">
-          <span className="flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-[#c7ef70]" /> No credit card · no sign-up · just download</span>
+          <span className="flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-[#c7ef70]" /> No credit card · no installation · portable .exe</span>
           <span className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-brand-cyan" /> Always the latest version — automatically</span>
           <span className="flex items-center gap-2"><ShieldCheck className="h-3.5 w-3.5 text-brand-cyan" /> Your license is protected — it&apos;s yours</span>
         </div>
@@ -142,7 +142,7 @@ export default function DownloadPage() {
         {metaFailed && (
           <div className="mt-8 rounded-2xl border border-amber-400/30 bg-amber-400/[.06] p-5 text-[13.5px] leading-6 text-foreground">
             Live checksums and file sizes are temporarily unavailable (GitHub API limit hit on this network).
-            The installers below are always the current builds — download normally, and verify the SHA-256 on the{' '}
+            The portable apps below are always the current builds — download normally, and verify the SHA-256 on the{' '}
             <a className="text-brand-cyan hover:underline" href={RELEASES_PAGE} target="_blank" rel="noopener noreferrer">
               releases page
             </a>.
@@ -195,9 +195,9 @@ export default function DownloadPage() {
             <div className="rounded-2xl border border-border bg-card p-6">
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <div className="min-w-0">
-                  <div className="text-[15.5px] font-medium text-foreground">All three tools — the Full Bundle (2 licenses of each — 6 total)</div>
+                  <div className="text-[15.5px] font-medium text-foreground">Full Bundle — buy one complete bundle and get a second bundle license free</div>
                   <div className="mt-1 font-mono-tech text-[10px] uppercase tracking-[.16em] text-muted-foreground">
-                    Grab each installer from the release list
+                    All three portable tools on two Windows PCs
                   </div>
                 </div>
                 <button
@@ -226,7 +226,7 @@ export default function DownloadPage() {
           </div>
           <p className="mt-3 text-[13.5px] font-light leading-6 text-foreground/75">
             3SVerse is a small independent developer, not a big publisher — so Windows SmartScreen
-            asks before an independently published installer runs. It is a one-time, 2-second pass,
+            may ask before an unsigned portable app runs. It is a one-time, 2-second pass,
             not a problem with the file. This is the exact dialog you will see:
           </p>
           <div
@@ -261,11 +261,10 @@ export default function DownloadPage() {
             </span>
           </div>
           <p className="mt-3 text-[12.5px] leading-5 text-muted-foreground">
-            Why it happens: big publishers pay for code-signing certificates, independent developers do not —
-            so SmartScreen flags any publisher it does not recognize. The tools are safe to run: your VidaPay
-            credentials and extracted data never leave your PC, the SHA-256 checksum above lets you verify the
-            file byte for byte, and the full source is public on GitHub if you want to see exactly what the
-            tools do.
+            Why it happens: the current Windows files are not yet Authenticode-signed, so SmartScreen shows
+            “Unknown publisher.” Before running a file, compare its SHA-256 checksum with the value above.
+            Your VidaPay credentials and extracted dealership data stay on your PC. If your company does not
+            allow unsigned software, contact us before downloading.
           </p>
         </div>
 
@@ -275,7 +274,7 @@ export default function DownloadPage() {
             <h2 className="text-[15px] font-medium text-foreground">Activate your key in 3 steps</h2>
           </div>
           <ol className="mt-3 space-y-2 text-[13.5px] font-light leading-6 text-foreground/75">
-            <li>1. Run the installer — it opens as a free 7-day trial, no sign-up.</li>
+            <li>1. Open the portable .exe — there is nothing to install, and the full 7-day trial starts.</li>
             <li>2. Buy a license key — it arrives by email within 2 business hours on business days (US Central); after-hours orders ship first thing next morning.</li>
             <li>3. Paste the key into the app&apos;s Activate box — that PC is unlocked permanently.</li>
           </ol>
@@ -331,7 +330,7 @@ export default function DownloadPage() {
         <div className="mt-10 rounded-2xl border border-brand-cyan/20 bg-[#6ee7ef]/[.04] p-6" data-testid="download-security">
           <div className="flex items-center gap-2.5">
             <ShieldCheck className="h-4 w-4 text-brand-cyan" />
-            <h2 className="text-[15px] font-medium text-foreground">Before you run the installer</h2>
+            <h2 className="text-[15px] font-medium text-foreground">Before you open the portable app</h2>
           </div>
           <ul className="mt-3 space-y-2.5 text-[13.5px] font-light leading-6 text-foreground/75">
             {[

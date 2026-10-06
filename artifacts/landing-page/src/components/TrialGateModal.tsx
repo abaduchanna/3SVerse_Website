@@ -1,7 +1,7 @@
 /**
  * TrialGateModal — the form that stands in front of every EXE download.
  *
- * Product rule (seller): no direct downloads — every trial or installer
+ * Product rule (seller): no direct downloads — every portable trial app
  * download happens only after this form is submitted successfully. The
  * lead is stored in the private ledger via the capture worker; only a
  * confirmed submission (worker 200) closes the modal and starts the
@@ -101,7 +101,7 @@ export default function TrialGateModal({ open, productName, onClose, onUnlocked 
         </div>
         <p className="mt-2 text-[13.5px] font-light leading-6 text-foreground/75">
           Tell us who is downloading the <span className="font-medium text-foreground">{productName}</span>{' '}
-          installer and the download starts immediately — the full software with the
+          portable .exe and the download starts immediately — no installation, with the full software and
           free 7-day trial built in.
         </p>
 
@@ -119,6 +119,7 @@ export default function TrialGateModal({ open, productName, onClose, onUnlocked 
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Your name *"
+              aria-label="Your name"
               autoComplete="name"
               required
               maxLength={120}
@@ -130,6 +131,7 @@ export default function TrialGateModal({ open, productName, onClose, onUnlocked 
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Work email *"
+              aria-label="Work email"
               autoComplete="email"
               required
               maxLength={254}
@@ -141,6 +143,7 @@ export default function TrialGateModal({ open, productName, onClose, onUnlocked 
               value={company}
               onChange={(e) => setCompany(e.target.value)}
               placeholder="Store or company (optional)"
+              aria-label="Store or company"
               autoComplete="organization"
               maxLength={160}
               data-testid="trial-gate-company"

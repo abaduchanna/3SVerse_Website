@@ -34,11 +34,11 @@ const FAQS: Array<{ q: string; a: string }> = [
   },
   {
     q: 'What happens when VidaPay changes its portal?',
-    a: 'Compatibility fixes ship to every active plan at no charge — that is what "every update included" means on the cards. When the portal shows a security or verification step, the tool pauses and hands it to you; nothing bypasses you, by design.',
+    a: 'Monthly and annual plans include compatibility updates while the plan is active. Lifetime includes one year of updates; after that, an optional $199/year update plan keeps the portable app current. Your licensed copy does not expire. When the portal shows a security or verification step, the tool pauses and hands it to you; nothing bypasses you.',
   },
   {
     q: 'What if a tool does not work for my stores?',
-    a: 'Every license carries a 30-day money-back guarantee. Email us with your order number and one line about what fell short — refunds are processed within 5 business days, back to the original payment method. No interrogation.',
+    a: 'Use the full 7-day trial on your own dealership data before buying. Activated licenses are non-refundable. If the software has a genuine defect on our side and we cannot fix it, we make it right under the Refund Policy. Email us with your order number and what happened.',
   },
 ];
 
@@ -66,7 +66,7 @@ function PlanCard({ product, featured }: { product: Product; featured?: boolean 
           {formatUSD(lifetime)}
         </span>
         <span className="pb-0.5 text-[12px] font-light text-muted-foreground">
-          {isBundle ? 'one-time · 2 licenses of each tool (6 total)' : 'one-time · per PC'}
+          {isBundle ? 'one-time · buy 1 complete bundle, get 1 free · covers 2 PCs' : 'one-time · per PC'}
         </span>
       </div>
       <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] font-light text-muted-foreground">
@@ -95,14 +95,14 @@ function PlanCard({ product, featured }: { product: Product; featured?: boolean 
 
       <div className="mt-6 flex flex-col gap-2 pt-1">
         <a
-          href="#tools"
+          href="#/download"
           data-testid={`pricing-cta-${product.id}`}
           className="group inline-flex items-center justify-center gap-2.5 rounded-xl border bg-white px-5 py-3 text-[14px] font-semibold tracking-tight text-[#0b0a10] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#f7f3e8]"
         >
-          Get started <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" />
+          Download the free trial <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" />
         </a>
         <a href="#/download" className="text-center text-[12px] font-light text-muted-foreground transition-colors hover:text-brand-cyan">
-          or download the free 7-day trial →
+          portable .exe · no installation · no card
         </a>
       </div>
     </div>
@@ -161,15 +161,15 @@ export default function Pricing() {
     <PageShell
       title="Get started now, pick a plan later."
       kicker="Pricing"
-      metaLine={<>Per-PC licensing &middot; every plan includes updates &middot; 30-day money-back guarantee</>}
+      metaLine={<>Portable Windows apps &middot; free 7-day trial &middot; clear per-PC licensing</>}
       width="max-w-5xl"
     >
       <div className="mt-8 space-y-4 text-[15px] font-light leading-7 text-foreground/75">
         <p>
-          Every tool below opens as a <strong className="font-medium text-foreground">free 7-day trial</strong> — the
-          full software on one PC, no card needed. Buy when it has earned it: pick lifetime (one payment, yours
-          forever, every update included), or monthly and annual if you prefer to spread it out. One license covers
-          all the stores you operate from that PC.
+          Every tool below is a <strong className="font-medium text-foreground">portable Windows .exe</strong> with
+          the full 7-day trial built in — no installation, no card, one PC. Buy only after it works with your own
+          dealership data. Lifetime gives permanent use plus one year of updates; monthly and annual include updates
+          while active. One PC license can process every store you operate from that computer.
         </p>
         <p>
           {LAUNCH_OFFER.active ? LAUNCH_OFFER.note : 'Launch pricing has ended — list prices below.'} {volNote}.{' '}
@@ -184,8 +184,10 @@ export default function Pricing() {
       </div>
 
       <p className="mt-6 text-center text-[12.5px] font-light leading-5 text-muted-foreground">
-        Prices in USD, per license. Lifetime is a one-time payment; monthly and annual renew as stated on your
-        invoice and can be cancelled by replying to the invoice email before the next renewal date.
+        Prices are in USD. Monthly and annual renew as stated on your invoice and can be cancelled before the next
+        renewal. Activated licenses are non-refundable. Lifetime is a one-time purchase with one year of updates;
+        continued updates after that are optional at $199/year. The Full Bundle includes two complete bundle licenses:
+        all three tools on two Windows PCs.
       </p>
 
       <Faq />

@@ -13,7 +13,6 @@
  * it survives Gmail/Outlook paste and prints cleanly to A4 PDF.
  */
 import {
-  BUNDLE_EACH,
   MODELS,
   PRODUCTS,
   discountPercent,
@@ -100,7 +99,7 @@ export function catalogInvoiceItem(
   const seatsLabel = pcLabel(pcs);
   const off = discountPercent(product, model, pcs);
   const bundleNote = productId === 'bundle'
-    ? ` — ${BUNDLE_EACH} licenses of each tool (${BUNDLE_EACH * 3} total)`
+    ? ' — buy 1 complete bundle, get 1 free (all 3 tools on 2 PCs)'
     : '';
   const detail =
     off > 0
@@ -445,5 +444,5 @@ export const SAMPLE_INVOICE: InvoiceData = {
     { label: 'VidaPay Incentive Extractor', key: '3SV-EXTX-Q7L2-8M4N-1R6T' },
   ],
   notes:
-    'License keys activate on first run on the registered PC(s). One bundle key covers every tool on the same license. For support, contact Connect@3sverse.com with your order reference.',
+    'License keys activate on first run on the registered PC(s). The Full Bundle includes two complete bundle licenses, with all three tools on each of two PCs. For support, contact Connect@3sverse.com with your order reference.',
 };

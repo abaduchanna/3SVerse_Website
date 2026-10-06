@@ -77,6 +77,7 @@ import {
   PRODUCTS,
   REVIEWS,
   VIDEO_DEMO,
+  OVERVIEW_DEMO,
   DEMOS,
   YOUTUBE_URL,
   formatUSD,
@@ -470,14 +471,14 @@ const MARQUEE_ITEMS = [
   'VIDAPAY DEVICE ORDERING',
   'VIDAPAY REBATE FILING',
   'FREE 7-DAY TRIAL',
-  'ONE LICENSE · ALL THREE TOOLS',
+  'BUY ONE FULL BUNDLE · GET ONE FREE',
   'CUSTOM DEALER AUTOMATION',
 ];
 
 function Marquee() {
   const items = [...MARQUEE_ITEMS, ...MARQUEE_ITEMS];
   return (
-    <div className="relative overflow-hidden border-y border-border bg-background py-9">
+    <div aria-hidden="true" className="relative overflow-hidden border-y border-border bg-background py-9">
       <div className="flex w-max animate-marquee items-center gap-20">
         {items.map((item, i) => (
           <span key={i} className="whitespace-nowrap text-[16px] font-medium uppercase tracking-[.24em] text-muted-foreground sm:text-[19px]">
@@ -492,15 +493,11 @@ function Marquee() {
 }
 
 const navItems = [
-  { label: 'What we offer', href: '#services' },
+  { label: 'Products', href: '#tools' },
   { label: 'How it works', href: '#how' },
-  { label: 'Dealer tools', href: '#tools' },
-  { label: 'Get my download', href: '#/download' },
   { label: 'Pricing', href: '#/pricing' },
-  { label: 'Guides', href: '#guides' },
-  { label: 'FAQ', href: '#faq' },
-  { label: 'Trust & Guarantees', href: '#reviews' },
-  { label: 'About', href: '#/about' },
+  { label: 'Security', href: '#/security' },
+  { label: 'Support', href: '#contact' },
 ];
 
 function Nav() {
@@ -529,8 +526,7 @@ function Nav() {
         </nav>
         <div className="hidden shrink-0 items-center gap-3 2xl:flex">
           <ThemeToggle className="flex h-10 w-10 items-center justify-center rounded-xl border border-input text-foreground transition-colors hover:border-brand-cyan/60 hover:text-brand-cyan" />
-          <BtnGhost href="#contact" testId="button-nav-contact" className="px-5 py-2.5 text-[14px]">Contact</BtnGhost>
-          <BtnWhite href="#contact" testId="button-nav-get-started" className="px-5 py-2.5 text-[14px]">Get started</BtnWhite>
+          <BtnWhite href="#/download" testId="button-nav-get-started" className="px-5 py-2.5 text-[14px]">Download free trial</BtnWhite>
         </div>
         <div className="flex items-center gap-2 2xl:hidden">
           <ThemeToggle className="flex h-10 w-10 items-center justify-center rounded-lg border border-input text-foreground transition-colors hover:border-brand-cyan/60 hover:text-brand-cyan" />
@@ -556,7 +552,7 @@ function Nav() {
               <span className="font-mono-tech text-[10px] uppercase tracking-[.2em] text-muted-foreground">Theme</span>
               <ThemeToggle className="flex h-10 w-10 items-center justify-center rounded-lg border border-input text-foreground transition-colors hover:border-brand-cyan/60 hover:text-brand-cyan" />
             </div>
-            <a href="#contact" onClick={() => setOpen(false)} data-testid="button-mobile-get-started" className="mt-4 block rounded-xl border bg-white px-4 py-3 text-center text-[15px] font-semibold text-[#0b0a10]">Get started</a>
+            <a href="#/download" onClick={() => setOpen(false)} data-testid="button-mobile-get-started" className="mt-4 block rounded-xl border bg-white px-4 py-3 text-center text-[15px] font-semibold text-[#0b0a10]">Download free trial</a>
           </motion.nav>
         )}
       </AnimatePresence>
@@ -659,37 +655,37 @@ function Hero() {
           <div className="relative z-10">
             <Reveal>
               <div className="mb-7 flex items-center gap-3 font-mono-tech text-[10px] uppercase tracking-[.3em] text-brand-cyan">
-                <Sparkles className="h-3.5 w-3.5 text-brand-magenta" /> VidaPay tools · Total Wireless dealers · Tcetra-ready
+                <Sparkles className="h-3.5 w-3.5 text-brand-magenta" /> Windows automation for Total Wireless dealers using VidaPay
               </div>
             </Reveal>
             <Reveal delay={0.08}>
               <h1 className="text-[clamp(2.4rem,8.5vw,4.6rem)] font-light leading-[1.06] tracking-[-0.03em] text-foreground">
-                Stop doing by hand
+                Finish incentive reports,
                 <br />
-                what a tool can do
+                device orders, and rebate claims
                 <br />
-                <span className="font-normal text-brand-cyan">in 60 seconds.</span>
+                <span className="font-normal text-brand-cyan">in minutes—not hours.</span>
               </h1>
             </Reveal>
             <Reveal delay={0.16}>
               <p className="mt-8 max-w-xl text-[17px] font-light leading-8 text-foreground/75">
-                Built for VidaPay authorized dealers: one download automates incentive extraction, device ordering, and rebate filing — free 7-day trial, no card needed. 3SVerse also builds custom automation for the work those tools don&apos;t cover. Start free, or bring us the bottleneck.
+                3SVerse gives dealership owners and back-office teams three portable Windows tools for repetitive VidaPay work. You keep control of your login and verification steps. Start a full 7-day trial with no credit card.
               </p>
             </Reveal>
             <Reveal delay={0.24}>
               <div className="mt-10 flex flex-wrap items-center gap-4">
-                <BtnWhite href="#tools" testId="button-hero-get-started">Start a dealer tool trial</BtnWhite>
-                <a href="#contact" data-testid="link-hero-explore" className="group inline-flex items-center gap-2 px-2 py-3 text-[15px] font-medium text-foreground transition-colors hover:text-foreground">
-                  Discuss a custom system
+                <BtnWhite href="#/download" testId="button-hero-get-started">Download the free trial</BtnWhite>
+                <a href="#demo" data-testid="link-hero-explore" className="group inline-flex items-center gap-2 px-2 py-3 text-[15px] font-medium text-foreground transition-colors hover:text-foreground">
+                  Watch the 90-second demo
                   <ArrowDownRight className="h-4 w-4 text-brand-cyan transition-transform duration-300 group-hover:translate-x-1 group-hover:translate-y-1" />
                 </a>
               </div>
             </Reveal>
             <Reveal delay={0.32}>
               <div className="mt-14 flex flex-wrap gap-x-8 gap-y-3 border-t border-border pt-5 font-mono-tech text-[11px] uppercase tracking-[.18em] text-muted-foreground">
-                <span className="flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-[#c7ef70]" /> Free 7-day trial · no card</span>
-                <span className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-brand-cyan" /> buy exactly what you need — or bundle all 3 and save 40%</span>
-                <span className="flex items-center gap-2"><ShieldCheck className="h-3.5 w-3.5 text-brand-magenta" /> Running in dealerships daily</span>
+                <span className="flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-[#c7ef70]" /> Windows 10/11 · portable .exe · no installation</span>
+                <span className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-brand-cyan" /> Credentials and dealership data stay on your PC</span>
+                <span className="flex items-center gap-2"><ShieldCheck className="h-3.5 w-3.5 text-brand-magenta" /> Buy one Full Bundle · get a second bundle license free</span>
               </div>
             </Reveal>
           </div>
@@ -974,7 +970,7 @@ function Outcomes() {
   const stats = [
     { value: '3 tools', label: 'Extractor · Device Ordering · Rebate Filing — bundle all 3 and save 40% vs per-tool pricing', kind: 'bars' as const },
     { value: '7 days', label: 'free full-software trial on every tool — no card, no feature locks', kind: 'rings' as const },
-    { value: '1 PC', label: 'per license key — machine-locked seats, no gray-market resale', kind: 'line' as const },
+    { value: '2 PCs', label: 'Full Bundle includes two complete bundle licenses — all 3 tools on each PC', kind: 'line' as const },
   ];
   return (
     <section id="outcomes" className="relative overflow-hidden py-28 lg:py-36">
@@ -988,7 +984,7 @@ function Outcomes() {
               </h2>
             </div>
             <p className="max-w-sm text-[15px] font-light leading-7 text-foreground/75">
-              Everything below is a fact about the product and the purchase — the trial, the bundle, the guarantee — not a promise of results we haven&apos;t measured on your stores yet. Run the free trial and judge the tools on your own data.
+              Everything below is a fact about the product and the purchase — the trial, the bundle, and the license terms — not a promise of results we haven&apos;t measured on your stores yet. Run the free trial and judge the tools on your own data.
             </p>
           </div>
         </Reveal>
@@ -1021,7 +1017,7 @@ const TOOLS = [
     id: 'extractor',
     tab: 'VidaPay Incentive Extractor',
     title: 'VidaPay Incentive Extractor',
-    blurb: 'Every rebate, spiff, and incentive pulled straight out of the VidaPay portal into one clean sheet in under 60 seconds. No screenshots, no retyping — built to reduce missed incentives and manual transcription for the front office that reconciles VidaPay every week.',
+    blurb: 'Pull incentive and activation details for selected stores into one Excel workbook. Use it when your team spends time opening reports, copying IMEIs, and combining spreadsheets.',
     chips: [
       { icon: FileSpreadsheet, label: 'Rebate tracking' },
       { icon: ClipboardCheck, label: 'Claim matching' },
@@ -1040,7 +1036,7 @@ const TOOLS = [
     id: 'ordering',
     tab: 'VidaPay Device Ordering',
     title: 'VidaPay Device Ordering',
-    blurb: 'Device orders for every branch, placed in minutes — pick the model, set per-store quantities, submit once. The front office stops babysitting the portal; wrong-SKU, wrong-store chaos is gone for good.',
+    blurb: 'Prepare and run store-by-store device orders from one organized screen. You choose products and quantities; the tool guides repetitive portal steps while verification stays under your control.',
     chips: [
       { icon: ShoppingCart, label: 'Bulk ordering' },
       { icon: Store, label: 'Per-store quantities' },
@@ -1059,7 +1055,7 @@ const TOOLS = [
     id: 'rebate',
     tab: 'VidaPay Rebate Filing',
     title: 'VidaPay Rebate Filing',
-    blurb: 'Every eligible rebate filed in bulk — with per-claim status you can check any time. The money the front office used to leave on the table, now filed and tracked to the last claim.',
+    blurb: 'Import claim information from Excel, check required fields, file claims, and keep a status record for follow-up. Use it when claims are delayed by retyping and inconsistent tracking.',
     chips: [
       { icon: FileSpreadsheet, label: 'Bulk filing' },
       { icon: ClipboardCheck, label: 'Templates + validation' },
@@ -1154,7 +1150,7 @@ function Tools() {
                       data-testid={`button-download-${tool.id}`}
                       className="inline-flex items-center gap-2.5 rounded-xl border bg-white px-6 py-3 text-[14.5px] font-semibold text-[#0b0a10] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#f7f3e8]"
                     >
-                      <Download className="h-4 w-4" /> Download free trial (.exe)
+                      <Download className="h-4 w-4" /> Download portable free trial (.exe)
                     </button>
                     <a
                       href="#/order"
@@ -1165,7 +1161,7 @@ function Tools() {
                     </a>
                   </div>
                   <p className="mt-3 text-[12.5px] font-light leading-5 text-muted-foreground">
-                    Windows 10/11 only · the download always serves the newest build ·
+                    Windows 10/11 only · no installation · the download always serves the newest build ·
                     7-day trial built in, activate with your license key.
                   </p>
                 </div>
@@ -1205,31 +1201,31 @@ const AUDIENCE_CARDS: Array<{ icon: typeof Store; title: string; body: string; t
   {
     icon: ClipboardCheck,
     title: 'VidaPay rebate filing & claims',
-    body: 'Rebates are money you already earned — extract, file, and track every rebate, spiff, and claim your stores earn, with per-claim status from filed to PAID. Built for the VidaPay portal workflows Total Wireless dealers run daily.',
+    body: 'Import claim information from Excel, check required fields, file claims, and retain a per-claim status record for follow-up. Built for the VidaPay portal workflows Total Wireless dealers run.',
     testId: 'aud-rebate-filing',
   },
   {
     icon: FileSpreadsheet,
     title: 'VidaPay incentive extraction',
-    body: 'The VidaPay Incentive Dashboard Extractor pulls activations, incentives, and spiffs straight into a clean Excel workbook in under 60 seconds — no screenshots, no retyping, no missed spiffs. What used to take 45 minutes now takes about one.',
+    body: 'The VidaPay Incentive Dashboard Extractor pulls selected activation and incentive details into one organized Excel workbook, reducing screenshots, repeated copying, and spreadsheet combining.',
     testId: 'aud-incentive-extraction',
   },
   {
     icon: ShoppingCart,
     title: 'VidaPay device ordering',
-    body: 'Device orders for every store in one guided submit — per-store quantities, the right SKU in the right store, zero guesswork and zero re-orders.',
+    body: 'Prepare store-by-store device orders in one guided workflow. You choose products and quantities, review the work, and keep verification under your control.',
     testId: 'aud-device-ordering',
   },
   {
     icon: Boxes,
-    title: 'Inventory audit & aging',
-    body: 'Inventory audits and aging reports across every location — see what is sitting, what is moving, and what is quietly costing you money each month.',
+    title: 'Custom inventory automation',
+    body: 'Need inventory audits or aging reports across multiple locations? 3SVerse can scope a custom workflow around the files and systems your team already uses.',
     testId: 'aud-inventory',
   },
   {
     icon: BarChart3,
-    title: 'Operations dashboards',
-    body: 'One live operations dashboard per store or across the whole district — KPIs built from the portal data you already extract, on screen or in Excel.',
+    title: 'Custom operations dashboards',
+    body: 'Need store or district reporting beyond the three packaged VidaPay tools? 3SVerse can scope a custom dashboard around your approved data sources and KPIs.',
     testId: 'aud-dashboards',
   },
   {
@@ -1293,27 +1289,27 @@ const COMPARE_ROWS: Array<[string, string, string]> = [
   [
     'Incentive & rebate data',
     'Screenshots + retyping into Excel — hours every week, typos included',
-    'One run — every rebate, spiff, and claim in a clean workbook',
+    'Selected VidaPay details organized into one Excel workbook for review',
   ],
   [
-    'Missed money',
-    'Unclaimed rebates quietly expire — $500–$2,000/month a typical dealer can miss',
-    'Every eligible claim extracted, filed, and tracked to PAID',
+    'Claim follow-up',
+    'Claim details are retyped and status may be tracked in separate notes',
+    'Excel import, required-field checks, filing assistance, and a retained status record',
   ],
   [
     'Device ordering',
     'Portal opened store by store — wrong SKU, wrong store, re-orders',
-    'All branches in one guided submit — per-store quantities, zero guesswork',
+    'One guided workflow with per-store quantities and a review step before submission',
   ],
   [
     'Growth',
     'More stores = proportionally more hours at the desk',
-    'More stores, same minutes — the workload does not scale with the store count',
+    'Repeatable workflows help reduce the manual steps added by each store',
   ],
   [
     'Cost shape',
     'Labor hours you never invoice, month after month',
-    'License that fits your cash flow — monthly, annual, or one-time lifetime; pays for itself within weeks',
+    'Monthly, annual, or lifetime licensing — test the workflow free before choosing',
   ],
 ];
 
@@ -1364,17 +1360,17 @@ function Compare() {
             <div className="rounded-3xl border border-brand-magenta/25 bg-[#e44bd7]/[.05] p-7">
               <p className="flex items-center gap-2.5 font-mono-tech text-[10px] uppercase tracking-[.2em] text-brand-magenta"><X className="h-3.5 w-3.5" /> Before — manual front office</p>
               <ul className="mt-4 space-y-2.5 text-[13.5px] font-light leading-6 text-foreground">
-                <li className="flex gap-2.5"><span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-[#e44bd7]" />Scenario range: $500–$2,000 in missed rebates — per store, every month</li>
-                <li className="flex gap-2.5"><span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-[#e44bd7]" />15–30 staff hours a week on screenshots and retyping</li>
+                <li className="flex gap-2.5"><span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-[#e44bd7]" />Reports opened separately and copied into more than one spreadsheet</li>
+                <li className="flex gap-2.5"><span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-[#e44bd7]" />Repeated screenshots, retyping, and store-by-store portal steps</li>
                 <li className="flex gap-2.5"><span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-[#e44bd7]" />Claims filed once and forgotten — no status, no proof, no follow-up</li>
               </ul>
             </div>
             <div className="rounded-3xl border border-brand-cyan/25 bg-[#6ee7ef]/[.05] p-7">
               <p className="flex items-center gap-2.5 font-mono-tech text-[10px] uppercase tracking-[.2em] text-brand-cyan"><Check className="h-3.5 w-3.5" /> After — the 3SVerse front office</p>
               <ul className="mt-4 space-y-2.5 text-[13.5px] font-light leading-6 text-foreground">
-                <li className="flex gap-2.5"><span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-[#6ee7ef]" />Every eligible claim extracted, filed, and tracked to PAID</li>
-                <li className="flex gap-2.5"><span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-[#6ee7ef]" />Minutes per run — every store in one pass, zero retyping</li>
-                <li className="flex gap-2.5"><span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-[#6ee7ef]" />A live workbook the whole team trusts — and audited numbers to prove it</li>
+                <li className="flex gap-2.5"><span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-[#6ee7ef]" />Claims imported, checked, filed, and retained with status for follow-up</li>
+                <li className="flex gap-2.5"><span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-[#6ee7ef]" />Repeatable workflows across selected stores with less retyping</li>
+                <li className="flex gap-2.5"><span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-[#6ee7ef]" />Organized Excel outputs your team can review and keep</li>
               </ul>
             </div>
           </div>
@@ -1384,19 +1380,20 @@ function Compare() {
   );
 }
 
-/* ROI calculator — audit action #7: "Enter your stores → see how much
-   you're losing → see the payback period." Uses the real bundle pricing
-   from the catalog (volume tiers included) so the numbers match the store. */
+/* Customer-entered planning calculator. It uses catalog pricing but does
+   not present 3SVerse benchmarks or guaranteed savings. */
 function RoiCalculator() {
   const bundle = PRODUCTS.find((p) => p.id === 'bundle')!;
   /* Audit v4 #4: default = 1 store (the median visitor), not 3 — a single-store
      dealer must see their own realistic number first, then add stores. */
   const [stores, setStores] = useState(1);
-  const [lossPerStore, setLossPerStore] = useState(1000);
+  const [lossPerStore, setLossPerStore] = useState(500);
 
   const monthlyLoss = stores * lossPerStore;
-  const lifetimePrice = perPcPrice(bundle, 'lifetime', stores) * stores;
-  const monthlyPrice = perPcPrice(bundle, 'monthly', stores) * stores;
+  const bundleUnits = Math.ceil(stores / 2);
+  const coveredPcs = bundleUnits * 2;
+  const lifetimePrice = perPcPrice(bundle, 'lifetime', 1) * bundleUnits;
+  const monthlyPrice = perPcPrice(bundle, 'monthly', 1) * bundleUnits;
   const paybackDays = Math.max(1, Math.ceil((lifetimePrice / monthlyLoss) * 30));
   const savedYear = Math.max(0, monthlyLoss * 12 - lifetimePrice);
 
@@ -1406,10 +1403,10 @@ function RoiCalculator() {
         <div>
           <p className="flex items-center gap-2 font-mono-tech text-[10px] uppercase tracking-[.22em] text-brand-cyan"><Calculator className="h-3.5 w-3.5" /> ROI calculator</p>
           <h3 className="mt-3 text-[clamp(1.6rem,2.4vw,2.2rem)] font-light leading-[1.1] tracking-[-0.02em] text-foreground">
-            What is the manual process <span className="text-brand-magenta">costing you?</span>
+            Estimate your dealership&apos;s <span className="text-brand-magenta">manual-work cost.</span>
           </h3>
           <p className="mt-4 max-w-md text-[14px] font-light leading-6 text-foreground/75">
-            A scenario range based on observed dealer workflows: $500–$2,000 in unclaimed rebates and spiffs per store every month, plus hours of retyping. Set your reality below — the payback math uses real catalog pricing, volume discounts included.
+            Enter your own monthly estimate for missed claims and staff time. The calculator compares that number with current catalog pricing; it does not promise savings or recovered revenue.
           </p>
           <div className="mt-7 space-y-6">
             <div>
@@ -1429,12 +1426,12 @@ function RoiCalculator() {
               />
             </div>
             <div>
-              <span className="mb-2 block text-[13px] font-medium text-foreground/75">Missed rebates &amp; incentives per store / month</span>
+              <span className="mb-2 block text-[13px] font-medium text-foreground/75">Your estimated manual-work and missed-claim cost per store / month</span>
               <div className="flex flex-wrap gap-2">
                 {[
-                  { v: 500, label: '$500 — careful' },
-                  { v: 1000, label: '$1,000 — typical' },
-                  { v: 2000, label: '$2,000 — manual & busy' },
+                  { v: 250, label: '$250 example' },
+                  { v: 500, label: '$500 example' },
+                  { v: 1000, label: '$1,000 example' },
                 ].map((o) => (
                   <button
                     key={o.v}
@@ -1450,33 +1447,32 @@ function RoiCalculator() {
               </div>
             </div>
             <p className="text-[12px] font-light leading-5 text-muted-foreground">
-              Running 10 or more stores? Message us — district pricing with central billing and
-              priority support. Results vary by dealership: the presets are a conservative /
-              typical / upside scenario range, and payback = bundle price ÷ your estimated
-              monthly recovery. If the math does not work for your dealership, the trial is free
-              and you owe us nothing.
+              Running 10 or more stores? Message us for district pricing. Results vary by
+              dealership. The examples are starting points only, and payback = bundle price ÷
+              the monthly cost you selected. Validate the workflow during the free trial before
+              making a purchase.
             </p>
           </div>
         </div>
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="rounded-2xl border border-brand-magenta/25 bg-[#e44bd7]/[.06] p-5">
-            <p className="font-mono-tech text-[10px] uppercase tracking-[.16em] text-brand-magenta">Losing today</p>
+            <p className="font-mono-tech text-[10px] uppercase tracking-[.16em] text-brand-magenta">Your monthly estimate</p>
             <p className="mt-2 text-[clamp(1.6rem,2.4vw,2.1rem)] font-light leading-none text-foreground" data-testid="roi-monthly-loss">{formatUSD(monthlyLoss)}<span className="text-[14px] text-muted-foreground">/mo</span></p>
-            <p className="mt-2 text-[12px] leading-5 text-muted-foreground">{formatUSD(monthlyLoss * 12)} a year in missed money and wasted hours</p>
+            <p className="mt-2 text-[12px] leading-5 text-muted-foreground">{formatUSD(monthlyLoss * 12)} annualized from the amount you selected</p>
           </div>
           <div className="rounded-2xl border border-brand-cyan/25 bg-[#6ee7ef]/[.06] p-5">
-            <p className="font-mono-tech text-[10px] uppercase tracking-[.16em] text-brand-cyan">Full bundle — {stores} PC{stores === 1 ? '' : 's'}</p>
+            <p className="font-mono-tech text-[10px] uppercase tracking-[.16em] text-brand-cyan">{bundleUnits} Full Bundle purchase{bundleUnits === 1 ? '' : 's'} — covers {coveredPcs} PCs</p>
             <p className="mt-2 text-[clamp(1.6rem,2.4vw,2.1rem)] font-light leading-none text-foreground" data-testid="roi-bundle-price">{formatUSD(lifetimePrice)}</p>
             <p className="mt-2 text-[12px] leading-5 text-muted-foreground">one-time lifetime · or {formatUSD(monthlyPrice)}/mo cancel-anytime</p>
           </div>
           <div className="rounded-2xl border border-border bg-foreground/[.03] p-5 sm:col-span-2">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
-                <p className="font-mono-tech text-[10px] uppercase tracking-[.16em] text-brand-cyan">Payback period</p>
+                <p className="font-mono-tech text-[10px] uppercase tracking-[.16em] text-brand-cyan">Illustrative payback</p>
                 <p className="mt-1.5 text-[clamp(1.6rem,2.4vw,2.1rem)] font-light leading-none text-foreground" data-testid="roi-payback">{paybackDays} days</p>
               </div>
               <p className="max-w-[240px] text-[12.5px] leading-5 text-foreground/75">
-                Then it keeps everything it finds — <span className="text-brand-cyan">{formatUSD(savedYear)}+ net in year one</span> at these settings.
+                Based only on your inputs: <span className="text-brand-cyan">{formatUSD(savedYear)} estimated first-year difference</span>. Actual results may be lower or higher.
               </p>
             </div>
           </div>
@@ -1500,11 +1496,23 @@ function RoiCalculator() {
 function DemoStrip() {
   const wa = whatsappLink();
   return (
-    <div data-testid="demo-strip" className="mt-14 overflow-hidden rounded-3xl border border-border bg-card">
+    <div id="demo" data-testid="demo-strip" className="mt-14 scroll-mt-24 overflow-hidden rounded-3xl border border-border bg-card">
       <div className="p-8 pb-0 sm:p-12 sm:pb-0">
-        <p className="flex items-center gap-2 font-mono-tech text-[10px] uppercase tracking-[.22em] text-brand-cyan"><PlayCircle className="h-3.5 w-3.5" /> {VIDEO_DEMO.kicker}</p>
-        <h3 className="mt-3 text-[clamp(1.6rem,2.4vw,2.2rem)] font-light leading-[1.1] tracking-[-0.02em] text-foreground">{VIDEO_DEMO.title}</h3>
-        <p className="mt-4 max-w-2xl text-[14px] font-light leading-7 text-foreground/75">{VIDEO_DEMO.note}</p>
+        <p className="flex items-center gap-2 font-mono-tech text-[10px] uppercase tracking-[.22em] text-brand-cyan"><PlayCircle className="h-3.5 w-3.5" /> {OVERVIEW_DEMO.kicker}</p>
+        <h3 className="mt-3 text-[clamp(1.6rem,2.4vw,2.2rem)] font-light leading-[1.1] tracking-[-0.02em] text-foreground">{OVERVIEW_DEMO.title}</h3>
+        <p className="mt-4 max-w-2xl text-[14px] font-light leading-7 text-foreground/75">{OVERVIEW_DEMO.note}</p>
+      </div>
+      <div className="p-8 pb-0 sm:p-12 sm:pb-0">
+        <video controls preload="metadata" poster={OVERVIEW_DEMO.poster} className="aspect-video w-full rounded-2xl border border-border bg-black" data-testid="overview-demo-video">
+          <source src={OVERVIEW_DEMO.url} type="video/mp4" />
+          Your browser does not support MP4 video. Download it from the link below.
+        </video>
+        <a href={OVERVIEW_DEMO.url} className="mt-3 inline-flex items-center gap-2 text-[13px] font-medium text-brand-cyan hover:text-foreground">Download the 90-second demo <Download className="h-3.5 w-3.5" /></a>
+      </div>
+      <div className="px-8 pt-10 sm:px-12">
+        <p className="font-mono-tech text-[10px] uppercase tracking-[.22em] text-muted-foreground">{VIDEO_DEMO.kicker}</p>
+        <h4 className="mt-2 text-[20px] font-light text-foreground">{VIDEO_DEMO.title}</h4>
+        <p className="mt-2 max-w-2xl text-[13.5px] font-light leading-6 text-foreground/70">{VIDEO_DEMO.note}</p>
       </div>
       <div className="grid gap-6 p-8 sm:p-12 lg:grid-cols-2">
         {DEMOS.map((demo) => (
@@ -1610,15 +1618,15 @@ const FAQ_ITEMS: Array<{ q: string; a: string }> = [
   },
   {
     q: 'What do I need to run it?',
-    a: 'A Windows 10 or 11 PC, your VidaPay dealer login, and Excel for the outputs. That is the whole checklist — install, activate with the key we email you, and run.',
+    a: 'A Windows 10 or 11 PC, your VidaPay dealer login, and Excel for the outputs. Download the portable .exe, open it without installing, activate with the key we email you, and run.',
   },
   {
     q: 'Windows shows a security warning when I run the tool. Is it safe?',
-    a: 'Yes — the warning is normal for independently published software. 3SVerse is a small developer, not a big publisher, so Windows SmartScreen asks on first run: click More info, then Run anyway. Your VidaPay credentials and extracted data never leave your PC, the download page shows the SHA-256 checksum so you can verify the file, and the full source is public on GitHub.',
+    a: 'Windows SmartScreen may warn on the first run because the portable executable is not yet code-signed by a widely recognized publisher. Download only from 3SVerse, compare the SHA-256 checksum shown on the download page, and follow your company security policy. Your VidaPay credentials and exported dealership data stay on your PC.',
   },
   {
     q: 'How do payment and delivery work?',
-    a: 'Place the order and a proper invoice opens in your browser instantly (PDF-ready, emailed to you). Pay by bank transfer, Wise, PayPal, or USDT, share the receipt, and your license keys plus download links arrive — within 2 business hours on business days (US Central). Paid after hours or on a weekend? Your key ships first thing the next morning.',
+    a: 'Card and PayPal are the primary checkout options. Invoice customers can also use bank transfer, Wise, or USDT. After payment is confirmed, your license keys and download links are delivered within the stated business-hours window.',
   },
   {
     q: 'What if it does not work out for my dealership?',
@@ -1630,7 +1638,7 @@ const FAQ_ITEMS: Array<{ q: string; a: string }> = [
   },
   {
     q: 'How fast is support, and who answers?',
-    a: 'WhatsApp and email, answered by the people who built the tools — same-day on business days (US Central time), next business day worst case. If a VidaPay portal update ever breaks something, the fix ships as a normal update, already included with every plan. You are never billed for fixes.',
+    a: 'WhatsApp and email are answered by the people who built the tools — same-day on business days (US Central time), next business day worst case. Monthly and annual plans include updates while active. Lifetime includes 1 year of updates; an optional $199/year update plan is available after that. Your existing lifetime build remains licensed for permanent use.',
   },
 ];
 
@@ -1818,7 +1826,7 @@ const TRUST_CARDS = [
   {
     icon: CreditCard,
     title: 'Pay your way',
-    text: 'Bank transfer, Wise, PayPal, or USDT — with a proper invoice and receipt for your records. No card required for the 7-day trial.',
+    text: 'Card and PayPal checkout are available, with bank transfer, Wise, or USDT for invoice customers. No payment method is required for the 7-day trial.',
   },
 ];
 
@@ -2351,7 +2359,7 @@ function Contact() {
         body: JSON.stringify(fields),
         signal,
       });
-      return { res, payload: await res.json().catch(() => null) as { success?: string; ok?: boolean } | null };
+      return { res, payload: await res.json().catch(() => null) as { success?: string; ok?: boolean; message?: string } | null };
     };
 
     try {
@@ -2622,7 +2630,7 @@ function Home() {
       window.scrollTo({ top, behavior: 'smooth' });
       return true;
     };
-    const onClick = (e: MouseEvent) => {
+    const onClick = (e: globalThis.MouseEvent) => {
       if (e.defaultPrevented) return;
       const target = e.target as HTMLElement | null;
       const anchor = target && target.closest ? (target.closest('a[href^="#"]') as HTMLAnchorElement | null) : null;
@@ -2658,17 +2666,15 @@ function Home() {
       <main>
         <Hero />
         <Marquee />
-        <IntegrateSection />
-        <Services />
         <HowItWorks />
         <Outcomes />
         <Tools />
-        <Audience />
         <Compare />
-        <Guides />
+        <Audience />
         <Faq />
         <Reviews />
-        <Work />
+        <IntegrateSection />
+        <Services />
         <Contact />
       </main>
       <Footer />

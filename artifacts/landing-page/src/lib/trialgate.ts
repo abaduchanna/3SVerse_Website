@@ -80,7 +80,7 @@ export async function submitTrialLead(input: {
         email,
         organization: (input.company || '').trim().slice(0, 160),
         interest: 'Trial download',
-        message: `Trial download requested: ${input.product} (Windows installer, free 7-day trial).`,
+        message: `Trial download requested: ${input.product} (portable Windows .exe, no installation, free 7-day trial).`,
       }),
       signal: controller.signal,
     });

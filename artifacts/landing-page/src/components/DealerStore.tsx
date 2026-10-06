@@ -19,7 +19,6 @@ import {
   Undo2,
 } from 'lucide-react';
 import {
-  BUNDLE_EACH,
   LAUNCH_OFFER,
   MODELS,
   PAID_DOWNLOAD,
@@ -164,7 +163,7 @@ export default function DealerStore() {
   const [cfToken, setCfToken] = useState('');
   const [cfResetCount, setCfResetCount] = useState(0);
   /* Paid-customer re-download box (order-verified gateway → the official
-     installer; the license key emailed after checkout unlocks it). */
+     portable executable; the license key emailed after checkout unlocks it). */
   const [paidRef, setPaidRef] = useState('');
   const [paidProduct, setPaidProduct] = useState('bundle');
   const [paidBusy, setPaidBusy] = useState(false);
@@ -202,7 +201,7 @@ export default function DealerStore() {
 
   /* Paid-customer download: verify the order number through the gateway
      worker (which checks the license ledger) and start the official
-     installer — the same one public build every customer downloads; the
+     portable executable — the same official build every customer downloads; the
      key emailed after checkout unlocks it. Without a deployed gateway we
      fall back to a pre-filled email so the customer is never stranded. */
   const paidDownload = () => {
@@ -217,7 +216,7 @@ export default function DealerStore() {
         `?subject=${encodeURIComponent(`Download request — order ${ref}`)}` +
         `&body=${encodeURIComponent(
           `Order number: ${ref}\nProduct: ${paidProduct}\n\n` +
-            'Please resend my download link (paid customers get every update free).',
+            'Please resend my portable app download link. Update coverage follows my license plan.',
         )}`;
       return;
     }
@@ -239,8 +238,8 @@ export default function DealerStore() {
   const setPcs = (productId: string, pcs: number) => {
     const sel = selections[productId];
     const model = sel?.model ?? 'lifetime';
-    /* The Full Bundle ships 2 licenses of EACH tool (6 total) at one price —
-       there is no per-PC choice to make, so the count is pinned at 1 bundle. */
+    /* The Full Bundle is buy one complete bundle, get one complete bundle
+       license free. It covers two PCs, with all three tools on each PC. */
     if (productId === 'bundle') {
       setSelection(productId, { pcs: 1 });
       return;
@@ -467,7 +466,7 @@ export default function DealerStore() {
           if (!product) return [`item_${i + 1}`, 'unknown item'];
           const discounted = discountPercent(product, l.model, l.pcs) > 0;
           const bundleSuffix = l.productId === 'bundle'
-            ? ` — ${BUNDLE_EACH} licenses of each tool (${BUNDLE_EACH * 3} total)`
+            ? ' — buy 1 complete bundle, get 1 free (all 3 tools on 2 PCs)'
             : '';
           return [
             `item_${i + 1}`,
@@ -573,7 +572,7 @@ export default function DealerStore() {
       </p>
 
       {/* Paid-customer re-download — the order number is checked against
-          the license ledger, then the official installer downloads (the
+          the license ledger, then the official portable executable downloads (the
           license key unlocks it on this PC). */}
       <div className="mb-10 rounded-2xl border border-border bg-foreground/[.02] p-5">
         <p className="mb-1 flex items-center gap-2 text-[14px] font-medium text-foreground">
@@ -582,8 +581,8 @@ export default function DealerStore() {
         </p>
         <p className="mb-4 text-[13px] font-light leading-5 text-muted-foreground">
           Enter the order number printed on your invoice — we verify it against your license before
-          the installer downloads. It is the same official build every customer uses; your license
-          key unlocks it. Updates are always free for paying customers.
+          the portable app downloads. It is the same official build every customer uses; your license
+          key unlocks it. Monthly and annual plans include updates while active; lifetime includes 1 year of updates.
         </p>
         <div className="flex flex-col gap-2 sm:flex-row">
           <input
@@ -669,7 +668,7 @@ export default function DealerStore() {
             <Download className="h-4 w-4 shrink-0 text-brand-cyan" />
             <p className="text-[13px] leading-5 text-foreground/90">
               Save your free re-download link — it always serves the newest
-              build, so future updates cost nothing:
+              compatible build for the update coverage included with your plan:
             </p>
             <a
               href={`/order/${result.ref}`}
@@ -817,7 +816,7 @@ export default function DealerStore() {
                       data-testid="pcs-value-bundle"
                       className="text-[14px] font-medium text-foreground"
                     >
-                      {BUNDLE_EACH} licenses of each tool — {BUNDLE_EACH * 3} total
+                      Buy 1 complete bundle, get 1 free — all 3 tools on 2 PCs
                     </span>
                   </div>
                   ) : (
@@ -865,7 +864,7 @@ export default function DealerStore() {
                   )}
                   {product.id === 'bundle' ? (
                     <p className="text-[12px] leading-4 text-muted-foreground">
-                      <span className="text-brand-cyan">Bundle deal</span> — one price, {bundleLicenseNote()} (every tool on every licensed PC).
+                      <span className="text-brand-cyan">Bundle deal</span> — {bundleLicenseNote()}.
                     </p>
                   ) : sel.model !== 'trial' ? (
                     <p className="text-[12px] leading-4 text-muted-foreground">
@@ -975,7 +974,7 @@ export default function DealerStore() {
                         ? `≈ ${formatUSD(Math.max(1, Math.round(price / 30)))}/day — a fraction of one month’s missed rebates. Cancel anytime.`
                         : sel.model === 'annual'
                           ? `≈ ${formatUSD(Math.max(1, Math.round(price / 365)))}/day — billed once a year, every update included.`
-                          : 'One payment — can pay for itself within the first months of captured rebates; run the ROI calculator above with your own numbers.'}
+                          : 'One payment for permanent use, with 1 year of updates included; use the calculator above with your own estimates.'}
                     </p>
                   ) : null}
                 </div>
@@ -987,9 +986,9 @@ export default function DealerStore() {
 
       {!result ? (
         <p className="mt-5 text-[13px] font-light text-muted-foreground">
-          Pick exactly how many PCs you need — 2–4 PCs get 10% off per PC and 5–9 get 20%,
-          applied automatically on every billing model. Monthly plans cancel anytime; annual
-          saves 30%; lifetime is a founding-customer option. Need 10 or more PCs, or central
+          For individual tools, pick exactly how many PCs you need — 2–4 PCs get 10% off per PC and 5–9 get 20%,
+          applied automatically. The Full Bundle already includes two complete PC licenses. Monthly plans cancel anytime; annual
+          is billed once a year; lifetime is a permanent-use option with 1 year of updates included. Need 10 or more PCs, or central
           billing for a whole district? Message us for a quote and we will set it up.
         </p>
       ) : null}

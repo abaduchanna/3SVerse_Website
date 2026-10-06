@@ -9,7 +9,7 @@ import { ArrowLeft, ShieldCheck } from 'lucide-react';
 
 export type LegalKind = 'privacy' | 'terms' | 'refund' | 'eula' | 'security';
 
-const UPDATED = '22 September 2026';
+const UPDATED = '6 October 2026';
 const EMAIL = 'Connect@3SVerse.com';
 
 const META: Record<LegalKind, { title: string; kicker: string }> = {
@@ -76,8 +76,8 @@ function Privacy() {
       <Section title="Your choices">
         <p>
           Want your activation records or form submissions deleted or corrected? Email {EMAIL} from the address
-          you used and we will action it. Dealership data inside the tools is yours and stays on your machine —
-          uninstalling removes it.
+          you used and we will action it. Dealership data inside the tools is yours and stays on your machine.
+          Removing the portable app removes its program files but does not delete workbooks or other exports you saved.
         </p>
       </Section>
     </>
@@ -98,7 +98,7 @@ function Terms() {
       <Section title="Orders, invoicing and delivery">
         <p>
           Place an order in the store and an invoice opens in your browser instantly (PDF-ready, emailed to you).
-          Pay by bank transfer, Wise, PayPal or USDT. Once payment is confirmed, license keys plus download links
+          Pay by card or PayPal at checkout, or use bank transfer, Wise, or USDT as an invoice customer. Once payment is confirmed, license keys plus download links
           arrive by email — within 2 business hours on business days (US Central); orders paid after hours ship
           first thing the next morning. Every plan includes every update while it is active;
           lifetime (perpetual) includes 1 year of updates, then an optional $199/yr update plan — the installed
@@ -167,7 +167,7 @@ function UserPolicy() {
           ordering for your own locations, filing claims for your own customers. The red lines:
         </p>
         <ul className="list-disc space-y-1.5 pl-5">
-          <li>No redistributing or reselling the installers or license keys.</li>
+          <li>No redistributing or reselling the portable executables or license keys.</li>
           <li>No sharing or sub-licensing seats outside your dealership.</li>
           <li>No providing bulk filing or extraction services to other dealerships without a written agreement with us.</li>
           <li>No attempting to defeat the license enforcement, the activation ledger, or the portal&rsquo;s security checks.</li>
@@ -327,14 +327,14 @@ function Eula() {
       </Section>
       <Section title="3. Permitted use and restrictions">
         <p>
-          You may use the tools for your own dealership operations. You may not redistribute the installers,
+          You may use the tools for your own dealership operations. You may not redistribute the portable executables,
           resell licenses, or use the tools to provide bulk filing/extraction services to third-party dealerships
           without a written agreement. You agree not to attempt to defeat the license enforcement.
         </p>
       </Section>
       <Section title="4. Updates and portal changes">
         <p>
-          Updates are included with every active plan and ship as normal installer updates. When the VidaPay
+          Updates are included with every active plan and ship as replacement portable executables. When the VidaPay
           portal changes, we ship compatibility fixes: monthly and annual plans always include them, perpetual
           (lifetime) licenses include 1 year of coverage then an optional $199/yr update plan, and your installed
           build keeps running either way. When the portal shows a security
@@ -391,24 +391,25 @@ function Security() {
           traffic is what is listed above.
         </p>
       </Section>
-      <Section title="Installer integrity">
+      <Section title="Download integrity">
         <p>
-          Every installer is served from a controlled GitHub repository and is re-published on a fixed
+          Every portable executable is served from a controlled GitHub repository and is re-published on a fixed
           sync schedule. The <a className="text-brand-cyan hover:underline" href="#/download">Download page</a>{' '}
-          shows the live SHA-256 checksum of each installer straight from that repository — verify the file you
+          shows the live SHA-256 checksum of each file straight from that repository — verify the file you
           downloaded against it before running. There is one build per tool and it is the same public file for
           everyone: it opens as a free 7-day trial, and a license key unlocks the full version. Paid delivery is
-          the key, emailed to you after checkout — never a separate hidden installer.
+          the key, emailed to you after checkout — never a separate hidden executable.
         </p>
         <p>
-          Code signing: the installers are not yet Authenticode-signed. A code-signing certificate is on the
+          Code signing: the portable executables are not yet Authenticode-signed. A code-signing certificate is on the
           roadmap; until then the SHA-256 checksums above are the verification mechanism we can stand behind.
         </p>
       </Section>
       <Section title="Updates and vulnerability reporting">
         <p>
-          Updates are included with every plan and ship as normal installers — when the VidaPay portal changes,
-          fixes ship to everyone at no charge. If you believe you have found a security issue in our tools,
+          Monthly and annual plans include updates while active. Lifetime licenses include 1 year of updates,
+          followed by an optional $199/year update plan; the licensed build remains usable permanently. Updates
+          ship as replacement portable executables. If you believe you have found a security issue in our tools,
           website or licensing system, email{' '}
           <a className="text-brand-cyan hover:underline" href={`mailto:${EMAIL}`}>{EMAIL}</a> with the details.
           We acknowledge within one US Central business day, and we will happily credit responsible reports on

@@ -197,7 +197,7 @@ export default function OrderStatus() {
               These buttons always serve the newest official build of each tool — when an
               update ships, come back to this page and re-download for free. Every build
               opens as a 7-day trial; the license key delivered with your invoice unlocks
-              the full version permanently. No separate installer is needed for paid plans.
+              the paid plan for the period it covers. No separate installer is needed.
             </p>
             <div className="mt-5 flex flex-wrap gap-3">
               {staticOrder.products.flatMap((pid, i) => {

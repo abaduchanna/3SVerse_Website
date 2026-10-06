@@ -30,7 +30,7 @@ export function modelBillingNote(model: ModelId): string {
     case 'annual':
       return 'per year · save 44% vs monthly';
     case 'lifetime':
-      return 'one-time payment · perpetual license';
+      return 'one-time payment · permanent use · 1 year of updates included';
     default:
       return '7 days · 1 PC · no card needed';
   }
@@ -154,6 +154,15 @@ export const VIDEO_DEMO = {
   note: 'Raw screen recordings — portal in, clean Excel out. No production polish, because the tools are the point.',
 } as const;
 
+/** Short, captioned overview assembled from the real product recordings. */
+export const OVERVIEW_DEMO = {
+  url: 'https://github.com/abaduchanna/3SVerse_Downloads/releases/download/latest/3SVerse_VidaPay_Tools_90_Second_Demo.mp4',
+  poster: 'https://github.com/abaduchanna/3SVerse_Downloads/releases/download/latest/3SVerse_VidaPay_Tools_90_Second_Demo_Poster.jpg',
+  kicker: '90-second product overview',
+  title: 'See all three tools in 90 seconds',
+  note: 'A captioned overview built from the real Incentive Extractor and Rebate Filing recordings, plus the live Device Ordering interface.',
+} as const;
+
 /** Both published product demos — embedded on the landing page and linked on YouTube. */
 export const DEMOS = [
   {
@@ -191,7 +200,7 @@ export const TRIAL_DOWNLOADS: Record<string, string> = {
   extractor: `${TRIAL_BASE}VidaPay_Incentive_Extractor.exe`,
   ordering: `${TRIAL_BASE}VidaPay_Device_Ordering.exe`,
   rebate: `${TRIAL_BASE}VidaPay_Rebate_Filing.exe`,
-  /* Bundle → the branded download page lists all three installers
+  /* Bundle → the branded download page lists all three portable executables
      with live SHA-256 checksums. */
   bundle: '/#/download',
 };
@@ -209,8 +218,8 @@ export function trialDownloadUrl(productId: string): string {
 }
 
 export const TRIAL_DOWNLOAD = {
-  label: 'Download for Windows (.exe)',
-  note: 'Windows 10/11 · full software · free 7-day trial built in · license key unlocks full',
+  label: 'Download portable Windows app (.exe)',
+  note: 'Windows 10/11 · no installation · full 7-day trial built in · license key unlocks the same file',
 } as const;
 
 /**
@@ -259,15 +268,15 @@ export const PAID_DOWNLOAD = {
 export const TURNSTILE_SITE_KEY = '';
 
 /**
- * Full Bundle value deal — every bundle purchase includes TWO licenses of
- * EACH tool (Extractor + Ordering + Rebate Filing) = 6 licenses total, at
- * the single-bundle price. The storefront hides the PC picker on the bundle
- * card and states the inclusion; invoices and order lines spell it out.
+ * Full Bundle value deal — buy one complete bundle and receive a second
+ * complete bundle license free. Each bundle license runs all three tools on
+ * one Windows PC, so one purchase covers two PCs. The storefront hides the
+ * PC picker on the bundle card and states the inclusion clearly.
  */
 export const BUNDLE_EACH = 2;
 
 export function bundleLicenseNote(): string {
-  return `includes ${BUNDLE_EACH} licenses of each tool — ${BUNDLE_EACH * 3} licenses total`;
+  return 'buy one complete bundle, get a second bundle license free — all 3 tools on 2 PCs';
 }
 
 /**
@@ -367,11 +376,11 @@ export const PRODUCTS: Product[] = [
   {
     id: 'bundle',
     name: 'VidaPay Full Bundle',
-    tagline: `All three tools. ${BUNDLE_EACH} licenses of each — ${BUNDLE_EACH * 3} licenses. Best value.`,
+    tagline: 'Buy one complete bundle and get a second bundle license free. Use all three tools on two Windows PCs.',
     features: [
-      `Extractor + Ordering + Rebate Filing — ${BUNDLE_EACH} licenses of each`,
-      `${BUNDLE_EACH * 3} licenses total, one price`,
-      'Every tool on every licensed PC',
+      'Incentive Extractor + Device Ordering + Rebate Filing',
+      'Two complete bundle licenses for the price shown',
+      'All three tools on each of two Windows PCs',
       'Priority support',
     ],
     prices: { trial: 0, monthly: 149, annual: 999, lifetime: 2499 },
