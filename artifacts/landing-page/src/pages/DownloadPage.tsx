@@ -31,10 +31,13 @@ const KNOWN_EXES: Array<{ name: string; label: string }> = [
 ];
 
 /* Audit 4.5: a 60-second "how to activate your key in 3 steps" video on the
-   download page eliminates ~90% of activation support requests. Record it
-   (Loom or YouTube), paste the embed URL here — the card renders the video
-   automatically. '' keeps the written steps as the fallback. */
-const ACTIVATION_VIDEO_URL = '';
+   download page eliminates ~90% of activation support requests.
+   Shipped: self-hosted MP4 (3SVerse_Downloads release asset, tag "latest" —
+   stable even if newer releases appear; Range/streaming verified). A .mp4 URL
+   renders a native <video> player; paste a YouTube/Loom embed URL instead and
+   the iframe branch takes over automatically. */
+const ACTIVATION_VIDEO_URL = 'https://github.com/abaduchanna/3SVerse_Downloads/releases/download/latest/3SVerse_Activation_in_60_Seconds.mp4';
+const ACTIVATION_VIDEO_POSTER = 'https://github.com/abaduchanna/3SVerse_Downloads/releases/download/latest/3SVerse_Activation_poster.jpg';
 
 interface AssetMeta { size?: number; digest?: string }
 
@@ -279,14 +282,26 @@ export default function DownloadPage() {
           {ACTIVATION_VIDEO_URL ? (
             <div className="mt-4 overflow-hidden rounded-xl border border-border">
               <div className="relative aspect-video w-full">
-                <iframe
-                  src={ACTIVATION_VIDEO_URL}
-                  title="How to activate your license key in 3 steps"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowFullScreen
-                  loading="lazy"
-                  className="absolute inset-0 h-full w-full"
-                />
+                {ACTIVATION_VIDEO_URL.endsWith('.mp4') ? (
+                  <video
+                    controls
+                    preload="metadata"
+                    poster={ACTIVATION_VIDEO_POSTER}
+                    src={ACTIVATION_VIDEO_URL}
+                    className="absolute inset-0 h-full w-full bg-black"
+                  >
+                    <track kind="captions" />
+                  </video>
+                ) : (
+                  <iframe
+                    src={ACTIVATION_VIDEO_URL}
+                    title="How to activate your license key in 3 steps"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                    loading="lazy"
+                    className="absolute inset-0 h-full w-full"
+                  />
+                )}
               </div>
             </div>
           ) : (
