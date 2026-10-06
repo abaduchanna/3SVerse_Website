@@ -511,7 +511,7 @@ function Nav() {
         <a href="#top" data-testid="link-brand" aria-label="3SVerse — back to top" className="shrink-0">
           <img src="/logo-240.png" alt="3SVerse" width={240} height={57} className="h-7 w-auto object-contain" />
         </a>
-        <nav className="hidden items-center gap-7 xl:flex">
+        <nav className="hidden items-center gap-5 2xl:flex">
           {navItems.map((item) => (
             <a
               key={item.href}
@@ -523,17 +523,17 @@ function Nav() {
             </a>
           ))}
         </nav>
-        <div className="hidden shrink-0 items-center gap-3 xl:flex">
+        <div className="hidden shrink-0 items-center gap-3 2xl:flex">
           <ThemeToggle className="flex h-10 w-10 items-center justify-center rounded-xl border border-input text-foreground transition-colors hover:border-brand-cyan/60 hover:text-brand-cyan" />
           <BtnGhost href="#contact" testId="button-nav-contact" className="px-5 py-2.5 text-[14px]">Contact</BtnGhost>
           <BtnWhite href="#contact" testId="button-nav-get-started" className="px-5 py-2.5 text-[14px]">Get started</BtnWhite>
         </div>
-        <div className="flex items-center gap-2 xl:hidden">
+        <div className="flex items-center gap-2 2xl:hidden">
           <ThemeToggle className="flex h-10 w-10 items-center justify-center rounded-lg border border-input text-foreground transition-colors hover:border-brand-cyan/60 hover:text-brand-cyan" />
           <button
             data-testid="button-mobile-menu"
             onClick={() => setOpen(!open)}
-            className="rounded-lg border border-input p-2 text-foreground xl:hidden"
+            className="rounded-lg border border-input p-2 text-foreground 2xl:hidden"
             aria-label={open ? 'Close menu' : 'Open menu'}
           >
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -542,7 +542,7 @@ function Nav() {
       </div>
       <AnimatePresence>
         {open && (
-          <motion.nav initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden border-t border-border bg-card px-5 py-4 xl:hidden">
+          <motion.nav initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden border-t border-border bg-card px-5 py-4 2xl:hidden">
             {navItems.map((item) => (
               <a key={item.href} href={item.href} onClick={() => setOpen(false)} data-testid={`link-mobile-${item.label.toLowerCase().replace(/ /g, '-')}`} className="block border-b border-border py-3.5 text-[15px] font-medium text-foreground">
                 {item.label}
