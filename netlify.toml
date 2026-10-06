@@ -1,4 +1,4 @@
-# Netlify build configuration for 3S Verse
+# Netlify build configuration for 3SVerse
 #
 # The site is the Vite app in artifacts/landing-page inside this pnpm
 # monorepo. Netlify's auto-detection looks at the repo root and finds

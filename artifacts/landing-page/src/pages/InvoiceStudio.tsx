@@ -58,15 +58,15 @@ const REF_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
 /* Exact template content to paste into the EmailJS template editor.
    TRIPLE braces around invoice_html are required — they make EmailJS
    insert the invoice as raw HTML instead of escaped text. */
-const EMAILJS_TEMPLATE_SUBJECT = 'Invoice {{invoice_no}} — 3S Verse (order {{order_ref}})';
+const EMAILJS_TEMPLATE_SUBJECT = 'Invoice {{invoice_no}} — 3SVerse (order {{order_ref}})';
 const EMAILJS_TEMPLATE_CONTENT = `Hi {{customer_name}},
 
-Your 3S Verse invoice is ready — total {{total_label}}.
+Your 3SVerse invoice is ready — total {{total_label}}.
 Pay within the due window shown on the invoice (bank transfer, Wise, PayPal, or USDT). After payment we deliver your license keys within a few hours.
 
 {{{invoice_html}}}
 
-3S Verse · 3sverse.com`;
+3SVerse · 3sverse.com`;
 
 const inputClass =
   'w-full rounded-xl border border-border bg-foreground/[.04] px-4 py-2.5 text-[14px] text-foreground placeholder:text-muted-foreground outline-none transition-colors focus:border-brand-cyan/60';
@@ -216,7 +216,7 @@ export default function InvoiceStudio() {
   const [emailBusy, setEmailBusy] = useState(false);
 
   useEffect(() => {
-    document.title = '3S Verse — Invoice Studio';
+    document.title = '3SVerse — Invoice Studio';
     const cfg = emailjsEffectiveConfig();
     setEmailSvc(cfg.serviceId);
     setEmailTpl(cfg.templateId);
@@ -429,7 +429,7 @@ export default function InvoiceStudio() {
         {/* header */}
         <header className="mb-7 flex flex-wrap items-center justify-between gap-4">
           <div>
-            <div className="text-[13px] font-semibold uppercase tracking-[.22em] text-muted-foreground">3S Verse</div>
+            <div className="text-[13px] font-semibold uppercase tracking-[.22em] text-muted-foreground">3SVerse</div>
             <h1 className="mt-1 text-[26px] font-bold leading-tight">Invoice Studio</h1>
             <p className="mt-1 text-[14px] text-muted-foreground">
               Order details — this exact format goes to the customer (PDF · HTML · email).

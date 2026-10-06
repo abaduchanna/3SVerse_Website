@@ -1,5 +1,5 @@
 /**
- * 3S Verse — customer email delivery (static-safe).
+ * 3SVerse — customer email delivery (static-safe).
  *
  * The site is a static SPA on GitHub Pages, so "email the invoice to the
  * customer automatically" runs through EmailJS (client-side SMTP relay,
@@ -30,17 +30,17 @@
  *   3. Email Templates → Create template:
  *        To Email:      {{to_email}}
  *        Reply To:      Connect@3SVerse.com
- *        Subject:       Invoice {{invoice_no}} — 3S Verse (order {{order_ref}})
+ *        Subject:       Invoice {{invoice_no}} — 3SVerse (order {{order_ref}})
  *        Content:       Hi {{customer_name}},
 
- *                       Your 3S Verse invoice is ready — total {{total_label}}.
+ *                       Your 3SVerse invoice is ready — total {{total_label}}.
  *                       Pay within the due window shown on the invoice
  *                       (bank transfer, Wise, PayPal, or USDT). After payment
  *                       we deliver your license keys within a few hours.
 
  *                       {{{invoice_html}}}
 
- *                       3S Verse · 3sverse.com
+ *                       3SVerse · 3sverse.com
  *      IMPORTANT: use TRIPLE braces {{{invoice_html}}} so EmailJS inserts
  *      the invoice as raw HTML, not escaped text. Save → copy Template ID.
  *   4. Account → API Keys → copy the Public Key.
@@ -168,7 +168,7 @@ export async function emailjsSendTest(to: string): Promise<{ ok: boolean; error?
         total_label: '$0',
         invoice_html:
           '<div style="font-family:Arial,sans-serif;padding:16px;border:1px solid #e6e4ee;border-radius:8px;">' +
-          '<strong>3S Verse — EmailJS test</strong><br/>If you can read this, the relay and ' +
+          '<strong>3SVerse — EmailJS test</strong><br/>If you can read this, the relay and ' +
           'template work. Real invoices will embed the full branded invoice here.</div>',
       },
       { publicKey: cfg.publicKey, blockHeadless: false },

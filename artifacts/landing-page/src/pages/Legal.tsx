@@ -55,8 +55,8 @@ function Privacy() {
       <Section title="What we do NOT collect">
         <p>
           The desktop tools do not ship telemetry, analytics, crash reporting or advertising SDKs. Your VidaPay
-          credentials, portal sessions and extracted business data stay on your PC and never reach a 3S Verse
-          server — there is no 3S Verse server holding them. This website runs no third-party analytics or ad
+          credentials, portal sessions and extracted business data stay on your PC and never reach a 3SVerse
+          server — there is no 3SVerse server holding them. This website runs no third-party analytics or ad
           trackers.
         </p>
       </Section>
@@ -89,9 +89,9 @@ function Terms() {
     <>
       <Section title="The service">
         <p>
-          3S Verse (&ldquo;we&rdquo;) licenses the VidaPay workflow tools — Incentive Extractor, Device Ordering,
+          3SVerse (&ldquo;we&rdquo;) licenses the VidaPay workflow tools — Incentive Extractor, Device Ordering,
           Rebate Filing, and the Full Bundle — and provides custom software services. The tools run on your own
-          Windows PC under your own VidaPay dealer login. 3S Verse is an independent software provider and is not
+          Windows PC under your own VidaPay dealer login. 3SVerse is an independent software provider and is not
           affiliated with, endorsed by or sponsored by VidaPay, T-CETRA or Total Wireless.
         </p>
       </Section>
@@ -219,7 +219,7 @@ function TermsTabs({ initialTab }: { initialTab: TermsTab }) {
   return (
     <>
       <p className="mt-6 text-[15px] font-light leading-7 text-foreground/75">
-        Everything that governs doing business with 3S Verse — the rules, your privacy, and your responsibilities
+        Everything that governs doing business with 3SVerse — the rules, your privacy, and your responsibilities
         as a user — in three short documents, written in plain English and kept in sync with how the products
         actually work.
       </p>
@@ -311,7 +311,7 @@ function Eula() {
     <>
       <Section title="1. The license">
         <p>
-          A 3S Verse license grants the purchasing dealership a non-exclusive, non-transferable right to run the
+          A 3SVerse license grants the purchasing dealership a non-exclusive, non-transferable right to run the
           licensed tool on the number of PCs purchased (seats), for the term purchased (monthly, annual, or perpetual
           lifetime). Each seat is machine-locked to the PC it is activated on.
         </p>
@@ -357,7 +357,7 @@ function Eula() {
         <p>
           The license terminates on material breach (for example, seat sharing or redistribution); refunds follow
           the Refund Policy. Liability is limited as set out in the Terms of Service. These terms are the complete
-          agreement between you and 3S Verse for the software.
+          agreement between you and 3SVerse for the software.
         </p>
       </Section>
     </>
@@ -371,7 +371,7 @@ function Security() {
         <p>
           The tools are native Windows applications that log into VidaPay from your own store PC, under your own
           dealer login. Your portal credentials are entered on your machine and stay on your machine — there is
-          no 3S Verse server that receives them, holds them or proxies them. Extracted data is written to Excel
+          no 3SVerse server that receives them, holds them or proxies them. Extracted data is written to Excel
           files on your disk.
         </p>
       </Section>
@@ -421,7 +421,7 @@ function Security() {
 export default function LegalPage({ kind }: { kind: LegalKind }) {
   const meta = META[kind];
   useEffect(() => {
-    document.title = `${meta.title} — 3S Verse`;
+    document.title = `${meta.title} — 3SVerse`;
     window.scrollTo(0, 0);
   }, [kind, meta.title]);
 
@@ -429,8 +429,8 @@ export default function LegalPage({ kind }: { kind: LegalKind }) {
     <div className="min-h-screen bg-background text-foreground">
       <header className="sticky top-0 z-10 border-b border-border bg-background/85 backdrop-blur-xl">
         <div className="mx-auto flex h-[64px] max-w-4xl items-center justify-between px-5">
-          <a href="#/" aria-label="3S Verse — home" className="flex items-center gap-2.5">
-            <img src="/logo-240.png" alt="3S Verse" width={240} height={57} className="h-7 w-auto" />
+          <a href="#/" aria-label="3SVerse — home" className="flex items-center gap-2.5">
+            <img src="/logo-240.png" alt="3SVerse" width={240} height={57} className="h-7 w-auto" />
           </a>
           <a
             href="#/"
@@ -459,7 +459,7 @@ export default function LegalPage({ kind }: { kind: LegalKind }) {
         {kind === 'security' && <Security />}
 
         <div className="mt-14 flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-border pt-7 font-mono-tech text-[10px] uppercase tracking-[.18em] text-muted-foreground">
-          <span className="flex items-center gap-2"><ShieldCheck className="h-3.5 w-3.5 text-brand-cyan" /> 3S Verse — operator-built software</span>
+          <span className="flex items-center gap-2"><ShieldCheck className="h-3.5 w-3.5 text-brand-cyan" /> 3SVerse — operator-built software</span>
           <a href="#/download" className="transition-colors hover:text-foreground">Download</a>
           <a href="#/security" className="transition-colors hover:text-foreground">Security</a>
           <a href="#/privacy" className="transition-colors hover:text-foreground">Privacy</a>
@@ -468,7 +468,7 @@ export default function LegalPage({ kind }: { kind: LegalKind }) {
           <a href="#/eula" className="transition-colors hover:text-foreground">EULA</a>
         </div>
         <p className="mt-8 text-[12.5px] font-light leading-5 text-muted-foreground">
-          3S Verse is an independent software provider and is not affiliated with, endorsed by, or sponsored by
+          3SVerse is an independent software provider and is not affiliated with, endorsed by, or sponsored by
           VidaPay, T-CETRA, Total Wireless, or their parent companies. Product names and trademarks belong to
           their respective owners.
         </p>

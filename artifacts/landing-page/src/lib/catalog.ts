@@ -132,7 +132,7 @@ export const LAUNCH_OFFER = {
  */
 export const WHATSAPP_NUMBER = '923393078683';
 export const WHATSAPP_GREETING =
-  'Hi 3S Verse — I have a question about the VidaPay dealer tools.';
+  'Hi 3SVerse — I have a question about the VidaPay dealer tools.';
 
 export function whatsappLink(): string | null {
   if (!WHATSAPP_NUMBER) return null;

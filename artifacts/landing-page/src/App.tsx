@@ -129,7 +129,7 @@ function currentTheme(): Theme {
 
 /* ── Theme water-swipe — the toggle press floods the NEW theme out of the
    button as a soft-feathered circle of water (View Transitions API — the
-   effect from the original 3S Verse site, restored). The wavefront is pure
+   effect from the original 3SVerse site, restored). The wavefront is pure
    CSS (index.css): a 2.5s feathered radial mask expanding from
    --water-x/--water-y, the exact center of the toggle button (top right).
    Browsers with View Transitions but without @property get a hard-edged
@@ -495,6 +495,7 @@ const navItems = [
   { label: 'What we offer', href: '#services' },
   { label: 'How it works', href: '#how' },
   { label: 'Dealer tools', href: '#tools' },
+  { label: 'Get my download', href: '#/download' },
   { label: 'Pricing', href: '#/pricing' },
   { label: 'Guides', href: '#guides' },
   { label: 'FAQ', href: '#faq' },
@@ -507,8 +508,8 @@ function Nav() {
   return (
     <header className="fixed left-0 right-0 top-0 z-40 border-b border-border bg-background/75 backdrop-blur-xl">
       <div className="mx-auto flex h-[76px] max-w-7xl items-center justify-between px-5 lg:px-8">
-        <a href="#top" data-testid="link-brand" aria-label="3S Verse — back to top" className="shrink-0">
-          <img src="/logo-240.png" alt="3S Verse" width={240} height={57} className="h-7 w-auto object-contain" />
+        <a href="#top" data-testid="link-brand" aria-label="3SVerse — back to top" className="shrink-0">
+          <img src="/logo-240.png" alt="3SVerse" width={240} height={57} className="h-7 w-auto object-contain" />
         </a>
         <nav className="hidden items-center gap-7 xl:flex">
           {navItems.map((item) => (
@@ -560,7 +561,7 @@ function Nav() {
 }
 
 /* The hero app window — the template's "product screenshot" slot, dressed in
-   3S Verse brand panels (cyan/magenta on near-black, DM Mono labels). */
+   3SVerse brand panels (cyan/magenta on near-black, DM Mono labels). */
 function OpsPanel() {
   return (
     <motion.div
@@ -668,7 +669,7 @@ function Hero() {
             </Reveal>
             <Reveal delay={0.16}>
               <p className="mt-8 max-w-xl text-[17px] font-light leading-8 text-foreground/75">
-                3S Verse builds the VidaPay tools wireless dealers run on — incentive extraction, device ordering, rebate filing — plus custom automation for the work those tools don&apos;t cover. Start with a free 7-day trial, or bring us the bottleneck.
+                Built for VidaPay authorized dealers: one download automates incentive extraction, device ordering, and rebate filing — free 7-day trial, no card needed. 3SVerse also builds custom automation for the work those tools don&apos;t cover. Start free, or bring us the bottleneck.
               </p>
             </Reveal>
             <Reveal delay={0.24}>
@@ -1243,7 +1244,7 @@ function Audience() {
               <span className="font-normal text-brand-cyan">rebate claims to device orders</span>
             </h2>
             <p className="mt-5 text-[16px] font-light leading-7 text-foreground/70">
-              3S Verse serves Total Wireless dealers and MVNO retail teams that live in the
+              3SVerse serves Total Wireless dealers and MVNO retail teams that live in the
               VidaPay portal and the Tcetra dashboard every day. If your front office does it
               twice a week, one of these fits.
             </p>
@@ -1267,7 +1268,7 @@ function Audience() {
           <p className="mx-auto mt-12 max-w-4xl text-center text-[13px] font-light leading-6 text-muted-foreground">
             Searching for a faster way through the Tcetra dashboard or the VidaPay portal?
             Whether the job is rebate claims, incentive reports, device ordering, inventory
-            audits, or day-to-day store operations, the 3S Verse tools were built on the same
+            audits, or day-to-day store operations, the 3SVerse tools were built on the same
             retail back-office workflows your dealership runs — start free and see a real run
             on your own store data within days.
           </p>
@@ -1277,7 +1278,7 @@ function Audience() {
   );
 }
 
-/* Before/After — the manual grind vs the 3S Verse front office, side by side. */
+/* Before/After — the manual grind vs the 3SVerse front office, side by side. */
 const COMPARE_ROWS: Array<[string, string, string]> = [
   [
     'Incentive & rebate data',
@@ -1313,7 +1314,7 @@ function Compare() {
         <Reveal>
           <div className="mb-12 flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <Kicker>05 — Manual vs 3S Verse</Kicker>
+              <Kicker>05 — Manual vs 3SVerse</Kicker>
               <h2 className="max-w-2xl text-[clamp(2.2rem,4vw,3.6rem)] font-light leading-[1.05] tracking-[-0.02em] text-foreground">
                 The same week, <span className="text-brand-cyan">two ways.</span>
               </h2>
@@ -1328,7 +1329,7 @@ function Compare() {
             <div className="hidden grid-cols-[1.1fr_1.3fr_1.3fr] border-b border-border font-mono-tech text-[11px] uppercase tracking-[.18em] text-muted-foreground md:grid">
               <div className="px-6 py-4">The work</div>
               <div className="border-x border-border px-6 py-4 text-brand-magenta">Manual today</div>
-              <div className="px-6 py-4 text-brand-cyan">With 3S Verse</div>
+              <div className="px-6 py-4 text-brand-cyan">With 3SVerse</div>
             </div>
             {COMPARE_ROWS.map(([work, before, after], i) => (
               <div
@@ -1359,7 +1360,7 @@ function Compare() {
               </ul>
             </div>
             <div className="rounded-3xl border border-brand-cyan/25 bg-[#6ee7ef]/[.05] p-7">
-              <p className="flex items-center gap-2.5 font-mono-tech text-[10px] uppercase tracking-[.2em] text-brand-cyan"><Check className="h-3.5 w-3.5" /> After — the 3S Verse front office</p>
+              <p className="flex items-center gap-2.5 font-mono-tech text-[10px] uppercase tracking-[.2em] text-brand-cyan"><Check className="h-3.5 w-3.5" /> After — the 3SVerse front office</p>
               <ul className="mt-4 space-y-2.5 text-[13.5px] font-light leading-6 text-foreground">
                 <li className="flex gap-2.5"><span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-[#6ee7ef]" />Every eligible claim extracted, filed, and tracked to PAID</li>
                 <li className="flex gap-2.5"><span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-[#6ee7ef]" />Minutes per run — every store in one pass, zero retyping</li>
@@ -1552,7 +1553,7 @@ function WhatsAppFloat() {
       target="_blank"
       rel="noopener noreferrer"
       data-testid="whatsapp-float"
-      aria-label="Chat with 3S Verse on WhatsApp"
+      aria-label="Chat with 3SVerse on WhatsApp"
       initial={{ opacity: 0, scale: 0.7 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ delay: 1.2, duration: 0.35 }}
@@ -1608,7 +1609,7 @@ const FAQ_ITEMS: Array<{ q: string; a: string }> = [
   },
   {
     q: 'Where does my dealership’s data end up?',
-    a: 'On your machine. The tools run on your own Windows PC under your own VidaPay login — credentials, portal sessions, and extracted data never leave your machine. There is no 3S Verse server holding your dealership’s numbers, and each license is machine-locked to the PC you activate it on.',
+    a: 'On your machine. The tools run on your own Windows PC under your own VidaPay login — credentials, portal sessions, and extracted data never leave your machine. There is no 3SVerse server holding your dealership’s numbers, and each license is machine-locked to the PC you activate it on.',
   },
   {
     q: 'How fast is support, and who answers?',
@@ -1874,7 +1875,7 @@ function Reviews() {
       _template: 'table',
       _captcha: 'false',
       _replyto: email,
-      _autoresponse: 'Thanks for your 3S Verse review! We verify every review against license records before publishing. We may reply here to confirm a detail or two.',
+      _autoresponse: 'Thanks for your 3SVerse review! We verify every review against license records before publishing. We may reply here to confirm a detail or two.',
       _honey: form.website,
       website: form.website,
       ...(cfToken ? { 'cf-turnstile-response': cfToken, turnstileToken: cfToken } : {}),
@@ -2012,7 +2013,7 @@ function Reviews() {
         {/* dealer feedback — compact invite + expandable form: the page stays
             clean by default (one invite line), but dealers who want to leave a
             review get the full form one click away. Submissions land in the
-            3S Verse inbox, get verified against license records, then publish */}
+            3SVerse inbox, get verified against license records, then publish */}
         <Reveal delay={0.08}>
           <div className="rounded-2xl border border-border bg-card p-6">
             <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
@@ -2022,7 +2023,7 @@ function Reviews() {
               </p>
               <div className="flex shrink-0 items-center gap-2">
                 {wa ? (
-                  <a href={wa} target="_blank" rel="noopener noreferrer" aria-label="Chat with 3S Verse on WhatsApp" className="inline-flex items-center gap-2 rounded-xl border border-input px-4 py-2.5 text-[13px] font-medium text-foreground transition-colors hover:border-brand-wa/60 hover:text-brand-wa"><MessageCircle className="h-4 w-4" /> WhatsApp</a>
+                  <a href={wa} target="_blank" rel="noopener noreferrer" aria-label="Chat with 3SVerse on WhatsApp" className="inline-flex items-center gap-2 rounded-xl border border-input px-4 py-2.5 text-[13px] font-medium text-foreground transition-colors hover:border-brand-wa/60 hover:text-brand-wa"><MessageCircle className="h-4 w-4" /> WhatsApp</a>
                 ) : null}
                 <button type="button" onClick={() => setFormOpen((open) => !open)} aria-expanded={formOpen} data-testid="button-review-toggle" className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-[13px] font-semibold tracking-tight text-[#0b0a10] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#f7f3e8]">
                   {formOpen ? 'Close' : 'Write a review'}
@@ -2504,7 +2505,7 @@ function Footer() {
       <div className="mx-auto max-w-7xl px-5 py-14 lg:px-8">
         <div className="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between">
           <div className="max-w-sm">
-            <img src="/logo-240.png" alt="3S Verse" width={240} height={57} className="h-7 w-auto" />
+            <img src="/logo-240.png" alt="3SVerse" width={240} height={57} className="h-7 w-auto" />
             <p className="mt-5 text-[14px] font-light leading-7 text-foreground/75">
               VidaPay dealer tools and custom dealership automation — built by people who have run wireless retail operations themselves.
             </p>
@@ -2523,7 +2524,7 @@ function Footer() {
               <div className="mt-4 flex flex-col gap-2.5">
                 <a href="#faq" data-testid="link-footer-faq" className="text-[14px] font-light text-foreground/85 transition-colors hover:text-brand-cyan">FAQ</a>
                 <a href="#contact" data-testid="link-footer-contact" className="text-[14px] font-light text-foreground/85 transition-colors hover:text-brand-cyan">Contact</a>
-                <a href="#/order-status" data-testid="link-footer-order-status" className="text-[14px] font-light text-foreground/85 transition-colors hover:text-brand-cyan">Order status</a>
+                <a href="#/order-status" data-testid="link-footer-order-status" className="text-[14px] font-light text-foreground/85 transition-colors hover:text-brand-cyan">Check my order</a>
                 <a href="#/download" data-testid="link-footer-download-2" className="text-[14px] font-light text-foreground/85 transition-colors hover:text-brand-cyan">Download</a>
                 <a href={`mailto:${CONTACT_EMAIL}`} data-testid="link-footer-email" className="mt-1 inline-block font-mono-tech text-[12px] tracking-wider text-brand-cyan dark:bg-none dark:bg-gradient-to-r dark:from-[#6ee7ef] dark:via-[#78a6ff] dark:to-[#e44bd7] dark:bg-clip-text dark:text-transparent">{CONTACT_EMAIL}</a>
               </div>
@@ -2531,10 +2532,10 @@ function Footer() {
           </div>
         </div>
         <p className="mt-10 border-t border-border pt-7 text-[12.5px] font-light leading-5 text-muted-foreground">
-          3S Verse is an independent software provider and is not affiliated with, endorsed by, or sponsored by VidaPay, T-CETRA, Total Wireless, or their parent companies. Product names and trademarks belong to their respective owners. Use of the tools remains subject to the dealer’s applicable agreements and policies.
+          3SVerse is an independent software provider and is not affiliated with, endorsed by, or sponsored by VidaPay, T-CETRA, Total Wireless, or their parent companies. Product names and trademarks belong to their respective owners. Use of the tools remains subject to the dealer’s applicable agreements and policies.
         </p>
         <div className="mt-6 flex flex-wrap items-center justify-between gap-4 font-mono-tech text-[11px] uppercase tracking-[.18em] text-muted-foreground">
-          <span>3S Verse {new Date().getFullYear()} © — All rights reserved</span>
+          <span>3SVerse {new Date().getFullYear()} © — All rights reserved</span>
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
             <a href="#/download" data-testid="link-footer-download" className="transition-colors hover:text-foreground">Download</a>
             <a href="#/security" data-testid="link-footer-security" className="transition-colors hover:text-foreground">Security</a>

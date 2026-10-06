@@ -1,5 +1,5 @@
 /**
- * 3S Verse — trial download gate.
+ * 3SVerse — trial download gate.
  *
  * Every EXE download on the site (trials included) happens only AFTER a
  * form submission — the visitor leaves their name + email first, the lead

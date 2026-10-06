@@ -1,5 +1,5 @@
 /**
- * 3S Verse — automatic order invoice.
+ * 3SVerse — automatic order invoice.
  *
  * Builds a complete InvoiceData straight from the DealerStore order lines,
  * so the customer's success screen can show the real invoice the moment the

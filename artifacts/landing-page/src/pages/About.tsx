@@ -1,7 +1,7 @@
 /**
  * About page (#/about) — structure follows the reference template's About:
  * mission hero + "how we work" value cards + a meet-the-products grid +
- * a closing CTA. Content stays strictly accurate to how 3S Verse actually
+ * a closing CTA. Content stays strictly accurate to how 3SVerse actually
  * operates (operator-built, local-first, no invented team members).
  */
 import PageShell from './PageShell';
@@ -15,7 +15,7 @@ const VALUES: Array<{ title: string; body: string }> = [
   },
   {
     title: 'Ownership',
-    body: 'Your data lives on your machines. Your licenses are machine-locked to the PCs you bought them for, every workbook the tools produce is yours to keep, and uninstalling removes everything — there is no 3S Verse server holding your dealership data.',
+    body: 'Your data lives on your machines. Your licenses are machine-locked to the PCs you bought them for, every workbook the tools produce is yours to keep, and uninstalling removes everything — there is no 3SVerse server holding your dealership data.',
   },
   {
     title: 'Openness',
@@ -41,13 +41,13 @@ export default function About() {
   return (
     <PageShell
       title="Our mission is to hand VidaPay dealers their hours back."
-      kicker="About 3S Verse"
+      kicker="About 3SVerse"
       metaLine={<>Operator-built software &middot; Questions: <a className="normal-case text-brand-cyan hover:underline" href="mailto:Connect@3SVerse.com">Connect@3SVerse.com</a></>}
     >
       {/* Mission lede — template's hero paragraph slot */}
       <div className="mt-8 space-y-4 text-[15px] font-light leading-7 text-foreground/75">
         <p>
-          3S Verse exists because wireless retail runs on hours nobody budgets for: pulling incentive data store
+          3SVerse exists because wireless retail runs on hours nobody budgets for: pulling incentive data store
           by store, retyping IMEIs into Excel, filing rebates one claim at a time. We build the software we wished
           existed when we were running those floors ourselves — tools that log into the VidaPay portal the way you
           do, do the repetitive part precisely, and hand you a clean workbook while you get on with the store.

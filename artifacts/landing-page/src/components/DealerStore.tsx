@@ -283,7 +283,7 @@ export default function DealerStore() {
 
   const orderSummaryText = (res: OrderResult) =>
     [
-      `Order ${res.ref} — 3S Verse Dealer Store`,
+      `Order ${res.ref} — 3SVerse Dealer Store`,
       ...lines.map((l) => {
         const product = PRODUCTS.find((p) => p.id === l.productId);
         if (!product) return '';
@@ -453,7 +453,7 @@ export default function DealerStore() {
       `  Terms:           https://3sverse.com/#/terms\n` +
       `  Privacy:         https://3sverse.com/#/privacy\n` +
       `  Refund policy:   https://3sverse.com/#/refund\n\n` +
-      `3S Verse · 3sverse.com · Connect@3SVerse.com`;
+      `3SVerse · 3sverse.com · Connect@3SVerse.com`;
     const fields: Record<string, string> = {
       order_ref: ref,
       name: form.name.trim().slice(0, 120),
@@ -636,7 +636,7 @@ export default function DealerStore() {
               <p className="text-[17px] font-medium text-foreground">Order placed — {result.ref}</p>
               <p className="text-[13.5px] text-foreground/75">
                 Total {result.totalLabel} · your invoice is ready below · a copy of these details
-                was sent to the 3S Verse team.
+                was sent to the 3SVerse team.
               </p>
             </div>
           </div>

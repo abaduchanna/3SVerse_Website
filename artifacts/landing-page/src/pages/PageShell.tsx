@@ -17,7 +17,7 @@ interface PageShellProps {
 
 export default function PageShell({ title, kicker, metaLine, children, width = 'max-w-3xl' }: PageShellProps) {
   useEffect(() => {
-    document.title = `${title} — 3S Verse`;
+    document.title = `${title} — 3SVerse`;
     window.scrollTo(0, 0);
   }, [title]);
 
@@ -25,8 +25,8 @@ export default function PageShell({ title, kicker, metaLine, children, width = '
     <div className="min-h-screen bg-background text-foreground">
       <header className="sticky top-0 z-10 border-b border-border bg-background/85 backdrop-blur-xl">
         <div className="mx-auto flex h-[64px] max-w-4xl items-center justify-between px-5">
-          <a href="#/" aria-label="3S Verse — home" className="flex items-center gap-2.5">
-            <img src="/logo-240.png" alt="3S Verse" width={240} height={57} className="h-7 w-auto" />
+          <a href="#/" aria-label="3SVerse — home" className="flex items-center gap-2.5">
+            <img src="/logo-240.png" alt="3SVerse" width={240} height={57} className="h-7 w-auto" />
           </a>
           <a
             href="#/"

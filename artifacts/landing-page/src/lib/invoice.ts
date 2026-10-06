@@ -1,5 +1,5 @@
 /**
- * 3S Verse — invoice engine.
+ * 3SVerse — invoice engine.
  *
  * Single source of truth for the invoice format used by the storefront
  * (DealerStore builds every order invoice through ./autoinvoice). The SAME
@@ -228,7 +228,7 @@ export function renderInvoiceBody(data: InvoiceData): string {
   /* header */
   parts.push(`<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
   <td style="padding:30px 0 22px;">
-    <img src="${LOGO_URL}" alt="3S Verse" height="40" width="179" style="height:40px;width:179px;display:block;border:0;outline:none;" />
+    <img src="${LOGO_URL}" alt="3SVerse" height="40" width="179" style="height:40px;width:179px;display:block;border:0;outline:none;" />
     <div style="font-size:11px;color:${MUTED};letter-spacing:.2em;text-transform:uppercase;margin-top:9px;">Dealer Automation Tools</div>
   </td>
   <td style="padding:30px 0 22px;text-align:right;">
@@ -314,13 +314,13 @@ ${data.validUntil && !paid && !cancelled
      Mirrors the on-site legal pages (#/terms, #/privacy, #/eula, #/refund). */
   parts.push(`<div style="height:1px;background:${HAIR};"></div>
 <div style="font-size:11px;font-weight:700;letter-spacing:.18em;color:${MUTED};text-transform:uppercase;margin:22px 0 8px;">Terms &amp; License</div>
-<div style="font-size:12px;line-height:1.7;color:${MUTED};margin:0 0 26px;">By paying this invoice the customer accepts the <a href="https://3sverse.com/#/eula" style="color:${ACCENT};text-decoration:underline;">End-User License Agreement</a> and the <a href="https://3sverse.com/#/terms" style="color:${ACCENT};text-decoration:underline;">Terms &amp; Conditions</a>. Licenses are per-PC, non-exclusive and non-transferable; keys activate on first run on the registered PC(s) and are delivered by email after payment is confirmed. Licenses are non-refundable once activated — genuine software defects are made right (see the <a href="https://3sverse.com/#/refund" style="color:${ACCENT};text-decoration:underline;">Refund Policy</a>). Customer details are processed as described in the <a href="https://3sverse.com/#/privacy" style="color:${ACCENT};text-decoration:underline;">Privacy Policy</a>. This invoice was issued electronically by 3S Verse (3sverse.com · Connect@3SVerse.com) and is valid without a signature.</div>`);
+<div style="font-size:12px;line-height:1.7;color:${MUTED};margin:0 0 26px;">By paying this invoice the customer accepts the <a href="https://3sverse.com/#/eula" style="color:${ACCENT};text-decoration:underline;">End-User License Agreement</a> and the <a href="https://3sverse.com/#/terms" style="color:${ACCENT};text-decoration:underline;">Terms &amp; Conditions</a>. Licenses are per-PC, non-exclusive and non-transferable; keys activate on first run on the registered PC(s) and are delivered by email after payment is confirmed. Licenses are non-refundable once activated — genuine software defects are made right (see the <a href="https://3sverse.com/#/refund" style="color:${ACCENT};text-decoration:underline;">Refund Policy</a>). Customer details are processed as described in the <a href="https://3sverse.com/#/privacy" style="color:${ACCENT};text-decoration:underline;">Privacy Policy</a>. This invoice was issued electronically by 3SVerse (3sverse.com · Connect@3SVerse.com) and is valid without a signature.</div>`);
 
   /* footer */
   parts.push(`<div style="height:1px;background:${HAIR};"></div>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
   <td style="padding:18px 0 30px;font-size:13px;font-weight:600;color:${INK};">Thank you for your business.</td>
-  <td style="padding:18px 0 30px;text-align:right;font-size:12px;color:${MUTED};">3S Verse · 3sverse.com · Connect@3sverse.com</td>
+  <td style="padding:18px 0 30px;text-align:right;font-size:12px;color:${MUTED};">3SVerse · 3sverse.com · Connect@3sverse.com</td>
 </tr></table>`);
 
   parts.push(`</td></tr></table>`);
@@ -333,7 +333,7 @@ ${data.validUntil && !paid && !cancelled
 /*  Full document — standalone HTML file / print-to-PDF / preview.       */
 /* ===================================================================== */
 export function renderInvoiceDocument(data: InvoiceData): string {
-  const title = data.invoiceNo ? `${data.invoiceNo} — 3S Verse Invoice` : '3S Verse Invoice';
+  const title = data.invoiceNo ? `${data.invoiceNo} — 3SVerse Invoice` : '3SVerse Invoice';
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -389,7 +389,7 @@ export function plainTextInvoice(data: InvoiceData): string {
   const state =
     data.status === 'PAID' ? 'PAID' : data.status === 'CANCELLED' ? 'CANCELLED' : 'PAYMENT DUE';
   const lines = [
-    `INVOICE ${data.invoiceNo} — 3S Verse (${state})`,
+    `INVOICE ${data.invoiceNo} — 3SVerse (${state})`,
     `Date: ${data.date}`,
     data.status === 'DUE' && data.validUntil
       ? `Pay by: ${formatDueLong(data.validUntil)} (invoice auto-cancels after this date)`
@@ -409,7 +409,7 @@ export function plainTextInvoice(data: InvoiceData): string {
       ? `License keys:\n${data.keys.map((k) => `  ${k.label ? `${k.label}: ` : ''}${k.key}`).join('\n')}`
       : '',
     data.notes ? `Notes: ${data.notes}` : '',
-    '3S Verse · 3sverse.com · Connect@3sverse.com',
+    '3SVerse · 3sverse.com · Connect@3sverse.com',
   ];
   return lines.filter((l) => l !== '').join('\n');
 }

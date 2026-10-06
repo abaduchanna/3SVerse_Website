@@ -109,7 +109,7 @@
 }
 
 /* ── DARK — GPT-X black canvas (every value identical to the previous
-   single palette; 3S Verse ramp stays cyan → periwinkle → magenta).
+   single palette; 3SVerse ramp stays cyan → periwinkle → magenta).
    Surfaces are near-black (template look) tinted with the brand's base hue. */
 .dark {
   color-scheme: dark;
@@ -393,7 +393,7 @@ html:not(.dark) .shape-subtle { opacity: .6; }
 
 /* ── Theme water-swipe — View Transitions reveal from the toggle ────────
    The NEW theme floods out of the theme toggle button (top right) as a
-   soft-feathered circle of water — the effect from the original 3S Verse
+   soft-feathered circle of water — the effect from the original 3SVerse
    site. Origin is fed by JS as --water-x/--water-y (the button's center);
    2.5s so the wavefront reads as water crossing the page, not a wipe.
    @property registers the radius so it animates inside the mask gradient
