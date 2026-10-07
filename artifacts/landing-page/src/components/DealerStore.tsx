@@ -555,7 +555,7 @@ export default function DealerStore() {
           {LAUNCH_OFFER.active ? (
             <span className="text-brand-cyan">{LAUNCH_OFFER.label} — {LAUNCH_OFFER.note} </span>
           ) : null}
-          Start with the free 7-day trial. Then pay the way your cash flow likes — tap the billing pills on any card and the price switches instantly: <span className="text-foreground">monthly $89, cancel anytime</span>, <span className="text-foreground">annual (save 44%)</span>, or <span className="text-foreground">one-time lifetime</span>. Lifetime is founding-customer pricing: pay once, runs forever. USD billing — bank transfer, Wise, PayPal, or USDT. Keys are delivered after payment confirmation.
+          Start with the free 7-day trial. Then pay the way your cash flow likes — tap the billing pills on any card and the price switches instantly: <span className="text-foreground">monthly $89 per tool · $300 Full Bundle, cancel anytime</span>, <span className="text-foreground">annual (save up to 72%)</span>, or <span className="text-foreground">one-time lifetime</span>. Lifetime is founding-customer pricing: pay once, runs forever. USD billing — bank transfer, Wise, PayPal, or USDT. Keys are delivered after payment confirmation.
         </p>
       </div>
       <div className="mb-8 flex flex-wrap items-center gap-x-6 gap-y-2.5 rounded-2xl border border-border bg-foreground/[.02] px-5 py-3.5 font-mono-tech text-[10px] uppercase tracking-[.16em] text-muted-foreground">
@@ -918,8 +918,8 @@ export default function DealerStore() {
                         {sel.model === 'trial'
                           ? '7 days · 1 PC · no card needed'
                           : product.id === 'bundle'
-                            ? `${bundleLicenseNote()} · ${modelBillingNote(sel.model)}`
-                            : `${formatUSD(perPcPrice(product, sel.model, sel.pcs))} per PC · ${modelBillingNote(sel.model)}`}
+                            ? `${bundleLicenseNote()} · ${modelBillingNote(sel.model, product)}`
+                            : `${formatUSD(perPcPrice(product, sel.model, sel.pcs))} per PC · ${modelBillingNote(sel.model, product)}`}
                       </p>
                     </div>
                     {/* two SELF-EXPLANATORY paths (owner-audit: bare "+ Add" read

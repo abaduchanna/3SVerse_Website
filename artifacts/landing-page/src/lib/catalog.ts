@@ -22,13 +22,22 @@ export function modelPriceSuffix(model: ModelId): string {
   return '';
 }
 
-/** Per-model billing explanation shown under the price in the store. */
-export function modelBillingNote(model: ModelId): string {
+/** Per-model billing explanation shown under the price in the store.
+ *  `product` (optional) makes the annual savings % exact per product —
+ *  the per-tool plans and the Full Bundle discount differently. */
+export function modelBillingNote(model: ModelId, product?: Product): string {
   switch (model) {
     case 'monthly':
       return 'per month · cancel anytime';
-    case 'annual':
+    case 'annual': {
+      if (product && product.prices.monthly > 0) {
+        const pct = Math.round(
+          (1 - product.prices.annual / (product.prices.monthly * 12)) * 100,
+        );
+        return `per year · save ${pct}% vs monthly`;
+      }
       return 'per year · save 44% vs monthly';
+    }
     case 'lifetime':
       return 'one-time payment · permanent use · 1 year of updates included';
     default:
@@ -335,7 +344,7 @@ export function lsCheckoutUrl(productId: string, model: string): string {
 export const MODELS: ModelOption[] = [
   { id: 'trial', label: '7-Day Free Trial', note: 'Full features, 7 days, 1 PC — no card needed' },
   { id: 'monthly', label: 'Monthly', note: '$89/mo per tool — cancel anytime' },
-  { id: 'annual', label: 'Annual', note: 'Save 44% vs monthly — every update included' },
+  { id: 'annual', label: 'Annual', note: 'Save up to 72% vs monthly — every update included' },
   { id: 'lifetime', label: 'Lifetime', note: 'Founding-customer launch price — pay once, runs forever. Includes 1 year of portal-change updates; after that an optional $199/yr update plan (your installed copy never stops working).' },
 ];
 
@@ -394,7 +403,11 @@ export const PRODUCTS: Product[] = [
       'All three tools on each of two Windows PCs',
       'Priority support',
     ],
-    prices: { trial: 0, monthly: 149, annual: 999, lifetime: 2499 },
+    /* Owner 2026-10-08: bundle monthly = $300. Lifetime LIST = $2,997 (the
+       3-tools-separately math used across the site) so the $2,499 launch
+       price gets a real strikethrough anchor again (−17% badge, same as the
+       per-tool cards); from Nov 1 the post-launch $2,499 stands alone. */
+    prices: { trial: 0, monthly: 300, annual: 999, lifetime: 2997 },
     launchPrices: { trial: 0, lifetime: 2499 },
     postLaunchPrices: { lifetime: 2499 },
   },

@@ -504,11 +504,11 @@ function Nav() {
   const [open, setOpen] = useState(false);
   return (
     <header className="fixed left-0 right-0 top-0 z-40 border-b border-border bg-background/75 backdrop-blur-xl">
-      {/* Audit v4 overlap fix: 9 nav items + logo + actions (~1400px) physically
-          overflow a max-w-7xl (1280px) container — justify-between collapses to zero
-          gap and the logo touches "What we offer" (owner screenshot). Wider header
-          container + a hard flex gap guarantees separation at every 2xl+ width. */}
-      <div className="mx-auto flex h-[76px] max-w-[1680px] items-center justify-between gap-8 px-5 lg:px-8">
+      {/* Owner 2026-10-08: the HEADER logo must left-align with the footer's
+          left edge, so the header container matches the footer's max-w-7xl.
+          Safe since Task 59 cut the nav down to 5 links — the 9-item overflow
+          that once forced 1680px is gone — and gap-8 keeps the separation. */}
+      <div className="mx-auto flex h-[76px] max-w-7xl items-center justify-between gap-8 px-5 lg:px-8">
         <a href="#top" data-testid="link-brand" aria-label="3SVerse — back to top" className="shrink-0">
           <img src="/logo-240.png" alt="3SVerse" width={240} height={57} className="h-7 w-auto object-contain" />
         </a>
@@ -1607,7 +1607,7 @@ const FAQ_ITEMS: Array<{ q: string; a: string }> = [
   },
   {
     q: 'Is this a subscription?',
-    a: 'Only if you want it to be. Monthly is the cancel-anytime plan — $89/mo per tool. Annual is the same software billed yearly at a 44% discount. Lifetime is one payment — a perpetual license that runs forever, with 1 year of updates included; after that an optional $199/yr update plan keeps you on the newest build. Pick per tool, mix and match, and switch anytime by replying to your invoice email.',
+    a: 'Only if you want it to be. Monthly is the cancel-anytime plan — $89/mo per tool. Annual is the same software billed yearly — 44% off the per-tool plans, 72% off the Full Bundle. Lifetime is one payment — a perpetual license that runs forever, with 1 year of updates included; after that an optional $199/yr update plan keeps you on the newest build. Pick per tool, mix and match, and switch anytime by replying to your invoice email.',
   },
   {
     q: 'What is the difference between the free trial and lifetime?',
@@ -2528,9 +2528,9 @@ function Contact() {
 function Footer() {
   return (
     <footer className="border-t border-border bg-background">
-      {/* Same 1680 container as the fixed header so the footer logo's left
-          edge lines up exactly with the header logo at every width. */}
-      <div className="mx-auto max-w-[1680px] px-5 py-14 lg:px-8">
+      {/* max-w-7xl = the header's container (owner 2026-10-08: align the
+          HEADER logo to the footer's left edge — the footer never moves). */}
+      <div className="mx-auto max-w-7xl px-5 py-14 lg:px-8">
         <div className="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between">
           <div className="max-w-sm">
             <img src="/logo-240.png" alt="3SVerse" width={240} height={57} className="h-7 w-auto" />

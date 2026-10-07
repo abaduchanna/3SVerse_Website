@@ -30,7 +30,7 @@ const FAQS: Array<{ q: string; a: string }> = [
   },
   {
     q: 'Do you offer discounts?',
-    a: 'Three ways. Volume: 10% off per PC from 2 seats, 20% from 5 seats, and 10+ seats are quoted as a district deal — message us. Plans: annual saves about 44% versus monthly. And launch pricing (shown on the cards) runs until Oct 31, 2026 — honored to the minute. From Nov 1 it is $999 per tool · $2,499 Full Bundle.',
+    a: 'Three ways. Volume: 10% off per PC from 2 seats, 20% from 5 seats, and 10+ seats are quoted as a district deal — message us. Plans: annual saves 44% on the per-tool plans and 72% on the Full Bundle versus monthly. And launch pricing (shown on the cards) runs until Oct 31, 2026 — honored to the minute. From Nov 1 it is $999 per tool · $2,499 Full Bundle.',
   },
   {
     q: 'What happens when VidaPay changes its portal?',
