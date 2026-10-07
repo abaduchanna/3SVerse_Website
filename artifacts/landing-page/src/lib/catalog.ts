@@ -106,6 +106,10 @@ export interface Product {
   features: string[];
   /** Regular (list) price per model in whole USD. */
   prices: Record<ModelId, number>;
+  /** Optional list price that takes over AUTOMATICALLY once the launch offer
+   *  ends (endsAt passes): per-tool lifetime settles at the $999 price point
+   *  and the bundle at $2,499 — no manual flip needed on Nov 1. */
+  postLaunchPrices?: Partial<Record<ModelId, number>>;
   /** Launch-offer price per model in whole USD (optional — falls back to list). */
   launchPrices?: Partial<Record<ModelId, number>>;
 }
@@ -123,7 +127,7 @@ export const LAUNCH_OFFER = {
   /* Audit v4 #3: urgency needs stakes — show the exact after-price so the customer
      sees what they save by deciding today. Rendered under the countdown strip, in
      the storefront, and on the Pricing page. */
-  note: 'Launch pricing ends Oct 31, 2026 — honored to the minute. On Nov 1, lifetime returns to list: $1,299 / $1,499 / $1,699 per tool ($2,499 bundle). No extension.',
+  note: 'Launch pricing ends Oct 31, 2026 — honored to the minute. From Nov 1: $999 per tool · $2,499 Full Bundle.',
   /** ISO deadline for launch pricing — the storefront counts down to it.
    *  Flip `active` to false (or clear endsAt) when the promo ends. */
   endsAt: '2026-10-31T23:59:59-05:00',
@@ -297,8 +301,10 @@ export function bundleLicenseNote(): string {
  * approval, so all 12 SKUs were RE-CREATED as real (non-test) products via
  * the Bridge dashboard automation — the old test-mode products below stayed
  * test data and are replaced here by the live checkouts scraped from the
- * public store page. Same names, same prices (lifetime = launch pricing;
- * bump to list on Nov 1: 899→1299, 999→1499, 1199→1699, 1499→2499).
+ * public store page. Same names, same prices (lifetime charges the
+ * $999-per-tool / $2,499-bundle price point — during AND after the launch
+ * offer; the launch window only shows the strikethrough savings vs the old
+ * $1,299/$1,499/$1,699 list).
  * The 3sverse-webhooks worker maps each variant to the right plan
  * (per-tool keys license only that tool; bundle keys license all three).
  */
@@ -345,7 +351,10 @@ export const PRODUCTS: Product[] = [
       'Runs under your own dealer login — portal security checks stay user-controlled',
     ],
     prices: { trial: 0, monthly: 89, annual: 599, lifetime: 1299 },
-    launchPrices: { trial: 0, lifetime: 899 },
+    /* Launch sale = the $999 per-tool price point (owner 2026-10-08); it
+       becomes the standing price automatically on Nov 1 (postLaunchPrices). */
+    launchPrices: { trial: 0, lifetime: 999 },
+    postLaunchPrices: { lifetime: 999 },
   },
   {
     id: 'ordering',
@@ -359,6 +368,7 @@ export const PRODUCTS: Product[] = [
     ],
     prices: { trial: 0, monthly: 89, annual: 599, lifetime: 1499 },
     launchPrices: { trial: 0, lifetime: 999 },
+    postLaunchPrices: { lifetime: 999 },
   },
   {
     id: 'rebate',
@@ -371,7 +381,8 @@ export const PRODUCTS: Product[] = [
       'Per-claim status tracking',
     ],
     prices: { trial: 0, monthly: 89, annual: 699, lifetime: 1699 },
-    launchPrices: { trial: 0, lifetime: 1199 },
+    launchPrices: { trial: 0, lifetime: 999 },
+    postLaunchPrices: { lifetime: 999 },
   },
   {
     id: 'bundle',
@@ -384,7 +395,8 @@ export const PRODUCTS: Product[] = [
       'Priority support',
     ],
     prices: { trial: 0, monthly: 149, annual: 999, lifetime: 2499 },
-    launchPrices: { trial: 0, lifetime: 1499 },
+    launchPrices: { trial: 0, lifetime: 2499 },
+    postLaunchPrices: { lifetime: 2499 },
   },
 ];
 
@@ -398,17 +410,19 @@ export function seatsAllowedForModel(model: ModelId): PcCount[] {
 /** Effective per-PC price after launch offer + volume tier (whole USD). */
 export function perPcPrice(product: Product, model: ModelId, pcs: number): number {
   const tier = volumeTier(pcs);
-  let eff = product.prices[model] ?? 0;
-  if (LAUNCH_OFFER.active) {
+  let eff = activeListPrice(product, model);
+  if (launchLive()) {
     const launch = product.launchPrices?.[model];
     if (typeof launch === 'number') eff = launch;
   }
   return Math.round(eff * tier.multiplier);
 }
 
-/** Price with NO promotion applied, for the whole license (per-PC list × PCs). */
+/** Price with NO promotion applied, for the whole license (per-PC list × PCs).
+ *  Uses the ACTIVE list — during launch the original list (strikethrough
+ *  anchor), after it ends the post-launch price point. */
 export function listPrice(product: Product, model: ModelId, pcs: number): number {
-  const base = product.prices[model] ?? 0;
+  const base = activeListPrice(product, model);
   return Math.round(base * Math.max(PC_MIN, pcs || PC_MIN));
 }
 
@@ -419,7 +433,7 @@ export function unitPrice(product: Product, model: ModelId, pcs: number): number
 
 /** Percent off the per-PC list price (launch offer + volume combined; 0 when none). */
 export function discountPercent(product: Product, model: ModelId, pcs: number): number {
-  const base = product.prices[model] ?? 0;
+  const base = activeListPrice(product, model);
   if (base <= 0) return 0;
   const eff = perPcPrice(product, model, pcs);
   if (eff >= base) return 0;
@@ -428,6 +442,26 @@ export function discountPercent(product: Product, model: ModelId, pcs: number): 
 
 export function productById(id: string): Product | undefined {
   return PRODUCTS.find((p) => p.id === id);
+}
+
+/** Launch window check — auto-expires at endsAt, so the storefront, the
+ *  Pricing page and the server order API all flip to the post-launch price
+ *  point ($999 per tool / $2,499 bundle) on Nov 1 with no manual step. */
+export function launchLive(now: number = Date.now()): boolean {
+  if (!LAUNCH_OFFER.active) return false;
+  if (!LAUNCH_OFFER.endsAt) return true;
+  return now <= new Date(LAUNCH_OFFER.endsAt).getTime();
+}
+
+/** The list price in force RIGHT NOW: during the launch window this is the
+ *  original list (the strikethrough anchor); after it ends, the post-launch
+ *  price point takes over automatically when one is defined. */
+export function activeListPrice(product: Product, model: ModelId): number {
+  if (!launchLive()) {
+    const post = product.postLaunchPrices?.[model];
+    if (typeof post === 'number') return post;
+  }
+  return product.prices[model] ?? 0;
 }
 
 export function formatUSD(amount: number): string {

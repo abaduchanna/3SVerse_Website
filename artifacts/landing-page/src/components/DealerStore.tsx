@@ -115,7 +115,7 @@ function LaunchBar() {
         <div className="flex items-center gap-2.5">
           <BadgePercent className="h-4 w-4 shrink-0 text-brand-magenta" />
           <p className="text-[13.5px] font-medium text-foreground">
-            Launch pricing ends Oct 31 — <span className="text-brand-magenta">list prices return Nov 1.</span>
+            Launch pricing ends Oct 31 — <span className="text-brand-magenta">from Nov 1: $999 per tool · $2,499 Full Bundle.</span>
           </p>
         </div>
         <div className="flex items-center gap-1.5 font-mono-tech" data-testid="launch-countdown">

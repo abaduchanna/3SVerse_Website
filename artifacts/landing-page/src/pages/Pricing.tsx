@@ -30,7 +30,7 @@ const FAQS: Array<{ q: string; a: string }> = [
   },
   {
     q: 'Do you offer discounts?',
-    a: 'Three ways. Volume: 10% off per PC from 2 seats, 20% from 5 seats, and 10+ seats are quoted as a district deal — message us. Plans: annual saves about 44% versus monthly. And launch pricing (shown on the cards) runs until Oct 31, 2026 and is honored to the minute — list prices return Nov 1, no extension.',
+    a: 'Three ways. Volume: 10% off per PC from 2 seats, 20% from 5 seats, and 10+ seats are quoted as a district deal — message us. Plans: annual saves about 44% versus monthly. And launch pricing (shown on the cards) runs until Oct 31, 2026 — honored to the minute. From Nov 1 it is $999 per tool · $2,499 Full Bundle.',
   },
   {
     q: 'What happens when VidaPay changes its portal?',
@@ -177,9 +177,7 @@ export default function Pricing() {
         </p>
         <p className="rounded-2xl border border-brand-cyan/25 bg-brand-cyan/[.06] px-5 py-4 text-foreground">
           <strong className="font-medium">Bundle math:</strong>{' '}
-          {LAUNCH_OFFER.active
-            ? 'Buying all 3 tools separately for 1 PC costs $3,097. The Full Bundle gives you all 3 tools on 2 PCs for $1,499 — six tool activations total.'
-            : 'Buying all 3 tools separately for 1 PC costs $4,497. The Full Bundle gives you all 3 tools on 2 PCs for $2,499 — six tool activations total.'}
+          Buying all 3 tools separately for 1 PC costs $2,997. The Full Bundle gives you all 3 tools on 2 PCs for $2,499 — six tool activations total.
         </p>
       </div>
 

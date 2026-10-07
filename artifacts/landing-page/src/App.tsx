@@ -84,7 +84,6 @@ import {
   perPcPrice,
   whatsappLink,
   PAID_DOWNLOAD,
-  LAUNCH_OFFER,
   TURNSTILE_SITE_KEY,
   type DealerReview,
 } from '@/lib/catalog';
@@ -687,7 +686,7 @@ function Hero() {
                 <span className="flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-[#c7ef70]" /> Windows 10/11 · download, run, done — no installation or admin password</span>
                 <span className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-brand-cyan" /> Credentials and dealership data stay on your PC</span>
                 <span className="flex items-center gap-2"><ShieldCheck className="h-3.5 w-3.5 text-brand-magenta" /> Buy one Full Bundle · get a second bundle license free</span>
-                <span className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-brand-cyan" /> {LAUNCH_OFFER.active ? 'All 3 tools on 1 PC separately: $3,097 · Full Bundle: all 3 tools on 2 PCs for $1,499' : 'All 3 tools on 1 PC separately: $4,497 · Full Bundle: all 3 tools on 2 PCs for $2,499'}</span>
+                <span className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-brand-cyan" /> All 3 tools on 1 PC separately: $2,997 · Full Bundle: all 3 tools on 2 PCs for $2,499</span>
               </div>
             </Reveal>
           </div>
@@ -1566,7 +1565,7 @@ function DemoStrip() {
 }
 
 /* WhatsApp float — audit action #10: dealers want a quick answer before
-   spending $899. Renders only when WHATSAPP_NUMBER is set in catalog.ts. */
+   spending $999. Renders only when WHATSAPP_NUMBER is set in catalog.ts. */
 function WhatsAppFloat() {
   const wa = whatsappLink();
   if (!wa) return null;
@@ -2529,7 +2528,9 @@ function Contact() {
 function Footer() {
   return (
     <footer className="border-t border-border bg-background">
-      <div className="mx-auto max-w-7xl px-5 py-14 lg:px-8">
+      {/* Same 1680 container as the fixed header so the footer logo's left
+          edge lines up exactly with the header logo at every width. */}
+      <div className="mx-auto max-w-[1680px] px-5 py-14 lg:px-8">
         <div className="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between">
           <div className="max-w-sm">
             <img src="/logo-240.png" alt="3SVerse" width={240} height={57} className="h-7 w-auto" />
