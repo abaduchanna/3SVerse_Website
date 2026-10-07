@@ -826,15 +826,15 @@ function Outcomes() {
         </Reveal>
         <div className="grid gap-4 md:grid-cols-3">
           {stats.map(({ value, label, icon: Icon, accent }, i) => (
-            <Reveal key={label} delay={i * 0.1}>
-              <div data-testid={`stat-outcome-${i}`} className="group overflow-hidden rounded-2xl border border-border bg-card transition-colors duration-500 hover:border-input">
+            <Reveal key={label} delay={i * 0.1} className="h-full">
+              <div data-testid={`stat-outcome-${i}`} className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card transition-colors duration-500 hover:border-input">
                 <div className="flex items-center gap-4 px-8 pb-10 pt-10">
                   <span className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-border bg-foreground/[.04] ${accent}`}>
                     <Icon className="h-6 w-6" />
                   </span>
                   <div className="text-[44px] font-light leading-none tracking-[-0.03em] text-foreground lg:text-[52px]">{value}</div>
                 </div>
-                <div className="border-t border-border px-8 py-7">
+                <div className="flex-1 border-t border-border px-8 py-7">
                   <div className="font-mono-tech text-[10px] uppercase leading-5 tracking-[.2em] text-muted-foreground">{label}</div>
                 </div>
               </div>
