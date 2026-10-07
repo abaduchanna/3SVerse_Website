@@ -614,9 +614,11 @@ function Hero() {
               </div>
             </Reveal>
           </div>
-          {/* template's exact hero swirl — huge, bleeding off the right edge */}
+          {/* template's exact hero swirl — huge, bleeding off the right edge.
+              Owner 2026-10-08: raised ~240px so the visible arc starts at the
+              "Finish incentive reports" headline level instead of mid-hero. */}
           <div className="relative">
-            <Shape v={1} spin={120} floatY={16} floatDur={12} className="absolute -right-[38vw] -top-40 hidden w-[820px] max-w-none opacity-90 sm:block lg:-right-[24vw] lg:-top-52 lg:w-[900px]" />
+            <Shape v={1} spin={120} floatY={16} floatDur={12} className="absolute -right-[38vw] -top-[280px] hidden w-[820px] max-w-none opacity-90 sm:block lg:-right-[24vw] lg:-top-[448px] lg:w-[900px]" />
           </div>
         </div>
       </div>
@@ -760,10 +762,11 @@ function HowItWorks() {
     <section id="how" className="relative overflow-hidden py-28 lg:py-36">
       {/* Owner 2026-10-08: the fake "Automate a workflow" form + "Run complete"
           chart confused customers (owner: samajh nahi aa raha yeh dono kyun hain).
-          Removed — the section is now heading + the three real steps. */}
+          Removed — and instead of leaving the right side empty, the three real
+          steps now run full-width as a 3-column row under the heading. */}
       <div className="mx-auto max-w-7xl px-5 lg:px-8">
-        <div className="max-w-3xl">
-          <Reveal>
+        <Reveal>
+          <div className="max-w-2xl">
             <Kicker magenta>02 — How it works</Kicker>
             <h2 className="text-[clamp(2.2rem,4vw,3.6rem)] font-light leading-[1.05] tracking-[-0.02em] text-foreground">
               From bottleneck
@@ -772,56 +775,23 @@ function HowItWorks() {
               <br />
               in three moves.
             </h2>
-            <div className="mt-12 space-y-10">
-              {steps.map(([number, title, copy], i) => (
-                <Reveal key={number} delay={i * 0.1}>
-                  <div className="border-l border-border pl-6">
-                    <h3 className="text-[22px] font-light tracking-[-0.01em] text-foreground transition-colors duration-300 hover:text-brand-cyan">
-                      {number}. {title}
-                    </h3>
-                    <p className="mt-2.5 max-w-md text-[14px] font-light leading-7 text-foreground/75">{copy}</p>
-                  </div>
-                </Reveal>
-              ))}
-            </div>
-          </Reveal>
+          </div>
+        </Reveal>
+        <div className="mt-14 grid gap-x-10 gap-y-12 md:grid-cols-3">
+          {steps.map(([number, title, copy], i) => (
+            <Reveal key={number} delay={i * 0.1}>
+              <div className="border-t border-border pt-7">
+                <div className="font-mono-tech text-[10px] uppercase tracking-[.24em] text-brand-magenta">Step {number}</div>
+                <h3 className="mt-3 text-[22px] font-light tracking-[-0.01em] text-foreground transition-colors duration-300 hover:text-brand-cyan">
+                  {title}
+                </h3>
+                <p className="mt-2.5 text-[14px] font-light leading-7 text-foreground/75">{copy}</p>
+              </div>
+            </Reveal>
+          ))}
         </div>
       </div>
     </section>
-  );
-}
-
-/* Outcomes — template's "35+ Pages / 90+ Sections" cards: a small visual
-   on top, big light number below, all in near-black rounded cards. */
-function StatVisual({ kind }: { kind: 'bars' | 'rings' | 'line' }) {
-  if (kind === 'bars') {
-    return (
-      <div className="flex h-24 items-end justify-center gap-1.5">
-        {[30, 44, 38, 56, 50, 68, 62, 82, 76, 95].map((height, i) => (
-          <motion.span key={i} initial={{ height: 0 }} whileInView={{ height: `${height}%` }} viewport={{ once: true }} transition={{ delay: i * 0.05, duration: 0.5 }} className={`w-3 rounded-t-[3px] ${i > 7 ? 'bg-[#e44bd7]' : 'bg-foreground/[.16]'}`} />
-        ))}
-      </div>
-    );
-  }
-  if (kind === 'rings') {
-    return (
-      <div className="flex h-24 items-center justify-center gap-5">
-        {[52, 76, 92].map((pct, i) => (
-          <svg key={i} viewBox="0 0 60 60" className="h-16 w-16">
-            <circle cx="30" cy="30" r="24" fill="none" stroke="rgba(255,255,255,.1)" strokeWidth="5" />
-            <motion.circle cx="30" cy="30" r="24" fill="none" stroke={i === 2 ? '#e44bd7' : '#6ee7ef'} strokeWidth="5" strokeLinecap="round" strokeDasharray={`${(pct / 100) * 150.8} 150.8`} transform="rotate(-90 30 30)" initial={{ strokeDasharray: '0 150.8' }} whileInView={{ strokeDasharray: `${(pct / 100) * 150.8} 150.8` }} viewport={{ once: true }} transition={{ delay: 0.2 + i * 0.15, duration: 1 }} />
-          </svg>
-        ))}
-      </div>
-    );
-  }
-  return (
-    <div className="flex h-24 items-end justify-center">
-      <svg viewBox="0 0 220 80" className="w-full max-w-[260px]">
-        <polyline points="0,68 30,58 60,62 90,42 120,46 150,26 180,30 220,10" fill="none" stroke="#6ee7ef" strokeWidth="2" strokeLinejoin="round" />
-        <polyline points="0,74 30,70 60,66 90,58 120,54 150,46 180,42 220,34" fill="none" stroke="#e44bd7" strokeWidth="1.4" strokeDasharray="3 3" opacity=".7" />
-      </svg>
-    </div>
   );
 }
 
@@ -829,11 +799,14 @@ function Outcomes() {
   /* Replaced the old operator-career stats (telecom/FMCG/pharma programs) —
      they read as irrelevant to a wireless dealer and the site contradicted
      its own "no invented praise" rule. These three are VERIFIABLE facts
-     about the product and the purchase instead. */
+     about the product and the purchase instead.
+     Owner 2026-10-08: the abstract bars/rings/line mini-charts were removed —
+     they looked like data but meant nothing ("fake kuch nahi chahiye"). Each
+     card now carries a plain real icon instead. */
   const stats = [
-    { value: '3 tools', label: 'Extractor · Device Ordering · Rebate Filing — Full Bundle $2,499 lifetime vs $2,997 separately (17% off) and it covers 2 PCs, not 1', kind: 'bars' as const },
-    { value: '7 days', label: 'free full-software trial on every tool — no card, no feature locks', kind: 'rings' as const },
-    { value: '2 PCs', label: 'Full Bundle includes two complete bundle licenses — all 3 tools on each PC', kind: 'line' as const },
+    { value: '3 tools', label: 'Extractor · Device Ordering · Rebate Filing — Full Bundle $2,499 lifetime vs $2,997 separately (17% off) and it covers 2 PCs, not 1', icon: Boxes, accent: 'text-brand-cyan' },
+    { value: '7 days', label: 'free full-software trial on every tool — no card, no feature locks', icon: Clock, accent: 'text-brand-magenta' },
+    { value: '2 PCs', label: 'Full Bundle includes two complete bundle licenses — all 3 tools on each PC', icon: MonitorSmartphone, accent: 'text-brand-cyan' },
   ];
   return (
     <section id="outcomes" className="relative overflow-hidden py-28 lg:py-36">
@@ -852,15 +825,17 @@ function Outcomes() {
           </div>
         </Reveal>
         <div className="grid gap-4 md:grid-cols-3">
-          {stats.map(({ value, label, kind }, i) => (
+          {stats.map(({ value, label, icon: Icon, accent }, i) => (
             <Reveal key={label} delay={i * 0.1}>
               <div data-testid={`stat-outcome-${i}`} className="group overflow-hidden rounded-2xl border border-border bg-card transition-colors duration-500 hover:border-input">
-                <div className="px-8 pb-2 pt-10">
-                  <StatVisual kind={kind} />
-                </div>
-                <div className="border-t border-border px-8 py-8 text-center">
+                <div className="flex items-center gap-4 px-8 pb-10 pt-10">
+                  <span className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-border bg-foreground/[.04] ${accent}`}>
+                    <Icon className="h-6 w-6" />
+                  </span>
                   <div className="text-[44px] font-light leading-none tracking-[-0.03em] text-foreground lg:text-[52px]">{value}</div>
-                  <div className="mt-3 font-mono-tech text-[10px] uppercase tracking-[.2em] text-muted-foreground">{label}</div>
+                </div>
+                <div className="border-t border-border px-8 py-7">
+                  <div className="font-mono-tech text-[10px] uppercase leading-5 tracking-[.2em] text-muted-foreground">{label}</div>
                 </div>
               </div>
             </Reveal>
