@@ -101,7 +101,7 @@ export default function TrialGateModal({ open, productName, onClose, onUnlocked 
         </div>
         <p className="mt-2 text-[13.5px] font-light leading-6 text-foreground/75">
           Tell us who is downloading the <span className="font-medium text-foreground">{productName}</span>{' '}
-          portable .exe and the download starts immediately — no installation, with the full software and
+          app and the download starts immediately — no installation, with the full software and
           free 7-day trial built in.
         </p>
 

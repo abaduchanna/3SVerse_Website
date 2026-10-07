@@ -142,7 +142,7 @@ export default function DownloadPage() {
         {metaFailed && (
           <div className="mt-8 rounded-2xl border border-amber-400/30 bg-amber-400/[.06] p-5 text-[13.5px] leading-6 text-foreground">
             Live checksums and file sizes are temporarily unavailable (GitHub API limit hit on this network).
-            The portable apps below are always the current builds — download normally, and verify the SHA-256 on the{' '}
+            The apps below are always the current builds — download normally, and verify the SHA-256 on the{' '}
             <a className="text-brand-cyan hover:underline" href={RELEASES_PAGE} target="_blank" rel="noopener noreferrer">
               releases page
             </a>.
@@ -197,7 +197,7 @@ export default function DownloadPage() {
                 <div className="min-w-0">
                   <div className="text-[15.5px] font-medium text-foreground">Full Bundle — buy one complete bundle and get a second bundle license free</div>
                   <div className="mt-1 font-mono-tech text-[10px] uppercase tracking-[.16em] text-muted-foreground">
-                    All three portable tools on two Windows PCs
+                    All three tools on two Windows PCs
                   </div>
                 </div>
                 <button
@@ -226,7 +226,7 @@ export default function DownloadPage() {
           </div>
           <p className="mt-3 text-[13.5px] font-light leading-6 text-foreground/75">
             3SVerse is a small independent developer, not a big publisher — so Windows SmartScreen
-            may ask before an unsigned portable app runs. It is a one-time, 2-second pass,
+            may ask before an unsigned app runs. It is a one-time, 2-second pass,
             not a problem with the file. This is the exact dialog you will see:
           </p>
           <div
@@ -274,7 +274,7 @@ export default function DownloadPage() {
             <h2 className="text-[15px] font-medium text-foreground">Activate your key in 3 steps</h2>
           </div>
           <ol className="mt-3 space-y-2 text-[13.5px] font-light leading-6 text-foreground/75">
-            <li>1. Open the portable .exe — there is nothing to install, and the full 7-day trial starts.</li>
+            <li>1. Open the .exe — there is nothing to install, and the full 7-day trial starts.</li>
             <li>2. Buy a license key — it arrives by email within 2 business hours on business days (US Central); after-hours orders ship first thing next morning.</li>
             <li>3. Paste the key into the app&apos;s Activate box — that PC is unlocked permanently.</li>
           </ol>
@@ -330,7 +330,7 @@ export default function DownloadPage() {
         <div className="mt-10 rounded-2xl border border-brand-cyan/20 bg-[#6ee7ef]/[.04] p-6" data-testid="download-security">
           <div className="flex items-center gap-2.5">
             <ShieldCheck className="h-4 w-4 text-brand-cyan" />
-            <h2 className="text-[15px] font-medium text-foreground">Before you open the portable app</h2>
+            <h2 className="text-[15px] font-medium text-foreground">Before you open the app</h2>
           </div>
           <ul className="mt-3 space-y-2.5 text-[13.5px] font-light leading-6 text-foreground/75">
             {[

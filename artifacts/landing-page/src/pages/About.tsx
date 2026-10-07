@@ -15,11 +15,11 @@ const VALUES: Array<{ title: string; body: string }> = [
   },
   {
     title: 'Ownership',
-    body: 'Your data lives on your machines. Your licenses are machine-locked to the PCs you bought them for, every workbook the tools produce is yours to keep, and there is no 3SVerse server holding your dealership data. Removing the portable app does not delete workbooks you exported.',
+    body: 'Your data lives on your machines. Your licenses are machine-locked to the PCs you bought them for, every workbook the tools produce is yours to keep, and there is no 3SVerse server holding your dealership data. Removing the app does not delete workbooks you exported.',
   },
   {
     title: 'Openness',
-    body: 'No telemetry, no hidden installers, no invented reviews. Portable-executable checksums are published so you can verify every download, policies are written in plain English, and the limits of the tools are stated before you pay — not after.',
+    body: 'No telemetry, no hidden installers, no invented reviews. Checksums are published so you can verify every download, policies are written in plain English, and the limits of the tools are stated before you pay — not after.',
   },
   {
     title: 'Innovation',

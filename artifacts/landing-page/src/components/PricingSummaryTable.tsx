@@ -8,6 +8,10 @@
  * Lifetime column shows "(unchanged Nov 1)" because it is the same on both
  * sides of the deadline (audit v6 #1: lifetime buyers must not be spooked by
  * a countdown that does not apply to them).
+ *
+ * Audit v7 #1: the Annual column is now visible here — previously a dealer
+ * who preferred annual billing had to click a pill to discover the price.
+ * Annual has no launch variant, so the column never changes on Nov 1.
  */
 import { PRODUCTS, formatUSD, launchLive, type Product } from '@/lib/catalog';
 
@@ -34,6 +38,7 @@ export default function PricingSummaryTable() {
               <th className="px-5 py-3.5 font-normal">Tool</th>
               <th className="px-5 py-3.5 font-normal">Monthly (now)</th>
               <th className="px-5 py-3.5 font-normal">Monthly (Nov 1)</th>
+              <th className="px-5 py-3.5 font-normal">Annual</th>
               <th className="px-5 py-3.5 font-normal">Lifetime</th>
             </tr>
           </thead>
@@ -47,6 +52,7 @@ export default function PricingSummaryTable() {
                   <td className="px-5 py-3.5 font-medium text-foreground">{p.name}</td>
                   <td className="px-5 py-3.5 text-foreground/85">{formatUSD(monthlyNow)}/mo</td>
                   <td className="px-5 py-3.5 text-foreground/85">{formatUSD(monthlyNov1)}/mo</td>
+                  <td className="px-5 py-3.5 text-foreground/85">{formatUSD(p.prices.annual)}/yr</td>
                   <td className="px-5 py-3.5 text-foreground/85">
                     {formatUSD(lifetimeNow)}
                     {isBundle ? <span className="ml-1.5 whitespace-nowrap text-[11.5px] text-muted-foreground">· covers 2 PCs</span> : null}
@@ -60,7 +66,8 @@ export default function PricingSummaryTable() {
       </div>
       <p className="border-t border-border px-5 py-3 text-[11.5px] font-light leading-5 text-muted-foreground">
         One row per product — the whole price picture in one glance. Only the monthly rate goes up on Nov 1;
-        lifetime prices stay where they are. Lifetime = one-time payment, permanent use, 1 year of updates included.
+        annual and lifetime prices stay where they are. Annual = billed once a year, cancel before renewal, every
+        update included while active. Lifetime = one-time payment, permanent use, 1 year of updates included.
       </p>
     </div>
   );

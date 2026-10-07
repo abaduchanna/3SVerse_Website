@@ -233,7 +233,7 @@ export function trialDownloadUrl(productId: string): string {
 }
 
 export const TRIAL_DOWNLOAD = {
-  label: 'Download portable Windows app (.exe)',
+  label: 'Download free trial — runs without installation',
   note: 'Windows 10/11 · no installation · full 7-day trial built in · license key unlocks the same file',
 } as const;
 
@@ -431,6 +431,11 @@ export function maxAnnualSavingsPct(): number {
   return Math.max(...PRODUCTS.map((p) => annualSavingsPct(p)));
 }
 
+/** Lowest per-tool annual price in the catalog — anchors the "from $X/yr"
+ *  copy (audit v7: "save up to 72%" floated without a number a dealer can
+ *  see; annual has no launch variant, so this figure never changes Nov 1). */
+export const ANNUAL_FROM = Math.min(...PRODUCTS.map((p) => p.prices.annual));
+
 /** Billing-model pills — notes computed from the catalog so the monthly
  *  price and the annual savings % update themselves when the launch window
  *  ends (owner 2026-10-08: math must stay correct without manual edits). */
@@ -439,7 +444,7 @@ export const MODELS: ModelOption[] = (() => {
   return [
     { id: 'trial', label: '7-Day Free Trial', note: 'Full features, 7 days, 1 PC — no card needed' },
     { id: 'monthly', label: 'Monthly', note: `$${perPcPrice(perTool, 'monthly', 1)}/mo per tool — cancel anytime` },
-    { id: 'annual', label: 'Annual', note: `Save up to ${maxAnnualSavingsPct()}% vs monthly — every update included` },
+    { id: 'annual', label: 'Annual', note: `From $${ANNUAL_FROM}/yr per tool — save up to ${maxAnnualSavingsPct()}% vs monthly, every update included` },
     { id: 'lifetime', label: 'Lifetime', note: 'Founding-customer launch price — pay once, runs forever. Includes 1 year of portal-change updates; after that an optional $199/yr update plan (your installed copy never stops working).' },
   ] as ModelOption[];
 })();

@@ -20,6 +20,7 @@ import {
   Undo2,
 } from 'lucide-react';
 import {
+  ANNUAL_FROM,
   LAUNCH_OFFER,
   MODELS,
   PAID_DOWNLOAD,
@@ -219,7 +220,7 @@ export default function DealerStore() {
         `?subject=${encodeURIComponent(`Download request — order ${ref}`)}` +
         `&body=${encodeURIComponent(
           `Order number: ${ref}\nProduct: ${paidProduct}\n\n` +
-            'Please resend my portable app download link. Update coverage follows my license plan.',
+            'Please resend my app download link. Update coverage follows my license plan.',
         )}`;
       return;
     }
@@ -558,7 +559,7 @@ export default function DealerStore() {
           {LAUNCH_OFFER.active ? (
             <span className="text-brand-cyan">{LAUNCH_OFFER.label} — {LAUNCH_OFFER.note} </span>
           ) : null}
-          Start with the free 7-day trial. Then pay the way your cash flow likes — tap the billing pills on any card and the price switches instantly: <span className="text-foreground">monthly ${perPcPrice(PRODUCTS.find((p) => p.id === 'extractor')!, 'monthly', 1)} per tool · ${perPcPrice(PRODUCTS.find((p) => p.id === 'bundle')!, 'monthly', 1)} Full Bundle, cancel anytime</span>, <span className="text-foreground">annual (save up to {maxAnnualSavingsPct()}%)</span>, or <span className="text-foreground">one-time lifetime</span>. Lifetime is founding-customer pricing: pay once, runs forever. USD billing — bank transfer, Wise, PayPal, or USDT. Keys are delivered after payment confirmation.
+          Start with the free 7-day trial. Then pay the way your cash flow likes — tap the billing pills on any card and the price switches instantly: <span className="text-foreground">monthly ${perPcPrice(PRODUCTS.find((p) => p.id === 'extractor')!, 'monthly', 1)} per tool · ${perPcPrice(PRODUCTS.find((p) => p.id === 'bundle')!, 'monthly', 1)} Full Bundle, cancel anytime</span>, <span className="text-foreground">annual from ${ANNUAL_FROM}/yr per tool — save up to {maxAnnualSavingsPct()}%</span>, or <span className="text-foreground">one-time lifetime</span>. Lifetime is founding-customer pricing: pay once, runs forever. USD billing — bank transfer, Wise, PayPal, or USDT. Keys are delivered after payment confirmation.
         </p>
       </div>
       <div className="mb-8 flex flex-wrap items-center gap-x-6 gap-y-2.5 rounded-2xl border border-border bg-foreground/[.02] px-5 py-3.5 font-mono-tech text-[10px] uppercase tracking-[.16em] text-muted-foreground">
@@ -588,7 +589,7 @@ export default function DealerStore() {
         </p>
         <p className="mb-4 text-[13px] font-light leading-5 text-muted-foreground">
           Enter the order number printed on your invoice — we verify it against your license before
-          the portable app downloads. It is the same official build every customer uses; your license
+          the app downloads. It is the same official build every customer uses; your license
           key unlocks it. Monthly and annual plans include updates while active; lifetime includes 1 year of updates.
         </p>
         <div className="flex flex-col gap-2 sm:flex-row">

@@ -988,7 +988,7 @@ function Tools() {
                       data-testid={`button-download-${tool.id}`}
                       className="inline-flex items-center gap-2.5 rounded-xl border bg-white px-6 py-3 text-[14.5px] font-semibold text-[#0b0a10] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#f7f3e8]"
                     >
-                      <Download className="h-4 w-4" /> Download portable free trial (.exe)
+                      <Download className="h-4 w-4" /> Download free trial — runs without installation
                     </button>
                     <a
                       href="#/order"
@@ -1472,7 +1472,7 @@ const FAQ_ITEMS: Array<{ q: string; a: string }> = [
   },
   {
     q: 'Is this a subscription?',
-    a: `Only if you want it to be. Monthly is the cancel-anytime plan — $${perPcPrice(PRODUCTS.find((p) => p.id === 'extractor')!, 'monthly', 1)}/mo per tool at launch pricing (${formatUSD(PRODUCTS.find((p) => p.id === 'extractor')!.postLaunchPrices?.monthly ?? 149)} after it ends). Annual is the same software billed yearly — ${annualSavingsPct(PRODUCTS.find((p) => p.id === 'extractor')!)}% off Incentive Extractor and Device Ordering, ${annualSavingsPct(PRODUCTS.find((p) => p.id === 'rebate')!)}% off Rebate Filing, and ${annualSavingsPct(PRODUCTS.find((p) => p.id === 'bundle')!)}% off the Full Bundle versus monthly. Lifetime is one payment — a perpetual license that runs forever, with 1 year of updates included; after that an optional $199/yr update plan keeps you on the newest build. Pick per tool, mix and match, and switch anytime by replying to your invoice email.`,
+    a: `Only if you want it to be. Monthly is the cancel-anytime plan — $${perPcPrice(PRODUCTS.find((p) => p.id === 'extractor')!, 'monthly', 1)}/mo per tool at launch pricing (${formatUSD(PRODUCTS.find((p) => p.id === 'extractor')!.postLaunchPrices?.monthly ?? 149)} after it ends). Annual is the same software billed yearly — ${formatUSD(PRODUCTS.find((p) => p.id === 'extractor')!.prices.annual)}/yr per tool (${formatUSD(PRODUCTS.find((p) => p.id === 'rebate')!.prices.annual)}/yr Rebate Filing · ${formatUSD(PRODUCTS.find((p) => p.id === 'bundle')!.prices.annual)}/yr Full Bundle), which saves ${annualSavingsPct(PRODUCTS.find((p) => p.id === 'extractor')!)}% / ${annualSavingsPct(PRODUCTS.find((p) => p.id === 'rebate')!)}% / ${annualSavingsPct(PRODUCTS.find((p) => p.id === 'bundle')!)}% versus monthly — cancel before renewal. Lifetime is one payment — a perpetual license that runs forever, with 1 year of updates included; after that an optional $199/yr update plan keeps you on the newest build. Pick per tool, mix and match, and switch anytime by replying to your invoice email.`,
   },
   {
     q: 'What is the difference between the free trial and lifetime?',
@@ -1484,11 +1484,11 @@ const FAQ_ITEMS: Array<{ q: string; a: string }> = [
   },
   {
     q: 'What do I need to run it?',
-    a: 'A Windows 10 or 11 PC, your VidaPay dealer login, and Excel for the outputs. Download the portable .exe, open it without installing, activate with the key we email you, and run.',
+    a: 'A Windows 10 or 11 PC, your VidaPay dealer login, and Excel for the outputs. Download the .exe, open it without installing, activate with the key we email you, and run.',
   },
   {
     q: 'Windows shows a security warning when I run the tool. Is it safe?',
-    a: 'Windows SmartScreen may warn on the first run because the portable executable is not yet code-signed by a widely recognized publisher. Download only from 3SVerse, compare the SHA-256 checksum shown on the download page, and follow your company security policy. Your VidaPay credentials and exported dealership data stay on your PC.',
+    a: 'Windows SmartScreen may warn on the first run because the app is not yet code-signed by a widely recognized publisher. Download only from 3SVerse, compare the SHA-256 checksum shown on the download page, and follow your company security policy. Your VidaPay credentials and exported dealership data stay on your PC.',
   },
   {
     q: 'How do payment and delivery work?',

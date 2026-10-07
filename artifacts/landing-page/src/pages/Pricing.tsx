@@ -36,7 +36,7 @@ const FAQS: Array<{ q: string; a: string }> = [
   },
   {
     q: 'What happens when VidaPay changes its portal?',
-    a: 'Monthly and annual plans include compatibility updates while the plan is active. Lifetime includes one year of updates; after that, an optional $199/year update plan keeps the portable app current. Your licensed copy does not expire. When the portal shows a security or verification step, the tool pauses and hands it to you; nothing bypasses you.',
+    a: 'Monthly and annual plans include compatibility updates while the plan is active. Lifetime includes one year of updates; after that, an optional $199/year update plan keeps the app current. Your licensed copy does not expire. When the portal shows a security or verification step, the tool pauses and hands it to you; nothing bypasses you.',
   },
   {
     q: 'What if a tool does not work for my stores?',
@@ -115,7 +115,7 @@ function PlanCard({ product, featured }: { product: Product; featured?: boolean 
           Download the free trial <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" />
         </a>
         <a href="#/download" className="text-center text-[12px] font-light text-muted-foreground transition-colors hover:text-brand-cyan">
-          portable .exe · no installation · no card
+          .exe · no installation · no card
         </a>
       </div>
     </div>
