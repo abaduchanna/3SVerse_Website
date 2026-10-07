@@ -44,7 +44,6 @@ import {
   Linkedin,
   Menu,
   MessageCircle,
-  Network,
   Package,
   Play,
   PlayCircle,
@@ -54,7 +53,6 @@ import {
   Sparkles,
   Sun,
   Moon,
-  Workflow,
   X,
   Youtube,
   Zap,
@@ -561,85 +559,10 @@ function Nav() {
   );
 }
 
-/* The hero app window — the template's "product screenshot" slot, dressed in
-   3SVerse brand panels (cyan/magenta on near-black, DM Mono labels). */
-function OpsPanel() {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 44 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 1, delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
-      className="relative overflow-hidden rounded-2xl border border-border bg-card/95 shadow-[0_40px_120px_rgba(0,0,0,.16)] dark:shadow-[0_40px_120px_rgba(0,0,0,.6)]"
-    >
-      <div className="flex items-center justify-between border-b border-border px-5 py-3.5">
-        <div className="flex items-center gap-3">
-          <img src="/logo-240.png" alt="" width={240} height={57} className="h-4 w-auto opacity-90" />
-          <span className="font-mono-tech text-[10px] tracking-[.22em] text-muted-foreground">VIDAPAY INCENTIVE EXTRACTOR</span>
-        </div>
-        <div className="flex items-center gap-3 font-mono-tech text-[10px] text-brand-cyan">
-          <span className="rounded-md border border-border bg-foreground/[.04] px-2 py-0.5 text-foreground">Sample output</span>
-        </div>
-      </div>
-      <div className="grid gap-4 p-5 sm:grid-cols-[1fr_1.2fr]">
-        <div className="space-y-4">
-          <div className="rounded-xl border border-border bg-foreground/[.02] p-4">
-            <div className="flex items-center justify-between font-mono-tech text-[9px] uppercase tracking-[.18em] text-muted-foreground">
-              <span>Incentives · this week</span><span className="rounded border border-brand-cyan/30 px-1.5 py-0.5 text-brand-cyan">EXTRACTED</span>
-            </div>
-            <div className="mt-3 space-y-2">
-              {[
-                ['Vendor rebate — row 14', '$1,240.00'],
-                ['Activation spiff — row 09', '$615.00'],
-                ['Bundle bonus — row 22', '$890.00'],
-              ].map(([row, amount], i) => (
-                <motion.div key={row} initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.9 + i * 0.12 }} className="flex items-center justify-between rounded-lg border border-border bg-foreground/[.02] px-3 py-2">
-                  <span className="text-[12.5px] text-foreground">{row}</span>
-                  <span className="font-mono-tech text-[11.5px] text-brand-cyan">{amount}</span>
-                </motion.div>
-              ))}
-            </div>
-            <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
-              <span className="font-mono-tech text-[10px] uppercase tracking-[.18em] text-muted-foreground">Total recovered</span>
-              <span className="text-[18px] font-light tracking-tight text-foreground">$2,745.00</span>
-            </div>
-          </div>
-          <div className="rounded-xl border border-border bg-foreground/[.02] p-4">
-            <div className="flex items-center justify-between font-mono-tech text-[9px] uppercase tracking-[.18em] text-muted-foreground">
-              <span>Excel output</span><span className="rounded border border-brand-lime/30 px-1.5 py-0.5 text-brand-lime">READY</span>
-            </div>
-            <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-foreground/[.06]">
-              <motion.div initial={{ width: 0 }} animate={{ width: '100%' }} transition={{ delay: 1.1, duration: 1 }} className="h-full rounded-full bg-gradient-to-r from-[#6ee7ef] to-[#e44bd7]" />
-            </div>
-            <div className="mt-3 flex items-center gap-2 font-mono-tech text-[9px] text-muted-foreground">
-              <FileSpreadsheet className="h-3 w-3 text-[#c7ef70]" /> one workbook · per-store tabs · no retyping
-            </div>
-          </div>
-        </div>
-        <div className="relative rounded-xl border border-border bg-foreground/[.02] p-4">
-          <div className="flex items-center justify-between font-mono-tech text-[9px] uppercase tracking-[.18em] text-muted-foreground">
-            <span>Run flow</span><Network className="h-3.5 w-3.5 text-brand-magenta" />
-          </div>
-          <svg viewBox="0 0 210 150" className="mt-2 h-[150px] w-full">
-            <path d="M19 85 C48 85 41 42 73 42 S100 112 130 105 149 44 189 44" fill="none" stroke="#6ee7ef" strokeWidth="1.5" strokeDasharray="4 4" opacity=".85" />
-            <path d="M30 20 C58 20 57 70 89 70 S124 24 158 24" fill="none" stroke="#e44bd7" strokeWidth="1" opacity=".7" />
-            <path d="M24 128 C60 128 96 118 186 118" fill="none" stroke="#78a6ff" strokeWidth="1" strokeDasharray="2 5" opacity=".5" />
-            {[[19, 85], [73, 42], [130, 105], [189, 44], [30, 20], [89, 70], [158, 24], [24, 128], [186, 118]].map(([cx, cy], i) => (
-              <g key={i}>
-                <circle cx={cx} cy={cy} r="4.5" fill="#0b0a11" stroke={i % 2 ? '#e44bd7' : '#6ee7ef'} strokeWidth="1.4" />
-                <circle cx={cx} cy={cy} r="1.6" fill={i % 2 ? '#e44bd7' : '#6ee7ef'} />
-              </g>
-            ))}
-          </svg>
-          <div className="flex justify-between border-t border-border pt-2.5 font-mono-tech text-[9px] text-muted-foreground">
-            <span>Portal in · you approve · Excel out</span><span className="text-brand-cyan">credentials stay on your PC</span>
-          </div>
-        </div>
-      </div>
-      <div className="animate-scan pointer-events-none absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-transparent via-[#6ee7ef]/[.05] to-transparent" />
-    </motion.div>
-  );
-}
-
+/* Owner 2026-10-08: removed the fake "VIDAPAY INCENTIVE EXTRACTOR" hero window
+   (OpsPanel) — invented sample numbers and a decorative node graph read as
+   meaningless clutter to a first-time customer. Hero is now headline + copy +
+   CTAs + the template swirl. */
 function Hero() {
   return (
     <section id="top" className="relative overflow-hidden pt-[76px]">
@@ -695,10 +618,6 @@ function Hero() {
           <div className="relative">
             <Shape v={1} spin={120} floatY={16} floatDur={12} className="absolute -right-[38vw] -top-40 hidden w-[820px] max-w-none opacity-90 sm:block lg:-right-[24vw] lg:-top-52 lg:w-[900px]" />
           </div>
-        </div>
-        {/* full-width app window, template-style */}
-        <div className="relative z-10 mx-auto mt-4 max-w-5xl">
-          <OpsPanel />
         </div>
       </div>
     </section>
@@ -831,61 +750,6 @@ function Services() {
   );
 }
 
-/* "Learn how it works" — numbered steps left, automation form visual right
-   (template's "Train a new model AI" moment). */
-function HowVisual() {
-  return (
-    <div className="relative mb-16 lg:mb-20">
-      <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-[0_30px_90px_rgba(0,0,0,.14)] dark:shadow-[0_30px_90px_rgba(0,0,0,.45)] sm:p-8">
-        <div className="flex items-center gap-3 border-b border-border pb-4">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-foreground/[.04] text-brand-cyan"><Workflow className="h-4 w-4" /></span>
-          <span className="text-[15px] font-medium text-foreground">Automate a workflow</span>
-        </div>
-        <div className="mt-5 space-y-4">
-          {[
-            ['Process', 'Rebates & claims intake'],
-            ['Tools', 'VidaPay portal → Sheets'],
-            ['Owner', 'Ops team · runs daily'],
-          ].map(([label, value], i) => (
-            <motion.div key={label} initial={{ opacity: 0, x: -14 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 + i * 0.12 }}>
-              <div className="font-mono-tech text-[9px] uppercase tracking-[.18em] text-muted-foreground">{label}</div>
-              <div className="mt-1.5 rounded-lg border border-border bg-foreground/[.03] px-3.5 py-2.5 text-[13px] text-foreground">{value}</div>
-            </motion.div>
-          ))}
-          <div className="rounded-lg border border-border bg-foreground/[.03] px-3.5 py-2.5">
-            <div className="flex items-center justify-between font-mono-tech text-[9px] uppercase tracking-[.18em] text-muted-foreground">
-              <span>Status</span>
-              <span className="flex items-center gap-1.5 text-brand-lime"><span className="h-1.5 w-1.5 rounded-full bg-[#c7ef70] shadow-[0_0_8px_#c7ef70]" /> running</span>
-            </div>
-            <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-foreground/[.06]">
-              <motion.div initial={{ width: 0 }} whileInView={{ width: '88%' }} viewport={{ once: true }} transition={{ delay: 0.5, duration: 1.1 }} className="h-full rounded-full bg-gradient-to-r from-[#6ee7ef] to-[#e44bd7]" />
-            </div>
-          </div>
-        </div>
-      </div>
-      {/* overlapping results card */}
-      <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ delay: 0.55, duration: 0.7 }}
-        className="absolute -bottom-10 -right-3 w-[240px] rounded-2xl border border-border bg-card p-5 shadow-[0_30px_80px_rgba(0,0,0,.16)] dark:shadow-[0_30px_80px_rgba(0,0,0,.6)] sm:-right-8"
-      >
-        <div className="text-[14px] font-medium text-foreground">Run complete</div>
-        <svg viewBox="0 0 200 90" className="mt-3 w-full">
-          <polyline points="0,78 28,66 56,70 84,48 112,52 140,30 168,34 200,14" fill="none" stroke="#6ee7ef" strokeWidth="1.8" strokeLinejoin="round" />
-          <polyline points="0,82 28,76 56,72 84,64 112,60 140,50 168,44 200,38" fill="none" stroke="#e44bd7" strokeWidth="1.2" strokeDasharray="3 3" opacity=".7" />
-          <line x1="0" y1="88" x2="200" y2="88" stroke="rgba(255,255,255,.12)" strokeWidth="1" />
-        </svg>
-        <div className="mt-2 flex items-center justify-between font-mono-tech text-[9px] uppercase tracking-[.16em] text-muted-foreground">
-          <span>VidaPay portal → Excel</span>
-          <span className="text-brand-lime">one run</span>
-        </div>
-      </motion.div>
-    </div>
-  );
-}
-
 function HowItWorks() {
   const steps = [
     ['01', 'Map the real work', 'We start where the work happens — the manual loops, the bottlenecks, the hours nobody tracks. You can’t fix what nobody has measured.'],
@@ -894,36 +758,33 @@ function HowItWorks() {
   ];
   return (
     <section id="how" className="relative overflow-hidden py-28 lg:py-36">
+      {/* Owner 2026-10-08: the fake "Automate a workflow" form + "Run complete"
+          chart confused customers (owner: samajh nahi aa raha yeh dono kyun hain).
+          Removed — the section is now heading + the three real steps. */}
       <div className="mx-auto max-w-7xl px-5 lg:px-8">
-        <div className="grid items-start gap-16 lg:grid-cols-[.85fr_1px_1.15fr] lg:gap-0">
-          <div className="lg:pr-16">
-            <Reveal>
-              <Kicker magenta>02 — How it works</Kicker>
-              <h2 className="text-[clamp(2.2rem,4vw,3.6rem)] font-light leading-[1.05] tracking-[-0.02em] text-foreground">
-                From bottleneck
-                <br />
-                to <span className="text-brand-magenta">live system</span>
-                <br />
-                in three moves.
-              </h2>
-              <div className="mt-12 space-y-10">
-                {steps.map(([number, title, copy], i) => (
-                  <Reveal key={number} delay={i * 0.1}>
-                    <div className="border-l border-border pl-6">
-                      <h3 className="text-[22px] font-light tracking-[-0.01em] text-foreground transition-colors duration-300 hover:text-brand-cyan">
-                        {number}. {title}
-                      </h3>
-                      <p className="mt-2.5 max-w-md text-[14px] font-light leading-7 text-foreground/75">{copy}</p>
-                    </div>
-                  </Reveal>
-                ))}
-              </div>
-            </Reveal>
-          </div>
-          <div aria-hidden="true" className="hidden w-px self-stretch bg-gradient-to-b from-transparent via-foreground/10 to-transparent lg:block" />
-          <div className="lg:pl-16">
-            <HowVisual />
-          </div>
+        <div className="max-w-3xl">
+          <Reveal>
+            <Kicker magenta>02 — How it works</Kicker>
+            <h2 className="text-[clamp(2.2rem,4vw,3.6rem)] font-light leading-[1.05] tracking-[-0.02em] text-foreground">
+              From bottleneck
+              <br />
+              to <span className="text-brand-magenta">live system</span>
+              <br />
+              in three moves.
+            </h2>
+            <div className="mt-12 space-y-10">
+              {steps.map(([number, title, copy], i) => (
+                <Reveal key={number} delay={i * 0.1}>
+                  <div className="border-l border-border pl-6">
+                    <h3 className="text-[22px] font-light tracking-[-0.01em] text-foreground transition-colors duration-300 hover:text-brand-cyan">
+                      {number}. {title}
+                    </h3>
+                    <p className="mt-2.5 max-w-md text-[14px] font-light leading-7 text-foreground/75">{copy}</p>
+                  </div>
+                </Reveal>
+              ))}
+            </div>
+          </Reveal>
         </div>
       </div>
     </section>
