@@ -82,6 +82,7 @@ import {
   YOUTUBE_URL,
   formatUSD,
   perPcPrice,
+  annualSavingsPct,
   whatsappLink,
   PAID_DOWNLOAD,
   TURNSTILE_SITE_KEY,
@@ -669,7 +670,7 @@ function Hero() {
             </Reveal>
             <Reveal delay={0.16}>
               <p className="mt-8 max-w-xl text-[17px] font-light leading-8 text-foreground/75">
-                3SVerse gives dealership owners and back-office teams three portable Windows tools for repetitive VidaPay work. You keep control of your login and verification steps. Start a full 7-day trial with no credit card.
+                Manual VidaPay work quietly eats hours every week — and every retyped IMEI is a wrong claim waiting to happen. 3SVerse runs the incentive reports, device orders and rebate claims for you, so the hours come back and the output comes out error-free. Full 7-day trial, no card needed.
               </p>
             </Reveal>
             <Reveal delay={0.24}>
@@ -969,7 +970,7 @@ function Outcomes() {
      its own "no invented praise" rule. These three are VERIFIABLE facts
      about the product and the purchase instead. */
   const stats = [
-    { value: '3 tools', label: 'Extractor · Device Ordering · Rebate Filing — bundle all 3 and save 40% vs per-tool pricing', kind: 'bars' as const },
+    { value: '3 tools', label: 'Extractor · Device Ordering · Rebate Filing — Full Bundle $2,499 lifetime vs $2,997 separately (17% off) and it covers 2 PCs, not 1', kind: 'bars' as const },
     { value: '7 days', label: 'free full-software trial on every tool — no card, no feature locks', kind: 'rings' as const },
     { value: '2 PCs', label: 'Full Bundle includes two complete bundle licenses — all 3 tools on each PC', kind: 'line' as const },
   ];
@@ -1309,8 +1310,8 @@ const COMPARE_ROWS: Array<[string, string, string]> = [
   ],
   [
     'Cost shape',
-    'Labor hours you never invoice, month after month',
-    'Monthly, annual, or lifetime licensing — test the workflow free before choosing',
+    'One employee costs $1,160+/month at the federal minimum wage — before taxes and turnover — and works one store at a time. Labor hours you never invoice, month after month.',
+    '$89/mo per tool · $300/mo Full Bundle — every store, every day, no overtime, no turnover. Test it free for 7 days before choosing.',
   ],
 ];
 
@@ -1376,6 +1377,34 @@ function Compare() {
             </div>
           </div>
         </Reveal>
+        {/* Owner 2026-10-08: sell the OUTCOME, not the software — what one
+            employee costs vs the tools, the errors manual work breeds, and
+            the savings in hours AND dollars. */}
+        <Reveal delay={0.2}>
+          <div className="mt-4 grid gap-4 md:grid-cols-3">
+            <div className="rounded-3xl border border-border bg-card p-7">
+              <p className="flex items-center gap-2.5 font-mono-tech text-[10px] uppercase tracking-[.2em] text-brand-cyan"><Clock className="h-3.5 w-3.5" /> Time — what you actually buy</p>
+              <p className="mt-3 text-[19px] font-light tracking-[-0.01em] text-foreground">Hours back, every single week</p>
+              <p className="mt-2.5 text-[13.5px] font-light leading-6 text-foreground/75">
+                You are not buying software; you are buying back the hours your team spends retyping portal data and clicking store by store. Incentive pulls, orders and claims run in minutes — and those hours go back to customers, selling, and your evenings.
+              </p>
+            </div>
+            <div className="rounded-3xl border border-border bg-card p-7">
+              <p className="flex items-center gap-2.5 font-mono-tech text-[10px] uppercase tracking-[.2em] text-brand-magenta"><X className="h-3.5 w-3.5" /> Errors — the silent cost</p>
+              <p className="mt-3 text-[19px] font-light tracking-[-0.01em] text-foreground">Manual work makes typos. Automation doesn&apos;t.</p>
+              <p className="mt-2.5 text-[13.5px] font-light leading-6 text-foreground/75">
+                Every wrong IMEI, wrong store pick and missed claim is born in copy-paste — and one missed rebate is money you already earned, gone. The tools validate required fields and hand you the same clean Excel workbook every run, no tired eyes involved.
+              </p>
+            </div>
+            <div className="rounded-3xl border border-border bg-card p-7">
+              <p className="flex items-center gap-2.5 font-mono-tech text-[10px] uppercase tracking-[.2em] text-brand-cyan"><TrendingUp className="h-3.5 w-3.5" /> Savings — time and money</p>
+              <p className="mt-3 text-[19px] font-light tracking-[-0.01em] text-foreground">$1,160+ vs $300 a month</p>
+              <p className="mt-2.5 text-[13.5px] font-light leading-6 text-foreground/75">
+                One employee costs $1,160+/month at the $7.25 federal minimum wage — before taxes and turnover — and works one store at a time. The Full Bundle is $300/month for all 3 tools on 2 PCs, running every store you operate. That&apos;s about one week of one employee&apos;s pay.
+              </p>
+            </div>
+          </div>
+        </Reveal>
       </div>
     </section>
   );
@@ -1408,6 +1437,11 @@ function RoiCalculator() {
           </h3>
           <p className="mt-4 max-w-md text-[14px] font-light leading-6 text-foreground/75">
             Enter your own monthly estimate for missed claims and staff time. The calculator compares that number with current catalog pricing; it does not promise savings or recovered revenue.
+          </p>
+          {/* Owner 2026-10-08: anchor the math against what the alternative — a
+              human hire — actually costs (federal minimum wage floor, 160 hrs/mo). */}
+          <p className="mt-3 max-w-md rounded-xl border border-border bg-foreground/[.03] px-4 py-3 text-[12.5px] font-light leading-5 text-foreground/75">
+            For scale: one full-time employee costs <span className="font-medium text-foreground">$1,160+/month</span> at the federal minimum wage (160 hrs) — before payroll taxes, benefits and turnover. The Full Bundle is <span className="font-medium text-foreground">$300/month</span> and works every store at once.
           </p>
           <div className="mt-7 space-y-6">
             <div>
@@ -1607,7 +1641,7 @@ const FAQ_ITEMS: Array<{ q: string; a: string }> = [
   },
   {
     q: 'Is this a subscription?',
-    a: 'Only if you want it to be. Monthly is the cancel-anytime plan — $89/mo per tool. Annual is the same software billed yearly — 44% off the per-tool plans, 72% off the Full Bundle. Lifetime is one payment — a perpetual license that runs forever, with 1 year of updates included; after that an optional $199/yr update plan keeps you on the newest build. Pick per tool, mix and match, and switch anytime by replying to your invoice email.',
+    a: `Only if you want it to be. Monthly is the cancel-anytime plan — $${perPcPrice(PRODUCTS.find((p) => p.id === 'extractor')!, 'monthly', 1)}/mo per tool at launch pricing (${formatUSD(PRODUCTS.find((p) => p.id === 'extractor')!.postLaunchPrices?.monthly ?? 149)} after it ends). Annual is the same software billed yearly — ${annualSavingsPct(PRODUCTS.find((p) => p.id === 'extractor')!)}% off Incentive Extractor and Device Ordering, ${annualSavingsPct(PRODUCTS.find((p) => p.id === 'rebate')!)}% off Rebate Filing, and ${annualSavingsPct(PRODUCTS.find((p) => p.id === 'bundle')!)}% off the Full Bundle versus monthly. Lifetime is one payment — a perpetual license that runs forever, with 1 year of updates included; after that an optional $199/yr update plan keeps you on the newest build. Pick per tool, mix and match, and switch anytime by replying to your invoice email.`,
   },
   {
     q: 'What is the difference between the free trial and lifetime?',

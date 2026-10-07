@@ -15,6 +15,7 @@ import {
   perPcPrice,
   listPrice,
   discountPercent,
+  annualSavingsPct,
   formatUSD,
   type Product,
 } from '@/lib/catalog';
@@ -30,7 +31,7 @@ const FAQS: Array<{ q: string; a: string }> = [
   },
   {
     q: 'Do you offer discounts?',
-    a: 'Three ways. Volume: 10% off per PC from 2 seats, 20% from 5 seats, and 10+ seats are quoted as a district deal — message us. Plans: annual saves 44% on the per-tool plans and 72% on the Full Bundle versus monthly. And launch pricing (shown on the cards) runs until Oct 31, 2026 — honored to the minute. From Nov 1 it is $999 per tool · $2,499 Full Bundle.',
+    a: `Three ways. Volume: 10% off per PC from 2 seats, 20% from 5 seats, and 10+ seats are quoted as a district deal — message us. Plans: annual saves ${annualSavingsPct(PRODUCTS.find((p) => p.id === 'extractor')!)}% on Incentive Extractor and Device Ordering, ${annualSavingsPct(PRODUCTS.find((p) => p.id === 'rebate')!)}% on Rebate Filing, and ${annualSavingsPct(PRODUCTS.find((p) => p.id === 'bundle')!)}% on the Full Bundle versus monthly. And launch pricing (shown on the cards) runs until Oct 31, 2026 — honored to the minute. From Nov 1: monthly $149 per tool · $450 Full Bundle; lifetime stays $999 per tool · $2,499 Full Bundle.`,
   },
   {
     q: 'What happens when VidaPay changes its portal?',
@@ -78,7 +79,11 @@ function PlanCard({ product, featured }: { product: Product; featured?: boolean 
           <span>Lifetime — pay once, keep it forever</span>
         )}
         <span>
-          or {formatUSD(product.prices.monthly)}/mo &middot; {formatUSD(product.prices.annual)}/yr
+          or {formatUSD(perPcPrice(product, 'monthly', 1))}/mo
+          {discountPercent(product, 'monthly', 1) > 0 ? (
+            <> <s className="opacity-70">{formatUSD(listPrice(product, 'monthly', 1))}</s> <span className="text-brand-cyan">(−{discountPercent(product, 'monthly', 1)}%)</span></>
+          ) : null}
+          {' · '}{formatUSD(product.prices.annual)}/yr
         </span>
       </div>
 

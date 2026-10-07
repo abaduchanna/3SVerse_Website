@@ -33,6 +33,7 @@ import {
   isRecurringModel,
   listPrice,
   lsCheckoutUrl,
+  maxAnnualSavingsPct,
   modelBillingNote,
   modelPriceSuffix,
   nextVolumeTier,
@@ -115,7 +116,7 @@ function LaunchBar() {
         <div className="flex items-center gap-2.5">
           <BadgePercent className="h-4 w-4 shrink-0 text-brand-magenta" />
           <p className="text-[13.5px] font-medium text-foreground">
-            Launch pricing ends Oct 31 — <span className="text-brand-magenta">from Nov 1: $999 per tool · $2,499 Full Bundle.</span>
+            Launch pricing ends Oct 31 — <span className="text-brand-magenta">from Nov 1: monthly $149 per tool · $450 Full Bundle; lifetime stays $999 per tool · $2,499 Full Bundle.</span>
           </p>
         </div>
         <div className="flex items-center gap-1.5 font-mono-tech" data-testid="launch-countdown">
@@ -555,7 +556,7 @@ export default function DealerStore() {
           {LAUNCH_OFFER.active ? (
             <span className="text-brand-cyan">{LAUNCH_OFFER.label} — {LAUNCH_OFFER.note} </span>
           ) : null}
-          Start with the free 7-day trial. Then pay the way your cash flow likes — tap the billing pills on any card and the price switches instantly: <span className="text-foreground">monthly $89 per tool · $300 Full Bundle, cancel anytime</span>, <span className="text-foreground">annual (save up to 72%)</span>, or <span className="text-foreground">one-time lifetime</span>. Lifetime is founding-customer pricing: pay once, runs forever. USD billing — bank transfer, Wise, PayPal, or USDT. Keys are delivered after payment confirmation.
+          Start with the free 7-day trial. Then pay the way your cash flow likes — tap the billing pills on any card and the price switches instantly: <span className="text-foreground">monthly ${perPcPrice(PRODUCTS.find((p) => p.id === 'extractor')!, 'monthly', 1)} per tool · ${perPcPrice(PRODUCTS.find((p) => p.id === 'bundle')!, 'monthly', 1)} Full Bundle, cancel anytime</span>, <span className="text-foreground">annual (save up to {maxAnnualSavingsPct()}%)</span>, or <span className="text-foreground">one-time lifetime</span>. Lifetime is founding-customer pricing: pay once, runs forever. USD billing — bank transfer, Wise, PayPal, or USDT. Keys are delivered after payment confirmation.
         </p>
       </div>
       <div className="mb-8 flex flex-wrap items-center gap-x-6 gap-y-2.5 rounded-2xl border border-border bg-foreground/[.02] px-5 py-3.5 font-mono-tech text-[10px] uppercase tracking-[.16em] text-muted-foreground">

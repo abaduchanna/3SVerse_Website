@@ -24,17 +24,16 @@ export function modelPriceSuffix(model: ModelId): string {
 
 /** Per-model billing explanation shown under the price in the store.
  *  `product` (optional) makes the annual savings % exact per product —
- *  the per-tool plans and the Full Bundle discount differently. */
+ *  the per-tool plans and the Full Bundle discount differently, and the
+ *  % is computed against the CURRENT effective monthly price (launch
+ *  sale now, list after it ends), so it stays true on both sides of Nov 1. */
 export function modelBillingNote(model: ModelId, product?: Product): string {
   switch (model) {
     case 'monthly':
       return 'per month · cancel anytime';
     case 'annual': {
       if (product && product.prices.monthly > 0) {
-        const pct = Math.round(
-          (1 - product.prices.annual / (product.prices.monthly * 12)) * 100,
-        );
-        return `per year · save ${pct}% vs monthly`;
+        return `per year · save ${annualSavingsPct(product)}% vs monthly`;
       }
       return 'per year · save 44% vs monthly';
     }
@@ -117,7 +116,9 @@ export interface Product {
   prices: Record<ModelId, number>;
   /** Optional list price that takes over AUTOMATICALLY once the launch offer
    *  ends (endsAt passes): per-tool lifetime settles at the $999 price point
-   *  and the bundle at $2,499 — no manual flip needed on Nov 1. */
+   *  and the bundle at $2,499 — no manual flip needed on Nov 1.
+   *  Owner 2026-10-08: monthly does the SAME flip — $89/$300 sale during the
+   *  window, then the $149/$450 list returns on Nov 1. */
   postLaunchPrices?: Partial<Record<ModelId, number>>;
   /** Launch-offer price per model in whole USD (optional — falls back to list). */
   launchPrices?: Partial<Record<ModelId, number>>;
@@ -136,7 +137,7 @@ export const LAUNCH_OFFER = {
   /* Audit v4 #3: urgency needs stakes — show the exact after-price so the customer
      sees what they save by deciding today. Rendered under the countdown strip, in
      the storefront, and on the Pricing page. */
-  note: 'Launch pricing ends Oct 31, 2026 — honored to the minute. From Nov 1: $999 per tool · $2,499 Full Bundle.',
+  note: 'Launch pricing ends Oct 31, 2026 — honored to the minute. From Nov 1: monthly $149 per tool · $450 Full Bundle. Lifetime stays $999 per tool · $2,499 Full Bundle.',
   /** ISO deadline for launch pricing — the storefront counts down to it.
    *  Flip `active` to false (or clear endsAt) when the promo ends. */
   endsAt: '2026-10-31T23:59:59-05:00',
@@ -341,13 +342,6 @@ export function lsCheckoutUrl(productId: string, model: string): string {
   return LS_CHECKOUT[`${productId}:${model}`] ?? '';
 }
 
-export const MODELS: ModelOption[] = [
-  { id: 'trial', label: '7-Day Free Trial', note: 'Full features, 7 days, 1 PC — no card needed' },
-  { id: 'monthly', label: 'Monthly', note: '$89/mo per tool — cancel anytime' },
-  { id: 'annual', label: 'Annual', note: 'Save up to 72% vs monthly — every update included' },
-  { id: 'lifetime', label: 'Lifetime', note: 'Founding-customer launch price — pay once, runs forever. Includes 1 year of portal-change updates; after that an optional $199/yr update plan (your installed copy never stops working).' },
-];
-
 export const PRODUCTS: Product[] = [
   {
     id: 'extractor',
@@ -359,11 +353,12 @@ export const PRODUCTS: Product[] = [
       'One-click Excel workbook output',
       'Runs under your own dealer login — portal security checks stay user-controlled',
     ],
-    prices: { trial: 0, monthly: 89, annual: 599, lifetime: 1299 },
-    /* Launch sale = the $999 per-tool price point (owner 2026-10-08); it
-       becomes the standing price automatically on Nov 1 (postLaunchPrices). */
-    launchPrices: { trial: 0, lifetime: 999 },
-    postLaunchPrices: { lifetime: 999 },
+    /* Owner 2026-10-08: monthly sale 89 (list 149 returns Nov 1) + the $999
+       per-tool lifetime price point (standing price from Nov 1). The list
+       anchors are what the strikethrough/discount badges compare against. */
+    prices: { trial: 0, monthly: 149, annual: 599, lifetime: 1299 },
+    launchPrices: { trial: 0, monthly: 89, lifetime: 999 },
+    postLaunchPrices: { lifetime: 999, monthly: 149 },
   },
   {
     id: 'ordering',
@@ -375,9 +370,9 @@ export const PRODUCTS: Product[] = [
       'Portal verification steps pause for your approval — nothing bypasses you',
       'Runs on a second screen with limited supervision',
     ],
-    prices: { trial: 0, monthly: 89, annual: 599, lifetime: 1499 },
-    launchPrices: { trial: 0, lifetime: 999 },
-    postLaunchPrices: { lifetime: 999 },
+    prices: { trial: 0, monthly: 149, annual: 599, lifetime: 1499 },
+    launchPrices: { trial: 0, monthly: 89, lifetime: 999 },
+    postLaunchPrices: { lifetime: 999, monthly: 149 },
   },
   {
     id: 'rebate',
@@ -389,9 +384,9 @@ export const PRODUCTS: Product[] = [
       'Store login management built in',
       'Per-claim status tracking',
     ],
-    prices: { trial: 0, monthly: 89, annual: 699, lifetime: 1699 },
-    launchPrices: { trial: 0, lifetime: 999 },
-    postLaunchPrices: { lifetime: 999 },
+    prices: { trial: 0, monthly: 149, annual: 699, lifetime: 1699 },
+    launchPrices: { trial: 0, monthly: 89, lifetime: 999 },
+    postLaunchPrices: { lifetime: 999, monthly: 149 },
   },
   {
     id: 'bundle',
@@ -403,13 +398,14 @@ export const PRODUCTS: Product[] = [
       'All three tools on each of two Windows PCs',
       'Priority support',
     ],
-    /* Owner 2026-10-08: bundle monthly = $300. Lifetime LIST = $2,997 (the
-       3-tools-separately math used across the site) so the $2,499 launch
-       price gets a real strikethrough anchor again (−17% badge, same as the
-       per-tool cards); from Nov 1 the post-launch $2,499 stands alone. */
-    prices: { trial: 0, monthly: 300, annual: 999, lifetime: 2997 },
-    launchPrices: { trial: 0, lifetime: 2499 },
-    postLaunchPrices: { lifetime: 2499 },
+    /* Owner 2026-10-08: bundle monthly = $300 now, $450 list returns Nov 1.
+       Lifetime LIST = $2,997 (the 3-tools-separately math used across the
+       site) so the $2,499 launch price keeps its strikethrough anchor
+       (−17% badge, same as the per-tool cards); from Nov 1 the post-launch
+       $2,499 stands alone. */
+    prices: { trial: 0, monthly: 450, annual: 999, lifetime: 2997 },
+    launchPrices: { trial: 0, monthly: 300, lifetime: 2499 },
+    postLaunchPrices: { lifetime: 2499, monthly: 450 },
   },
 ];
 
@@ -419,6 +415,33 @@ export function seatsAllowedForModel(model: ModelId): PcCount[] {
     ...Array.from({ length: PC_MAX - PC_MIN + 1 }, (_, i) => i + PC_MIN),
   ];
 }
+
+/** Annual-plan savings vs the CURRENT effective monthly price (launch-aware:
+ *  vs the $89/$300 sale today, vs the $149/$450 list after it ends) — the
+ *  “save X% vs monthly” line never lies on either side of Nov 1. */
+export function annualSavingsPct(product: Product): number {
+  const m = perPcPrice(product, 'monthly', 1);
+  if (m <= 0) return 0;
+  return Math.round((1 - product.prices.annual / (m * 12)) * 100);
+}
+
+/** Best annual savings across the catalog (the “save up to X%” copy). */
+export function maxAnnualSavingsPct(): number {
+  return Math.max(...PRODUCTS.map((p) => annualSavingsPct(p)));
+}
+
+/** Billing-model pills — notes computed from the catalog so the monthly
+ *  price and the annual savings % update themselves when the launch window
+ *  ends (owner 2026-10-08: math must stay correct without manual edits). */
+export const MODELS: ModelOption[] = (() => {
+  const perTool = PRODUCTS.find((p) => p.id === 'extractor')!;
+  return [
+    { id: 'trial', label: '7-Day Free Trial', note: 'Full features, 7 days, 1 PC — no card needed' },
+    { id: 'monthly', label: 'Monthly', note: `$${perPcPrice(perTool, 'monthly', 1)}/mo per tool — cancel anytime` },
+    { id: 'annual', label: 'Annual', note: `Save up to ${maxAnnualSavingsPct()}% vs monthly — every update included` },
+    { id: 'lifetime', label: 'Lifetime', note: 'Founding-customer launch price — pay once, runs forever. Includes 1 year of portal-change updates; after that an optional $199/yr update plan (your installed copy never stops working).' },
+  ] as ModelOption[];
+})();
 
 /** Effective per-PC price after launch offer + volume tier (whole USD). */
 export function perPcPrice(product: Product, model: ModelId, pcs: number): number {
