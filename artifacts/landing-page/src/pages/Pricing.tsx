@@ -161,19 +161,25 @@ export default function Pricing() {
     <PageShell
       title="Get started now, pick a plan later."
       kicker="Pricing"
-      metaLine={<>Portable Windows apps &middot; free 7-day trial &middot; clear per-PC licensing</>}
+      metaLine={<>Download and run &middot; free 7-day trial &middot; clear per-PC licensing</>}
       width="max-w-5xl"
     >
       <div className="mt-8 space-y-4 text-[15px] font-light leading-7 text-foreground/75">
         <p>
-          Every tool below is a <strong className="font-medium text-foreground">portable Windows .exe</strong> with
-          the full 7-day trial built in — no installation, no card, one PC. Buy only after it works with your own
+          Every tool below is a Windows app you can <strong className="font-medium text-foreground">download and run immediately</strong> —
+          no installation, no admin password, and no card for the full 7-day trial on one PC. Buy only after it works with your own
           dealership data. Lifetime gives permanent use plus one year of updates; monthly and annual include updates
           while active. One PC license can process every store you operate from that computer.
         </p>
         <p>
           {LAUNCH_OFFER.active ? LAUNCH_OFFER.note : 'Launch pricing has ended — list prices below.'} {volNote}.{' '}
           Running 10 or more PCs? <a className="text-brand-cyan hover:underline" href="mailto:Connect@3SVerse.com">Message us</a> for district pricing.
+        </p>
+        <p className="rounded-2xl border border-brand-cyan/25 bg-brand-cyan/[.06] px-5 py-4 text-foreground">
+          <strong className="font-medium">Bundle math:</strong>{' '}
+          {LAUNCH_OFFER.active
+            ? 'Buying all 3 tools separately for 1 PC costs $3,097. The Full Bundle gives you all 3 tools on 2 PCs for $1,499 — six tool activations total.'
+            : 'Buying all 3 tools separately for 1 PC costs $4,497. The Full Bundle gives you all 3 tools on 2 PCs for $2,499 — six tool activations total.'}
         </p>
       </div>
 

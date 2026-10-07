@@ -84,6 +84,7 @@ import {
   perPcPrice,
   whatsappLink,
   PAID_DOWNLOAD,
+  LAUNCH_OFFER,
   TURNSTILE_SITE_KEY,
   type DealerReview,
 } from '@/lib/catalog';
@@ -683,9 +684,10 @@ function Hero() {
             </Reveal>
             <Reveal delay={0.32}>
               <div className="mt-14 flex flex-wrap gap-x-8 gap-y-3 border-t border-border pt-5 font-mono-tech text-[11px] uppercase tracking-[.18em] text-muted-foreground">
-                <span className="flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-[#c7ef70]" /> Windows 10/11 · portable .exe · no installation</span>
+                <span className="flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-[#c7ef70]" /> Windows 10/11 · download, run, done — no installation or admin password</span>
                 <span className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-brand-cyan" /> Credentials and dealership data stay on your PC</span>
                 <span className="flex items-center gap-2"><ShieldCheck className="h-3.5 w-3.5 text-brand-magenta" /> Buy one Full Bundle · get a second bundle license free</span>
+                <span className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-brand-cyan" /> {LAUNCH_OFFER.active ? 'All 3 tools on 1 PC separately: $3,097 · Full Bundle: all 3 tools on 2 PCs for $1,499' : 'All 3 tools on 1 PC separately: $4,497 · Full Bundle: all 3 tools on 2 PCs for $2,499'}</span>
               </div>
             </Reveal>
           </div>
@@ -1500,14 +1502,14 @@ function DemoStrip() {
       <div className="p-8 pb-0 sm:p-12 sm:pb-0">
         <p className="flex items-center gap-2 font-mono-tech text-[10px] uppercase tracking-[.22em] text-brand-cyan"><PlayCircle className="h-3.5 w-3.5" /> {OVERVIEW_DEMO.kicker}</p>
         <h3 className="mt-3 text-[clamp(1.6rem,2.4vw,2.2rem)] font-light leading-[1.1] tracking-[-0.02em] text-foreground">{OVERVIEW_DEMO.title}</h3>
-        <p className="mt-4 max-w-2xl text-[14px] font-light leading-7 text-foreground/75">{OVERVIEW_DEMO.note}</p>
+        <p className="mt-4 max-w-2xl text-[14px] font-light leading-7 text-foreground/75">{OVERVIEW_DEMO.note} Press play below — no download is required.</p>
       </div>
       <div className="p-8 pb-0 sm:p-12 sm:pb-0">
         <video controls preload="metadata" poster={OVERVIEW_DEMO.poster} className="aspect-video w-full rounded-2xl border border-border bg-black" data-testid="overview-demo-video">
           <source src={OVERVIEW_DEMO.url} type="video/mp4" />
           Your browser does not support MP4 video. Download it from the link below.
         </video>
-        <a href={OVERVIEW_DEMO.url} className="mt-3 inline-flex items-center gap-2 text-[13px] font-medium text-brand-cyan hover:text-foreground">Download the 90-second demo <Download className="h-3.5 w-3.5" /></a>
+        <a href={OVERVIEW_DEMO.url} className="mt-3 inline-flex items-center gap-2 text-[13px] font-medium text-brand-cyan hover:text-foreground">Need an offline copy? Download the video <Download className="h-3.5 w-3.5" /></a>
       </div>
       <div className="px-8 pt-10 sm:px-12">
         <p className="font-mono-tech text-[10px] uppercase tracking-[.22em] text-muted-foreground">{VIDEO_DEMO.kicker}</p>
@@ -2299,7 +2301,7 @@ function Work() {
 
 function Contact() {
   const wa = whatsappLink();
-  const [form, setForm] = useState({ name: '', email: '', organization: '', locations: '2–5 stores', interest: 'Dealer tools (Extractor / Ordering / Rebate)', message: '', website: '' });
+  const [form, setForm] = useState({ name: '', email: '', organization: '', locations: '1 store', interest: 'Dealer tools (Extractor / Ordering / Rebate)', message: '', website: '' });
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
   const [serverNote, setServerNote] = useState('');
   const [cfToken, setCfToken] = useState('');
@@ -2407,7 +2409,7 @@ function Contact() {
       }
       clearTimeout(timeoutId);
 
-      setForm({ name: '', email: '', organization: '', locations: '2–5 stores', interest: 'Dealer tools (Extractor / Ordering / Rebate)', message: '', website: '' });
+      setForm({ name: '', email: '', organization: '', locations: '1 store', interest: 'Dealer tools (Extractor / Ordering / Rebate)', message: '', website: '' });
       setCfToken('');
       setCfResetCount((count) => count + 1);
       setSubmitStatus('success');

@@ -127,14 +127,14 @@ export default function DownloadPage() {
         </h1>
         <p className="mt-5 text-[15px] font-light leading-7 text-foreground/75">
           Windows 10/11, your VidaPay dealer login, and Excel for the outputs — that is the whole checklist.
-          Each portable .exe is the full software: open it directly with no installation. It runs as a 7-day
+          Each download is the full software: open it and run — no installation, admin password, or IT setup. It runs as a 7-day
           trial on one PC, and the license key activates the plan you buy — there is no second download. Builds are hosted in our controlled public
           repository and re-published on a fixed sync schedule. Not sure it fits your setup? Run the free
           trial on your actual store data — you will know within the first session, no card, no guesswork.
         </p>
 
         <div className="mt-7 flex flex-wrap gap-x-7 gap-y-2.5 border-t border-border pt-5 font-mono-tech text-[11px] uppercase tracking-[.16em] text-muted-foreground">
-          <span className="flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-[#c7ef70]" /> No credit card · no installation · portable .exe</span>
+          <span className="flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-[#c7ef70]" /> No credit card · download, run, done</span>
           <span className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-brand-cyan" /> Always the latest version — automatically</span>
           <span className="flex items-center gap-2"><ShieldCheck className="h-3.5 w-3.5 text-brand-cyan" /> Your license is protected — it&apos;s yours</span>
         </div>
