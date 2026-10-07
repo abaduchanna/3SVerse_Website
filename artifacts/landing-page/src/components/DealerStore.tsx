@@ -11,6 +11,7 @@ import {
   Lock,
   MailCheck,
   Minus,
+  MonitorSmartphone,
   Plus,
   Printer,
   ShieldCheck,
@@ -49,6 +50,7 @@ import { TurnstileWidget } from '@/components/TurnstileWidget';
 import TrialGateModal from '@/components/TrialGateModal';
 import { savedTrialLead } from '@/lib/trialgate';
 import { buildOrderInvoice } from '@/lib/autoinvoice';
+import PricingSummaryTable from '@/components/PricingSummaryTable';
 import {
   formatDueLong,
   renderInvoiceDocument,
@@ -116,7 +118,7 @@ function LaunchBar() {
         <div className="flex items-center gap-2.5">
           <BadgePercent className="h-4 w-4 shrink-0 text-brand-magenta" />
           <p className="text-[13.5px] font-medium text-foreground">
-            Launch pricing ends Oct 31 — <span className="text-brand-magenta">from Nov 1: monthly $149 per tool · $450 Full Bundle; lifetime stays $999 per tool · $2,499 Full Bundle.</span>
+            Launch pricing ends Oct 31 — <span className="text-brand-magenta">monthly goes up Nov 1 ($89 → $149 per tool · $300 → $450 Full Bundle); lifetime stays $999 per tool · $2,499 Full Bundle.</span>
           </p>
         </div>
         <div className="flex items-center gap-1.5 font-mono-tech" data-testid="launch-countdown">
@@ -568,6 +570,10 @@ export default function DealerStore() {
       </div>
 
       <LaunchBar />
+      {/* audit v6 #2: one clean pricing table at the top — no cross-referencing */}
+      <div className="mb-8">
+        <PricingSummaryTable />
+      </div>
       <p className="mb-8 -mt-4 max-w-3xl text-[12.5px] font-light leading-5.5 text-muted-foreground">
         {PER_PC_NOTE}
       </p>
@@ -902,9 +908,18 @@ export default function DealerStore() {
                   <div className="border-t border-border pt-4">
                     <div className="min-w-0">
                       {pct > 0 ? (
-                        <p className="mb-1.5 inline-flex items-center gap-1.5 rounded-md bg-[#6ee7ef]/10 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[.12em] text-brand-cyan">
-                          <BadgePercent className="h-3 w-3" /> {LAUNCH_OFFER.label} −{pct}%
-                        </p>
+                        /* audit v6 #3: the bundle's value is the FREE SECOND
+                           LICENSE, not a small −17% next to the tools' −23/−33/−41% —
+                           lead with the 2-PC story on the bundle card */
+                        product.id === 'bundle' ? (
+                          <p className="mb-1.5 inline-flex items-center gap-1.5 rounded-md bg-[#6ee7ef]/10 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[.12em] text-brand-cyan">
+                            <MonitorSmartphone className="h-3 w-3" /> 2 complete licenses — 2nd PC free
+                          </p>
+                        ) : (
+                          <p className="mb-1.5 inline-flex items-center gap-1.5 rounded-md bg-[#6ee7ef]/10 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[.12em] text-brand-cyan">
+                            <BadgePercent className="h-3 w-3" /> {LAUNCH_OFFER.label} −{pct}%
+                          </p>
+                        )
                       ) : null}
                       <p className="text-[26px] font-light leading-none text-foreground">
                         {price === 0 ? 'Free' : formatUSD(price)}

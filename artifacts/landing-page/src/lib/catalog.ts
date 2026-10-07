@@ -134,10 +134,11 @@ export interface Product {
 export const LAUNCH_OFFER = {
   active: true,
   label: 'Launch Offer',
-  /* Audit v4 #3: urgency needs stakes — show the exact after-price so the customer
-     sees what they save by deciding today. Rendered under the countdown strip, in
-     the storefront, and on the Pricing page. */
-  note: 'Launch pricing ends Oct 31, 2026 — honored to the minute. From Nov 1: monthly $149 per tool · $450 Full Bundle. Lifetime stays $999 per tool · $2,499 Full Bundle.',
+  /* Audit v6 #1: urgency must apply to the buyer who reads it. Only the
+     MONTHLY rate changes Nov 1 — lifetime does not — so the note now says
+     exactly that, and gives lifetime buyers their own reason to act today
+     (founding-customer pricing + 1 year of updates). */
+  note: 'Launch pricing ends Oct 31, 2026 — honored to the minute. Monthly goes up Nov 1: $89 → $149 per tool · $300 → $450 Full Bundle. Lifetime stays $999 per tool · $2,499 Full Bundle — founding-customer pricing, 1 year of updates included.',
   /** ISO deadline for launch pricing — the storefront counts down to it.
    *  Flip `active` to false (or clear endsAt) when the promo ends. */
   endsAt: '2026-10-31T23:59:59-05:00',

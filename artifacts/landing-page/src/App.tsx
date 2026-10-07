@@ -804,7 +804,7 @@ function Outcomes() {
      they looked like data but meant nothing ("fake kuch nahi chahiye"). Each
      card now carries a plain real icon instead. */
   const stats = [
-    { value: '3 tools', label: 'Extractor · Device Ordering · Rebate Filing — Full Bundle $2,499 lifetime vs $2,997 separately (17% off) and it covers 2 PCs, not 1', icon: Boxes, accent: 'text-brand-cyan' },
+    { value: '3 tools', label: 'Extractor · Device Ordering · Rebate Filing — all 3 tools on 2 PCs for $2,499 lifetime. The second desk is free — $2,997 if bought separately.', icon: Boxes, accent: 'text-brand-cyan' },
     { value: '7 days', label: 'free full-software trial on every tool — no card, no feature locks', icon: Clock, accent: 'text-brand-magenta' },
     { value: '2 PCs', label: 'Full Bundle includes two complete bundle licenses — all 3 tools on each PC', icon: MonitorSmartphone, accent: 'text-brand-cyan' },
   ];
@@ -1146,8 +1146,8 @@ const COMPARE_ROWS: Array<[string, string, string]> = [
   ],
   [
     'Cost shape',
-    'One employee costs $1,160+/month at the federal minimum wage — before taxes and turnover — and works one store at a time. Labor hours you never invoice, month after month.',
-    '$89/mo per tool · $300/mo Full Bundle — every store, every day, no overtime, no turnover. Test it free for 7 days before choosing.',
+    'Cost climbs with every store — more desk hours, more overtime, another hire just to keep up.',
+    'One subscription runs every store at once — no overtime, no turnover, and the 7-day trial is free.',
   ],
 ];
 
@@ -1273,11 +1273,6 @@ function RoiCalculator() {
           </h3>
           <p className="mt-4 max-w-md text-[14px] font-light leading-6 text-foreground/75">
             Enter your own monthly estimate for missed claims and staff time. The calculator compares that number with current catalog pricing; it does not promise savings or recovered revenue.
-          </p>
-          {/* Owner 2026-10-08: anchor the math against what the alternative — a
-              human hire — actually costs (federal minimum wage floor, 160 hrs/mo). */}
-          <p className="mt-3 max-w-md rounded-xl border border-border bg-foreground/[.03] px-4 py-3 text-[12.5px] font-light leading-5 text-foreground/75">
-            For scale: one full-time employee costs <span className="font-medium text-foreground">$1,160+/month</span> at the federal minimum wage (160 hrs) — before payroll taxes, benefits and turnover. The Full Bundle is <span className="font-medium text-foreground">$300/month</span> and works every store at once.
           </p>
           <div className="mt-7 space-y-6">
             <div>

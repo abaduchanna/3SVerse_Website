@@ -8,6 +8,7 @@
 import { useState } from 'react';
 import PageShell from './PageShell';
 import { ArrowRight, Check, ChevronDown } from 'lucide-react';
+import PricingSummaryTable from '@/components/PricingSummaryTable';
 import {
   PRODUCTS,
   LAUNCH_OFFER,
@@ -72,9 +73,16 @@ function PlanCard({ product, featured }: { product: Product; featured?: boolean 
       </div>
       <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] font-light text-muted-foreground">
         {off > 0 ? (
-          <span className="text-brand-cyan">
-            Launch Offer — <s className="opacity-70">{formatUSD(list)}</s> ({off}% off)
-          </span>
+          isBundle ? (
+            /* audit v6 #3: lead with the 2-license value, not a small −17% */
+            <span className="text-brand-cyan">
+              2 complete licenses included — <s className="opacity-70">{formatUSD(list)}</s> if bought separately
+            </span>
+          ) : (
+            <span className="text-brand-cyan">
+              Launch Offer — <s className="opacity-70">{formatUSD(list)}</s> ({off}% off)
+            </span>
+          )
         ) : (
           <span>Lifetime — pay once, keep it forever</span>
         )}
@@ -184,6 +192,12 @@ export default function Pricing() {
           <strong className="font-medium">Bundle math:</strong>{' '}
           Buying all 3 tools separately for 1 PC costs $2,997. The Full Bundle gives you all 3 tools on 2 PCs for $2,499 — six tool activations total.
         </p>
+      </div>
+
+      {/* audit v6 #2: one clean summary table before the plan cards — tool by
+          tool, monthly now vs Nov 1, lifetime — one glance, complete picture */}
+      <div className="mt-10">
+        <PricingSummaryTable />
       </div>
 
       <div className="mt-12 grid gap-4 sm:grid-cols-2">
