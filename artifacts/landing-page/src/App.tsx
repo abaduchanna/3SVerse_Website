@@ -1535,7 +1535,7 @@ function Faq() {
       <div className="relative mx-auto max-w-4xl px-5 lg:px-8">
         <Reveal>
           <div className="mb-12 text-center">
-            <Kicker>07 — Straight answers</Kicker>
+            <Kicker>06 — Straight answers</Kicker>
             <h2 className="text-[clamp(2.2rem,4vw,3.6rem)] font-light leading-[1.05] tracking-[-0.02em] text-foreground">
               Questions dealers <span className="text-brand-magenta">actually ask.</span>
             </h2>
@@ -1637,7 +1637,7 @@ function Guides() {
         <Reveal>
           <div className="mb-14 flex flex-col justify-between gap-8 md:flex-row md:items-end">
             <div>
-              <Kicker magenta>06 — Dealer field guides</Kicker>
+              <Kicker magenta>07 — Dealer field guides</Kicker>
               <h2 className="max-w-2xl text-[clamp(2.2rem,4vw,3.6rem)] font-light leading-[1.05] tracking-[-0.02em] text-foreground">
                 Written for the <span className="text-brand-cyan">front office,</span> not the boardroom.
               </h2>
