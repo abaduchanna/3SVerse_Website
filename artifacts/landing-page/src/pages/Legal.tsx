@@ -430,7 +430,7 @@ export default function LegalPage({ kind }: { kind: LegalKind }) {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="sticky top-0 z-10 border-b border-border bg-background/85 backdrop-blur-xl">
-        <div className="mx-auto flex h-[64px] max-w-4xl items-center justify-between px-5">
+        <div className="mx-auto flex h-[76px] max-w-7xl items-center justify-between gap-8 px-5 lg:px-8">
           <a href="#/" aria-label="3SVerse — home" className="flex items-center gap-2.5">
             <img src="/logo-240.webp" alt="3SVerse" width={240} height={57} className="h-7 w-auto" />
           </a>
