@@ -388,8 +388,8 @@ html:not(.dark) .shape-img-dark { display: none; }
 html:not(.dark) .shape-img {
   filter: saturate(1.32) contrast(1.07);
 }
-/* low-opacity background accents need more presence on the white canvas */
-html:not(.dark) .shape-subtle { opacity: .6; }
+/* shape-subtle elements now run at site-standard vibrancy (.9/.95 inline);
+   the old light-mode .6 cap is gone so both themes look the same. */
 
 /* ── Theme water-swipe — View Transitions reveal from the toggle ────────
    The NEW theme floods out of the theme toggle button (top right) as a
