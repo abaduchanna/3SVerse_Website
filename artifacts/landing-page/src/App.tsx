@@ -374,11 +374,11 @@ function BrandCursor() {
       {/* the 27s loop, right of the pointer: logo chip → mini hero ring → mini footer orb */}
       <div ref={chipRef} className="brand-cursor-chip-anchor will-change-transform">
         <div className="brand-cursor-fade f-chip">
-          <img src="/logo-240.png" alt="" width={240} height={57} draggable={false} className="select-none" />
+          <img src="/logo-240.webp" alt="" width={240} height={57} draggable={false} className="select-none" />
         </div>
         <div className="brand-cursor-fade f-ring">
           <img src="/shapes/shape-v1.webp" alt="" width={900} height={932} draggable={false} className="shape-img-dark" />
-          <img src="/shapes/shape-v1-solid.webp?v=7" alt="" width={900} height={932} draggable={false} className="shape-img-light" />
+          <img src="/shapes/shape-v1-solid.webp?v=7" alt="" width={900} height={932} loading="lazy" decoding="async" draggable={false} className="shape-img-light" />
         </div>
         <div className="brand-cursor-fade f-orb">
           <img src="/shapes/shape-v3.webp" alt="" width={640} height={640} draggable={false} />
@@ -509,7 +509,7 @@ function Nav() {
           that once forced 1680px is gone — and gap-8 keeps the separation. */}
       <div className="mx-auto flex h-[76px] max-w-7xl items-center justify-between gap-8 px-5 lg:px-8">
         <a href="#top" data-testid="link-brand" aria-label="3SVerse — back to top" className="shrink-0">
-          <img src="/logo-240.png" alt="3SVerse" width={240} height={57} className="h-7 w-auto object-contain" />
+          <img src="/logo-240.webp" alt="3SVerse" width={240} height={57} className="h-7 w-auto object-contain" />
         </a>
         <nav className="hidden items-center gap-5 2xl:flex">
           {navItems.map((item) => (
@@ -1715,7 +1715,7 @@ function ReviewCard({ review }: { review: DealerReview }) {
   return (
     <figure data-testid={`review-${review.initials}`} className="group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl border border-border bg-card p-8 transition-colors duration-500 hover:border-input lg:p-9">
       <div>
-        <div className="flex items-center gap-1 text-brand-magenta" aria-label={`${review.stars} out of 5 stars`}>
+        <div className="flex items-center gap-1 text-brand-magenta" role="img" aria-label={`${review.stars} out of 5 stars`}>
           {Array.from({ length: 5 }).map((_, s) => (
             <Star key={s} className={`h-4 w-4 ${s < review.stars ? 'fill-current' : 'opacity-25'}`} />
           ))}
@@ -2406,7 +2406,7 @@ function Footer() {
       <div className="mx-auto max-w-7xl px-5 py-14 lg:px-8">
         <div className="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between">
           <div className="max-w-sm">
-            <img src="/logo-240.png" alt="3SVerse" width={240} height={57} className="h-7 w-auto" />
+            <img src="/logo-240.webp" alt="3SVerse" width={240} height={57} className="h-7 w-auto" />
             <p className="mt-5 text-[14px] font-light leading-7 text-foreground/75">
               VidaPay dealer tools and custom dealership automation — built by people who have run wireless retail operations themselves.
             </p>
