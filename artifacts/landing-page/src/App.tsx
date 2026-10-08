@@ -1024,6 +1024,7 @@ function Tools() {
           }}
         />
         <RoiCalculator />
+        <BargainBand />
         <DealerStore />
         <DemoStrip />
       </div>
@@ -1264,7 +1265,7 @@ function RoiCalculator() {
   const savedYear = Math.max(0, monthlyLoss * 12 - lifetimePrice);
 
   return (
-    <div data-testid="roi-calculator" className="mt-14 rounded-3xl border border-border bg-gradient-to-br from-card via-card to-card p-7 sm:p-10">
+    <div id="roi" data-testid="roi-calculator" className="mt-14 rounded-3xl border border-border bg-gradient-to-br from-card via-card to-card p-7 sm:p-10">
       <div className="grid items-center gap-10 lg:grid-cols-[1fr_1.1fr]">
         <div>
           <p className="flex items-center gap-2 font-mono-tech text-[10px] uppercase tracking-[.22em] text-brand-cyan"><Calculator className="h-3.5 w-3.5" /> ROI calculator</p>
@@ -1291,6 +1292,13 @@ function RoiCalculator() {
                 className="w-full accent-brand-cyan"
               />
             </div>
+            {/* Deep-audit proposal (owner-approved 2026-10-08): make the
+                unlimited-stores value visible inside the calculator itself —
+                the slider moves desks, never the per-store license price. */}
+            <p className="text-[12px] font-light leading-5 text-muted-foreground" data-testid="roi-unlimited-note">
+              Store count alone never adds license cost — one license runs every store you operate from one desk. The
+              estimate only grows when you add workstations (about two stores per PC of back-office work).
+            </p>
             <div>
               <span className="mb-2 block text-[13px] font-medium text-foreground/75">Your estimated manual-work and missed-claim cost per store / month</span>
               <div className="flex flex-wrap gap-2">
@@ -2444,6 +2452,106 @@ function Footer() {
   );
 }
 
+/* Sticky mini-nav (deep-audit proposal, owner-approved 2026-10-08): a slim
+   pill bar that slides in under the fixed header once the visitor scrolls
+   past the hero, giving one-tap jumps to the decision-critical sections.
+   Hidden on load (the hero never competes with navigation); anchor taps reuse
+   Home's JS scroll handler, so the 92px header offset applies automatically. */
+function MiniNav() {
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setVisible(window.scrollY > 560);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+  const links = [
+    { label: 'ROI calculator', href: '#roi' },
+    { label: 'Store & pricing', href: '#store' },
+    { label: 'FAQ', href: '#faq' },
+    { label: 'Reviews', href: '#reviews' },
+    { label: 'Contact', href: '#contact' },
+  ];
+  return (
+    <div
+      data-testid="mini-nav"
+      className={`fixed left-0 right-0 top-[76px] z-30 transition-all duration-300 ${visible ? 'translate-y-0 opacity-100' : 'pointer-events-none -translate-y-2 opacity-0'}`}
+    >
+      <div className="mx-auto flex max-w-7xl items-center gap-1.5 overflow-x-auto px-5 py-2 lg:px-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {links.map((l) => (
+          <a
+            key={l.href}
+            href={l.href}
+            data-testid={`mini-nav-${l.href.slice(1)}`}
+            className="shrink-0 rounded-full border border-border bg-background/85 px-3.5 py-1.5 text-[12.5px] font-medium text-foreground/75 backdrop-blur-md transition-colors hover:border-brand-cyan/50 hover:text-foreground"
+          >
+            {l.label}
+          </a>
+        ))}
+        <a
+          href="#/download"
+          className="ml-auto hidden shrink-0 rounded-full bg-white px-3.5 py-1.5 text-[12.5px] font-semibold text-[#0b0a10] shadow-sm sm:block"
+        >
+          Free 7-day trial
+        </a>
+      </div>
+    </div>
+  );
+}
+
+/* "Why $2,499 is a bargain" (deep-audit proposal, owner-approved 2026-10-08):
+   the lifetime bundle's value story in three static cards — labor math,
+   rebate leakage, and the stores-not-desks pricing shape. All prices come
+   from the catalog; the $20/hour figure is labeled as an example and the
+   band defers personal math to the ROI calculator (audit rules: no invented
+   benchmarks, no point repeated twice). Unnumbered band inside #tools, so
+   the section numbering 01-07 stays untouched. */
+function BargainBand() {
+  const bundle = PRODUCTS.find((p) => p.id === 'bundle')!;
+  const perTool = PRODUCTS.find((p) => p.id === 'extractor')!;
+  const bundleLifetime = formatUSD(perPcPrice(bundle, 'lifetime', 1));
+  const toolLifetime = formatUSD(perPcPrice(perTool, 'lifetime', 1));
+  const cards = [
+    {
+      icon: Clock,
+      title: 'The labor math',
+      body: `Ten hours a week of manual extracting, ordering and filing at $20/hour is about $800 a month of staff time. ${bundleLifetime} once — and the work is automated from day one. That is an example, not a promise.`,
+    },
+    {
+      icon: TrendingUp,
+      title: 'Missed rebates are pure margin',
+      body: 'An unfiled rebate claim is revenue that never arrives — it never appears as a line item, so it is easy to ignore. Filing every claim on time is where the tools quietly earn their keep.',
+    },
+    {
+      icon: MonitorSmartphone,
+      title: 'It never scales with stores',
+      body: `1 store or 100+, the license is ${toolLifetime} per tool / ${bundleLifetime} per bundle — one license runs every store you operate from one desk. You only add licenses when you add desks.`,
+    },
+  ];
+  return (
+    <div data-testid="bargain-band" className="mt-14 rounded-3xl border border-brand-magenta/25 bg-gradient-to-br from-[#e44bd7]/[.05] via-card to-[#6ee7ef]/[.05] p-7 sm:p-10">
+      <p className="flex items-center gap-2 font-mono-tech text-[10px] uppercase tracking-[.22em] text-brand-magenta"><TrendingUp className="h-3.5 w-3.5" /> Lifetime value</p>
+      <h3 className="mt-3 text-[clamp(1.6rem,2.4vw,2.2rem)] font-light leading-[1.1] tracking-[-0.02em] text-foreground">
+        Why <span className="text-brand-magenta">{bundleLifetime}</span> is a bargain.
+      </h3>
+      <p className="mt-4 max-w-2xl text-[14px] font-light leading-6 text-foreground/75">
+        The Full Bundle is a one-time payment — no per-store fees, no seat math, no renewal to remember. Here is the value story behind the price.
+      </p>
+      <div className="mt-8 grid gap-4 md:grid-cols-3">
+        {cards.map((c) => (
+          <div key={c.title} className="rounded-2xl border border-border bg-card p-5">
+            <p className="flex items-center gap-2 text-[14px] font-medium text-foreground"><c.icon className="h-4 w-4 shrink-0 text-brand-magenta" /> {c.title}</p>
+            <p className="mt-2.5 text-[13px] font-light leading-6 text-foreground/75">{c.body}</p>
+          </div>
+        ))}
+      </div>
+      <p className="mt-6 text-[12px] font-light leading-5 text-muted-foreground">
+        Numbers above are illustrative examples, not guarantees — run your own estimates in the ROI calculator above and validate everything during the free 7-day trial.
+      </p>
+    </div>
+  );
+}
+
 function Home() {
   // Safety net for "always start on the hero": some engines restore the
   // scroll position asynchronously after load, and a layout shift can also
@@ -2531,6 +2639,7 @@ function Home() {
       <WhatsAppFloat />
       <BrandCursor />
       <Nav />
+      <MiniNav />
       <main>
         <Hero />
         <Marquee />

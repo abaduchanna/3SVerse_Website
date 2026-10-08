@@ -3,29 +3,28 @@
  * across sections — "one clean table that answers every pricing question in
  * 10 seconds"). Rendered at the top of the storefront and the Pricing page.
  *
- * All values are computed from catalog.ts — launch-aware, so the
- * "Monthly (now)" column flips itself on Nov 1 with no manual edits, and the
- * Lifetime column shows "(unchanged Nov 1)" because it is the same on both
- * sides of the deadline (audit v6 #1: lifetime buyers must not be spooked by
- * a countdown that does not apply to them).
+ * All values are computed from catalog.ts — launch-aware, so the Monthly
+ * column always shows the rate in force right now and flips itself on Nov 1
+ * with no manual edits.
  *
- * Audit v7 #1: the Annual column is now visible here — previously a dealer
- * who preferred annual billing had to click a pill to discover the price.
- * Annual has no launch variant, so the column never changes on Nov 1.
+ * SIMPLIFIED (owner 2026-10-08, deep-audit: "too many options, tabs and
+ * pricing cards"): the old "Monthly (now)" vs "Monthly (Nov 1)" split columns
+ * are gone — one honest Monthly column + a one-line footnote carries the
+ * Nov 1 change. Countdown-style urgency was removed from the store the same
+ * day; the table stays pure pricing information. 3 billing options:
+ * Monthly | Annual | Lifetime.
  */
 import { PRODUCTS, formatUSD, launchLive, type Product } from '@/lib/catalog';
 
 function colPrices(p: Product) {
   const live = launchLive();
-  const monthlyNow = live
+  const monthly = live
     ? (p.launchPrices?.monthly ?? p.prices.monthly)
     : (p.postLaunchPrices?.monthly ?? p.prices.monthly);
-  const monthlyNov1 = p.postLaunchPrices?.monthly ?? p.prices.monthly;
-  const lifetimeNow = live
+  const lifetime = live
     ? (p.launchPrices?.lifetime ?? p.prices.lifetime)
     : (p.postLaunchPrices?.lifetime ?? p.prices.lifetime);
-  const lifetimeNov1 = p.postLaunchPrices?.lifetime ?? p.prices.lifetime;
-  return { monthlyNow, monthlyNov1, lifetimeNow, lifetimeNov1 };
+  return { monthly, lifetime };
 }
 
 export default function PricingSummaryTable() {
@@ -36,27 +35,23 @@ export default function PricingSummaryTable() {
           <thead>
             <tr className="border-b border-border font-mono-tech text-[10px] uppercase tracking-[.18em] text-muted-foreground">
               <th className="px-5 py-3.5 font-normal">Tool</th>
-              <th className="px-5 py-3.5 font-normal">Monthly (now)</th>
-              <th className="px-5 py-3.5 font-normal">Monthly (Nov 1)</th>
+              <th className="px-5 py-3.5 font-normal">Monthly</th>
               <th className="px-5 py-3.5 font-normal">Annual</th>
               <th className="px-5 py-3.5 font-normal">Lifetime</th>
             </tr>
           </thead>
           <tbody>
             {PRODUCTS.map((p) => {
-              const { monthlyNow, monthlyNov1, lifetimeNow, lifetimeNov1 } = colPrices(p);
+              const { monthly, lifetime } = colPrices(p);
               const isBundle = p.id === 'bundle';
-              const lifetimeUnchanged = lifetimeNow === lifetimeNov1;
               return (
                 <tr key={p.id} className="border-b border-border last:border-b-0" data-testid={`pricing-row-${p.id}`}>
                   <td className="px-5 py-3.5 font-medium text-foreground">{p.name}</td>
-                  <td className="px-5 py-3.5 text-foreground/85">{formatUSD(monthlyNow)}/mo</td>
-                  <td className="px-5 py-3.5 text-foreground/85">{formatUSD(monthlyNov1)}/mo</td>
+                  <td className="px-5 py-3.5 text-foreground/85">{formatUSD(monthly)}/mo</td>
                   <td className="px-5 py-3.5 text-foreground/85">{formatUSD(p.prices.annual)}/yr</td>
                   <td className="px-5 py-3.5 text-foreground/85">
-                    {formatUSD(lifetimeNow)}
+                    {formatUSD(lifetime)}
                     {isBundle ? <span className="ml-1.5 whitespace-nowrap text-[11.5px] text-muted-foreground">· covers 2 PCs</span> : null}
-                    {lifetimeUnchanged ? <span className="ml-1.5 whitespace-nowrap text-[11.5px] text-muted-foreground">(unchanged Nov 1)</span> : null}
                   </td>
                 </tr>
               );
@@ -65,9 +60,9 @@ export default function PricingSummaryTable() {
         </table>
       </div>
       <p className="border-t border-border px-5 py-3 text-[11.5px] font-light leading-5 text-muted-foreground">
-        One row per product — the whole price picture in one glance. Only the monthly rate goes up on Nov 1;
-        annual and lifetime prices stay where they are. Annual = billed once a year, cancel before renewal, every
-        update included while active. Lifetime = one-time payment, permanent use, 1 year of updates included.
+        One row per product — the whole price picture in one glance. Monthly rates go up on Nov 1; annual and lifetime
+        prices stay where they are. Annual = billed once a year, cancel before renewal, every update included while
+        active. Lifetime = one-time payment, permanent use, 1 year of updates included.
       </p>
     </div>
   );

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
+import { useMemo, useRef, useState, type FormEvent } from 'react';
 import {
   BadgePercent,
   Check,
@@ -85,66 +85,6 @@ function pill(active: boolean): string {
       ? 'border bg-white text-[#0b0a10]'
       : 'border border-input text-foreground hover:border-foreground/40 hover:text-foreground',
   ].join(' ');
-}
-
-/* Launch-offer urgency strip — live countdown to the REAL enforced pricing
-   deadline (audit: scarcity must be tied to an enforced end condition — no
-   fabricated inventory counters). Renders nothing once the deadline passes. */
-function LaunchBar() {
-  const endsAt = LAUNCH_OFFER.active ? Date.parse(LAUNCH_OFFER.endsAt) : NaN;
-  const [now, setNow] = useState(() => Date.now());
-
-  useEffect(() => {
-    if (!Number.isFinite(endsAt)) return;
-    const id = window.setInterval(() => setNow(Date.now()), 1000);
-    return () => window.clearInterval(id);
-  }, [endsAt]);
-
-  const msLeft = endsAt - now;
-  if (!Number.isFinite(endsAt) || msLeft <= 0) return null;
-
-  const sec = Math.floor(msLeft / 1000);
-  const days = Math.floor(sec / 86400);
-  const hours = Math.floor((sec % 86400) / 3600);
-  const mins = Math.floor((sec % 3600) / 60);
-  const secs = sec % 60;
-  const pad = (n: number) => String(n).padStart(2, '0');
-
-  return (
-    <div
-      data-testid="launch-bar"
-      className="mb-8 rounded-2xl border border-brand-magenta/25 bg-gradient-to-r from-[#e44bd7]/[.08] via-[#78a6ff]/[.06] to-[#6ee7ef]/[.08] px-5 py-4"
-    >
-      <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
-        <div className="flex items-center gap-2.5">
-          <BadgePercent className="h-4 w-4 shrink-0 text-brand-magenta" />
-          <p className="text-[13.5px] font-medium text-foreground">
-            Launch pricing ends Oct 31 — <span className="text-brand-magenta">monthly goes up Nov 1 ($89 → $149 per tool · $300 → $450 Full Bundle); lifetime stays $999 per tool · $2,499 Full Bundle.</span>
-          </p>
-        </div>
-        <div className="flex items-center gap-1.5 font-mono-tech" data-testid="launch-countdown">
-          {[
-            [days, 'd'],
-            [hours, 'h'],
-            [mins, 'm'],
-            [secs, 's'],
-          ].map(([v, u]) => (
-            <span
-              key={u as string}
-              className="min-w-[44px] rounded-lg border border-border bg-muted px-2 py-1 text-center text-[13px] font-semibold text-foreground"
-            >
-              {pad(v as number)}
-              <span className="ml-0.5 text-[10px] font-normal text-muted-foreground">{u}</span>
-            </span>
-          ))}
-        </div>
-      </div>
-      <p className="mt-3 border-t border-border pt-3 text-[12px] font-light leading-5 text-muted-foreground">
-        {LAUNCH_OFFER.note} Evaluate free for 7 days before you pay — licenses are non-refundable once activated, genuine defects are made right —{' '}
-        <a href="#/refund" className="underline decoration-foreground/30 underline-offset-2 hover:text-foreground">refund policy</a>.
-      </p>
-    </div>
-  );
 }
 
 export default function DealerStore() {
@@ -544,8 +484,23 @@ export default function DealerStore() {
     }
   };
 
+  /* Deep-audit #1 (owner-approved copy, 2026-10-08): the per-tool lifetime
+     price for the unlimited-stores banner — $999 on BOTH sides of Nov 1,
+     computed from the catalog so it can never drift from the cards below. */
+  const toolLifetime = formatUSD(perPcPrice(PRODUCTS.find((p) => p.id === 'extractor')!, 'lifetime', 1));
+
   return (
-    <div className="mt-16">
+    <div id="store" className="mt-16 scroll-mt-24">
+      {/* The single strongest conversion message, stated in plain text at the
+          very top of the pricing section (owner: "pricing section ke top pe"). */}
+      <div data-testid="unlimited-stores-banner" className="mb-10 rounded-2xl border border-brand-cyan/25 bg-gradient-to-r from-[#6ee7ef]/[.08] via-transparent to-[#e44bd7]/[.07] px-6 py-5">
+        <p className="font-mono-tech text-[10px] uppercase tracking-[.22em] text-brand-cyan">One license, unlimited stores</p>
+        <p className="mt-2 text-[clamp(1.15rem,2vw,1.45rem)] font-light leading-snug text-foreground">
+          1 store? <span className="font-semibold text-brand-cyan">{toolLifetime}</span>. 50 stores?{' '}
+          <span className="font-semibold text-brand-cyan">{toolLifetime}</span>. 100+ stores?{' '}
+          <span className="font-semibold text-brand-cyan">{toolLifetime}</span>. One license covers every store you operate.
+        </p>
+      </div>
       <div className="mb-10 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <p className="mb-3 flex items-center gap-2 font-mono-tech text-[10px] uppercase tracking-[.22em] text-brand-magenta">
@@ -570,7 +525,9 @@ export default function DealerStore() {
         <span className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-brand-cyan" /> Support on WhatsApp &amp; email</span>
       </div>
 
-      <LaunchBar />
+      {/* Countdown strip REMOVED (owner 2026-10-08: "countdown hatao") — the
+          launch deadline stays visible as plain info in the intro line and the
+          pricing-table footnote, without ticking-timer pressure. */}
       {/* audit v6 #2: one clean pricing table at the top — no cross-referencing */}
       <div className="mb-8">
         <PricingSummaryTable />
@@ -791,8 +748,15 @@ export default function DealerStore() {
             return (
               <div
                 key={product.id}
-                className="flex flex-col rounded-3xl border border-border bg-card p-6"
+                className={`relative flex flex-col rounded-3xl border bg-card p-6 ${product.id === 'bundle' ? 'border-brand-cyan/45 shadow-[0_0_0_1px_rgba(110,231,239,.18),0_20px_44px_-28px_rgba(110,231,239,.22)]' : 'border-border'}`}
               >
+                {/* audit simplify (owner 2026-10-08): Full Bundle presented as
+                    the recommended option, matching the pricing page */}
+                {product.id === 'bundle' ? (
+                  <p data-testid="bundle-recommended" className="mb-2 inline-flex items-center gap-1.5 self-start rounded-md bg-brand-cyan/10 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[.12em] text-brand-cyan">
+                    <MonitorSmartphone className="h-3 w-3" /> Recommended — best value
+                  </p>
+                ) : null}
                 <h4 className="text-[16.5px] font-medium leading-snug text-foreground">{product.name}</h4>
                 <p className="mt-1.5 text-[13px] font-light leading-5 text-muted-foreground">
                   {product.tagline}
@@ -806,8 +770,12 @@ export default function DealerStore() {
                   ))}
                 </ul>
                 <div className="mt-5 space-y-3">
+                  {/* audit simplify (owner 2026-10-08): exactly 3 billing
+                      options on the cards — Monthly | Annual | Lifetime. The
+                      free trial leaves the pricing pills but stays one tap
+                      away via the link below. */}
                   <div className="flex flex-wrap gap-1.5">
-                    {MODELS.map((m) => (
+                    {MODELS.filter((m) => m.id !== 'trial').map((m) => (
                       <button
                         key={m.id}
                         type="button"
@@ -818,6 +786,20 @@ export default function DealerStore() {
                       </button>
                     ))}
                   </div>
+                  <button
+                    type="button"
+                    data-testid={`trial-link-${product.id}`}
+                    onClick={() => {
+                      if (savedTrialLead()) {
+                        window.location.href = trialDownloadUrl(product.id);
+                        return;
+                      }
+                      setGateFor({ product: product.id, label: product.name });
+                    }}
+                    className="text-[12px] font-medium text-brand-cyan transition-colors hover:text-foreground"
+                  >
+                    or start the free 7-day trial — no card
+                  </button>
                   {product.id === 'bundle' ? (
                   <div className="flex items-center gap-2">
                     <span
