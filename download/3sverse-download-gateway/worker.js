@@ -1171,15 +1171,15 @@ tbody tr:hover td{background:var(--hov)}
 #bgart{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0}
 #bgart>div{position:absolute;will-change:transform}
 #bgart img{position:relative;display:block;width:100%;height:auto;will-change:transform}
-.bg-ring{right:-22vw;top:-16vh;width:min(56vw,720px);opacity:.45;animation:bgfloatR 12s ease-in-out infinite}
+.bg-ring{right:-22vw;top:-16vh;width:min(56vw,720px);opacity:.9;animation:bgfloatR 12s ease-in-out infinite}
 .bg-ring img{animation:bgspin 120s linear infinite}
-.bg-ring-light{display:none;right:-22vw;top:-16vh;width:min(56vw,720px);opacity:.55;animation:bgfloatR 12s ease-in-out infinite}
+.bg-ring-light{display:none;right:-22vw;top:-16vh;width:min(56vw,720px);opacity:.9;animation:bgfloatR 12s ease-in-out infinite}
 .bg-ring-light img{animation:bgspin 120s linear infinite}
-.bg-orb{left:-9vw;bottom:-24vh;width:min(34vw,440px);opacity:.45;animation:bgfloatO 13s ease-in-out infinite}
+.bg-orb{left:-9vw;bottom:-24vh;width:min(34vw,440px);opacity:.95;animation:bgfloatO 13s ease-in-out infinite}
 .bg-orb img{animation:bgspin 140s linear infinite}
 body[data-theme="light"] .bg-ring{display:none}
 body[data-theme="light"] .bg-ring-light{display:block}
-body[data-theme="light"] .bg-orb{opacity:.45}
+body[data-theme="light"] .bg-orb{opacity:.95}
 @keyframes bgspin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 @keyframes bgfloatR{0%,100%{transform:translateY(-16px)}50%{transform:translateY(16px)}}
 @keyframes bgfloatO{0%,100%{transform:translateY(-12px)}50%{transform:translateY(12px)}}
