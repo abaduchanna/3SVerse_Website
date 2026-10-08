@@ -1857,7 +1857,7 @@ function Reviews() {
         <Reveal>
           <div className="mb-14 flex flex-col justify-between gap-8 md:flex-row md:items-end">
             <div>
-              <Kicker>08 — Trust &amp; guarantees</Kicker>
+              <Kicker>07 — Trust &amp; guarantees</Kicker>
               <h2 className="max-w-2xl text-[clamp(2.2rem,4vw,3.6rem)] font-light leading-[1.05] tracking-[-0.02em] text-foreground">
                 No invented praise. <span className="text-brand-cyan">Verified dealers</span> only.
               </h2>
