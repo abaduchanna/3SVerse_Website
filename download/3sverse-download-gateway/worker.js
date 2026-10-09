@@ -252,7 +252,7 @@ function challengePage(request, env, nextUrl) {
   const sep = nextUrl.includes("?") ? "&" : "?";
   const html = `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">` +
     `<meta name="viewport" content="width=device-width, initial-scale=1">` +
-    `<link rel="icon" href="https://3sverse.com/favicon.ico?v=2">` +
+    `<link rel="icon" href="https://3sverse.com/favicon.ico?v=3">` +
     `<title>3S Verse — quick check</title>` +
     `<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer><\/script>` +
     `</head><body style="font-family:Arial,sans-serif;background:#f4f3f8;padding:40px;text-align:center;">` +
@@ -574,7 +574,7 @@ function validate(ledger, orderNo, product) {
 /* -------------------------------- pages -------------------------------- */
 function infoPage() {
   return new Response(
-    `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><link rel="icon" href="https://3sverse.com/favicon.ico?v=2"><title>3S Verse — Downloads</title></head>
+    `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><link rel="icon" href="https://3sverse.com/favicon.ico?v=3"><title>3S Verse — Downloads</title></head>
 <body style="font-family:Arial,sans-serif;background:#f4f3f8;padding:40px;text-align:center;">
 <div style="max-width:520px;margin:0 auto;background:#fff;border:1px solid #e6e4ee;border-radius:12px;padding:32px;">
 <h1 style="margin:0 0 8px;font-size:20px;">3S Verse — Customer Downloads</h1>
@@ -598,7 +598,7 @@ function bundlePage(orderNo, products) {
     )
     .join("\n");
   return new Response(
-    `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><link rel="icon" href="https://3sverse.com/favicon.ico?v=2"><title>3S Verse — Your downloads</title></head>
+    `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><link rel="icon" href="https://3sverse.com/favicon.ico?v=3"><title>3S Verse — Your downloads</title></head>
 <body style="font-family:Arial,sans-serif;background:#f4f3f8;padding:40px;text-align:center;">
 <div style="max-width:520px;margin:0 auto;background:#fff;border:1px solid #e6e4ee;border-radius:12px;padding:32px;">
 <h1 style="margin:0 0 6px;font-size:20px;">Order ${orderNo} — your software</h1>
@@ -612,7 +612,7 @@ ${buttons}
 
 function errorPage(status, message) {
   return new Response(
-    `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><link rel="icon" href="https://3sverse.com/favicon.ico?v=2"><title>3S Verse — Download</title></head>
+    `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><link rel="icon" href="https://3sverse.com/favicon.ico?v=3"><title>3S Verse — Download</title></head>
 <body style="font-family:Arial,sans-serif;background:#f4f3f8;padding:40px;text-align:center;">
 <div style="max-width:520px;margin:0 auto;background:#fff;border:1px solid #fecaca;border-radius:12px;padding:32px;">
 <h1 style="margin:0 0 8px;font-size:20px;color:#b91c1c;">Download unavailable</h1>
@@ -1116,7 +1116,7 @@ function opsShellPage() {
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>3S Verse — Ops</title>
-<link rel="icon" href="https://3sverse.com/favicon.ico?v=2">
+<link rel="icon" href="https://3sverse.com/favicon.ico?v=3">
 <style>
 :root{--bg:#0b1020;--card:#141b38;--bd:#2b3561;--teal:#22b8c9;--tx:#e8ecf7;--mut:#9aa4c0;--ok:#5ee39a;--warn:#ffcf70;--bad:#ff9b93;--hov:#1a2246;--chipok:#12301f;--chipwarn:#33270e;--chipbad:#3a1518;--chipmut:#23283b;--chipteal:#0e2f36;--thead:#e8ecf7}
 body[data-theme="light"]{--bg:#f4f3f8;--card:#fff;--bd:#e6e4ee;--teal:#0e7c8c;--tx:#16151d;--mut:#6b6880;--ok:#1f7a4d;--warn:#b45309;--bad:#b3261e;--hov:#fafafd;--chipok:#e5f4ec;--chipwarn:#fdf1df;--chipbad:#fbe9e7;--chipmut:#efedf5;--chipteal:#e3f1f3;--thead:#16151d}
@@ -1171,15 +1171,15 @@ tbody tr:hover td{background:var(--hov)}
 #bgart{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0}
 #bgart>div{position:absolute;will-change:transform}
 #bgart img{position:relative;display:block;width:100%;height:auto;will-change:transform}
-.bg-ring{right:-22vw;top:-16vh;width:min(56vw,720px);opacity:.45;animation:bgfloatR 12s ease-in-out infinite}
+.bg-ring{right:-22vw;top:-16vh;width:min(56vw,720px);opacity:.9;animation:bgfloatR 12s ease-in-out infinite}
 .bg-ring img{animation:bgspin 120s linear infinite}
-.bg-ring-light{display:none;right:-22vw;top:-16vh;width:min(56vw,720px);opacity:.3;animation:bgfloatR 12s ease-in-out infinite}
+.bg-ring-light{display:none;right:-22vw;top:-16vh;width:min(56vw,720px);opacity:.9;animation:bgfloatR 12s ease-in-out infinite}
 .bg-ring-light img{animation:bgspin 120s linear infinite}
-.bg-orb{left:-9vw;bottom:-24vh;width:min(34vw,440px);opacity:.45;animation:bgfloatO 13s ease-in-out infinite}
+.bg-orb{left:-9vw;bottom:-24vh;width:min(34vw,440px);opacity:.95;animation:bgfloatO 13s ease-in-out infinite}
 .bg-orb img{animation:bgspin 140s linear infinite}
 body[data-theme="light"] .bg-ring{display:none}
 body[data-theme="light"] .bg-ring-light{display:block}
-body[data-theme="light"] .bg-orb{opacity:.3}
+body[data-theme="light"] .bg-orb{opacity:.95}
 @keyframes bgspin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 @keyframes bgfloatR{0%,100%{transform:translateY(-16px)}50%{transform:translateY(16px)}}
 @keyframes bgfloatO{0%,100%{transform:translateY(-12px)}50%{transform:translateY(12px)}}
@@ -1266,7 +1266,7 @@ function days(d){if(!d)return null;var t=Date.parse(d+'T00:00:00Z'),n=Date.parse
 function licById(id){if(!id)return null;var L=(DATA&&DATA.licenses)||[];for(var i=0;i<L.length;i++){if(L[i].license_id===id)return L[i];}return null;}
 function orderForLic(lid){var O=(DATA&&DATA.orders)||[];for(var i=0;i<O.length;i++){if(O[i].licenseId===lid)return O[i].ref;}return '';}
 function orderItems(rec){return (rec.items||[]).map(function(it){var n=PNAME[it.productId]||it.productId;var q=' ×'+(it.qty||1);var pcs=it.pcs?' · '+it.pcs+' PC':'';var be=it.bundleEach?' · '+it.bundleEach+' each':'';var m=(MSHORT[it.model]||it.model);return n+q+pcs+be+' ('+m+')';}).join('; ');}
-function licChip(l){if(!l)return '<span class="chip c-warn">no license yet</span>';var d=days(l.expires);if(l.expires&&d<0)return '<span class="chip c-bad">expired '+esc(l.expires)+'</span>';if(l.expires&&d<=30)return '<span class="chip c-warn">expires in '+d+'d</span>';if(l.expires)return '<span class="chip c-ok">till '+esc(l.expires)+'</span>';return '<span class="chip c-teal">lifetime</span>';}
+function licChip(l){if(!l)return '<span class="chip c-warn">no license yet</span>';if(l.status==='revoked')return '<span class="chip c-bad">revoked</span>';var d=days(l.expires);if(l.expires&&d<0)return '<span class="chip c-bad">expired '+esc(l.expires)+'</span>';if(l.expires&&d<=30)return '<span class="chip c-warn">expires in '+d+'d</span>';if(l.expires)return '<span class="chip c-ok">till '+esc(l.expires)+'</span>';return '<span class="chip c-teal">lifetime</span>';}
 function unlock(){KEY=document.getElementById('key').value.trim();document.getElementById('gerr').textContent='';loadData();}
 function logout(){sessionStorage.removeItem('opsKey');location.reload();}
 function loadData(){
@@ -1289,10 +1289,10 @@ function loadData(){
 }
 function renderCards(){
   var O=(DATA&&DATA.orders)||[],L=(DATA&&DATA.licenses)||[];
-  var pend=0,ful=0,revenue=0,act=0,exp=0,expn=0;
+  var pend=0,ful=0,revenue=0,act=0,exp=0,expn=0,rvk=0;
   O.forEach(function(o){if(o.status==='fulfilled')ful++;else if(o.status==='pending')pend++;revenue+=money(o.totalLabel);});
-  L.forEach(function(l){var d=days(l.expires);if(l.expires&&d<0)exp++;else if(l.expires&&d<=30)expn++;else act++;});
-  var cards=[['Orders',O.length],['Pending',pend],['Fulfilled',ful],['Licenses',L.length],['Active',act],['Expiring ≤30d',expn],['Expired',exp],['Revenue','$'+revenue.toFixed(2)]];
+  L.forEach(function(l){if(l.status==='revoked'){rvk++;return;}var d=days(l.expires);if(l.expires&&d<0)exp++;else if(l.expires&&d<=30)expn++;else act++;});
+  var cards=[['Orders',O.length],['Pending',pend],['Fulfilled',ful],['Licenses',L.length],['Active',act],['Expiring ≤30d',expn],['Expired',exp],['Revoked',rvk],['Revenue','$'+revenue.toFixed(2)]];
   document.getElementById('cards').innerHTML=cards.map(function(c){return '<div class="card"><div class="k">'+c[0]+'</div><div class="v">'+c[1]+'</div></div>';}).join('');
 }
 function renderOrders(){
@@ -1343,7 +1343,8 @@ function renderLic(){
   rows.forEach(function(l){
     var d=days(l.expires);
     var st;
-    if(l.expires&&d<0)st='<span class="chip c-bad">expired</span>';
+    if(l.status==='revoked')st='<span class="chip c-bad"'+(l.revoked_at?' title="revoked '+new Date(l.revoked_at*1000).toISOString().slice(0,10)+'"':'')+'>revoked</span>';
+    else if(l.expires&&d<0)st='<span class="chip c-bad">expired</span>';
     else if(l.expires&&d<=30)st='<span class="chip c-warn">'+d+'d left</span>';
     else st='<span class="chip c-ok">active</span>';
     var prods=(l.products||[]).map(function(p){return PNAME[p]||p;}).join(', ');
