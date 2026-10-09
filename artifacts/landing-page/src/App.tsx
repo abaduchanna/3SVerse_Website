@@ -36,6 +36,8 @@ import {
   Boxes,
   Calculator,
   Check,
+  ChevronLeft,
+  ChevronRight,
   Clock,
   Database,
   Download,
@@ -846,6 +848,140 @@ function Outcomes() {
   );
 }
 
+/* Click-to-zoom lightbox for the tool screenshots (Task 107). Minimal a11y:
+   dialog role, Esc / backdrop / ✕ close, ← → keys navigate, body scroll
+   locked while open. Framer-motion fade/scale, matching the site's motion. */
+function Lightbox({ shots, index, onClose, onNav }: {
+  shots: { src: string; alt: string }[];
+  index: number;
+  onClose: () => void;
+  onNav: (i: number) => void;
+}) {
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+      if (e.key === 'ArrowRight') onNav((index + 1) % shots.length);
+      if (e.key === 'ArrowLeft') onNav((index - 1 + shots.length) % shots.length);
+    };
+    window.addEventListener('keydown', onKey);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [index, shots.length, onClose, onNav]);
+  const shot = shots[index];
+  return (
+    <motion.div
+      key="lightbox"
+      role="dialog"
+      aria-modal="true"
+      aria-label={shot.alt}
+      className="fixed inset-0 z-[120] flex items-center justify-center bg-background/95 p-4 backdrop-blur-md sm:p-8"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.18 }}
+      onClick={onClose}
+    >
+      <button
+        type="button"
+        onClick={onClose}
+        aria-label="Close zoom"
+        className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full border border-border bg-background/70 text-foreground transition-colors hover:bg-background"
+      >
+        <X className="h-5 w-5" />
+      </button>
+      <figure
+        className="relative flex max-h-full flex-col items-center"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <motion.img
+          key={shot.src}
+          src={shot.src}
+          alt={shot.alt}
+          className="max-h-[82vh] w-auto max-w-full rounded-lg border border-border bg-background object-contain shadow-[0_32px_120px_rgba(0,0,0,.55)]"
+          initial={{ opacity: 0, scale: 0.965 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.22, ease: 'easeOut' }}
+        />
+        <figcaption className="mt-3 text-center font-mono-tech text-[10px] uppercase tracking-[.18em] text-muted-foreground">
+          {shot.alt} · {index + 1} / {shots.length}
+        </figcaption>
+        {shots.length > 1 && (
+          <>
+            <button
+              type="button"
+              aria-label="Previous screenshot"
+              onClick={() => onNav((index - 1 + shots.length) % shots.length)}
+              className="absolute left-1 top-[45%] flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-background/70 text-foreground transition-colors hover:bg-background sm:-left-16"
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+            <button
+              type="button"
+              aria-label="Next screenshot"
+              onClick={() => onNav((index + 1) % shots.length)}
+              className="absolute right-1 top-[45%] flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-background/70 text-foreground transition-colors hover:bg-background sm:-right-16"
+            >
+              <ChevronRight className="h-5 w-5" />
+            </button>
+          </>
+        )}
+      </figure>
+    </motion.div>
+  );
+}
+
+/* New static app screenshots — dark + light side by side, click any to zoom
+   in a fullscreen lightbox (Task 107, owner: "new images laga de aur click
+   to zoom hon"). Replaces the heavy ~3 MB theme-switch GIFs (~490 KB total). */
+function ToolGallery({ id, title }: { id: string; title: string }) {
+  const shots = [
+    { src: `/screenshots/vidapay-${id}-dark.png`, alt: `${title} - dark theme` },
+    { src: `/screenshots/vidapay-${id}-light.png`, alt: `${title} - light theme` },
+  ];
+  const [zoom, setZoom] = useState<number | null>(null);
+  return (
+    <figure>
+      <div className="grid gap-3 sm:grid-cols-2">
+        {shots.map((s, i) => (
+          <button
+            key={s.src}
+            type="button"
+            aria-label={`Zoom: ${s.alt}`}
+            onClick={() => setZoom(i)}
+            className="group relative block cursor-zoom-in overflow-hidden rounded-xl border border-border shadow-[0_24px_80px_rgba(0,0,0,.25)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#6ee7ef] focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          >
+            <img
+              src={s.src}
+              alt={s.alt}
+              width={960}
+              height={515}
+              loading="lazy"
+              className="w-full transition-transform duration-500 ease-out group-hover:scale-[1.02]"
+            />
+            <span className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center pb-2.5 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+              <span className="rounded-md bg-background/85 px-2.5 py-1 font-mono-tech text-[9px] uppercase tracking-[.18em] text-foreground backdrop-blur">
+                Click to zoom
+              </span>
+            </span>
+          </button>
+        ))}
+      </div>
+      <figcaption className="mt-2.5 text-center font-mono-tech text-[9px] uppercase tracking-[.18em] text-muted-foreground">
+        Live app - dark / light · Click any screenshot to zoom
+      </figcaption>
+      <AnimatePresence>
+        {zoom !== null && (
+          <Lightbox key="lb" shots={shots} index={zoom} onClose={() => setZoom(null)} onNav={setZoom} />
+        )}
+      </AnimatePresence>
+    </figure>
+  );
+}
+
 /* Dealer tools — template's "Use cases" tabbed card, with the three VidaPay
    portal tools by their FULL names (always, everywhere). Positioned for the
    dealership's FRONT OFFICE (owner / office manager / admin staff) — these
@@ -863,12 +999,7 @@ const TOOLS = [
       { icon: Database, label: 'Export ready' },
     ],
     tags: ['Rebates', 'Spiffs', 'Claims', 'One clean sheet'],
-    visual: (
-      <figure>
-        <img src="/screenshots/vidapay-extractor-dark-light.gif" alt="VidaPay Incentive Dashboard Extractor switching between dark and light mode" width={1000} height={538} loading="lazy" className="w-full rounded-xl border border-border shadow-[0_24px_80px_rgba(0,0,0,.25)]" />
-        <figcaption className="mt-2.5 text-center font-mono-tech text-[9px] uppercase tracking-[.18em] text-muted-foreground">Live app - dark / light</figcaption>
-      </figure>
-    ),
+    visual: <ToolGallery id="extractor" title="VidaPay Incentive Extractor" />,
   },
   {
     id: 'ordering',
@@ -882,12 +1013,7 @@ const TOOLS = [
       { icon: Package, label: 'Fewer errors' },
     ],
     tags: ['Bulk', 'All stores', 'One submit', 'Fewer mistakes'],
-    visual: (
-      <figure>
-        <img src="/screenshots/vidapay-device-ordering-dark-light.gif" alt="VidaPay Device Ordering Automation switching between dark and light mode" width={1000} height={538} loading="lazy" className="w-full rounded-xl border border-border shadow-[0_24px_80px_rgba(0,0,0,.25)]" />
-        <figcaption className="mt-2.5 text-center font-mono-tech text-[9px] uppercase tracking-[.18em] text-muted-foreground">Live app - dark / light</figcaption>
-      </figure>
-    ),
+    visual: <ToolGallery id="ordering" title="VidaPay Device Ordering" />,
   },
   {
     id: 'rebate',
@@ -901,12 +1027,7 @@ const TOOLS = [
       { icon: TrendingUp, label: 'Nothing missed' },
     ],
     tags: ['Rebates', 'Bulk', 'Status tracking', 'Validation'],
-    visual: (
-      <figure>
-        <img src="/screenshots/vidapay-rebate-filing-dark-light.gif" alt="VidaPay Rebate Filing switching between dark and light mode" width={1000} height={538} loading="lazy" className="w-full rounded-xl border border-border shadow-[0_24px_80px_rgba(0,0,0,.25)]" />
-        <figcaption className="mt-2.5 text-center font-mono-tech text-[9px] uppercase tracking-[.18em] text-muted-foreground">Live app - dark / light</figcaption>
-      </figure>
-    ),
+    visual: <ToolGallery id="rebate" title="VidaPay Rebate Filing" />,
   },
 ];
 
