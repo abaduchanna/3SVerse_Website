@@ -1,4 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { createPortal } from 'react-dom';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import NotFound from '@/pages/not-found';
@@ -873,7 +874,13 @@ function Lightbox({ shots, index, onClose, onNav }: {
     };
   }, [index, shots.length, onClose, onNav]);
   const shot = shots[index];
-  return (
+  /* Rendered through a PORTAL to document.body: ancestors with transform /
+     filter (the Reveal blur/y animations) turn `fixed` into positioning
+     relative to THEM, which pinned the zoom to the tools panel and left
+     most of the screen click-through — the zoom then didn't close on a
+     random click. A portal escapes every ancestor, so `fixed inset-0` is
+     viewport-relative again. */
+  return createPortal(
     <motion.div
       key="lightbox"
       role="dialog"
@@ -934,7 +941,8 @@ function Lightbox({ shots, index, onClose, onNav }: {
           </>
         )}
       </figure>
-    </motion.div>
+    </motion.div>,
+    document.body
   );
 }
 
@@ -2182,7 +2190,7 @@ function VideoLightbox({ video, onClose }: { video: ProjectVideo | null; onClose
 
   return (
     <AnimatePresence>
-      {video && source && (
+      {video && source && createPortal(
         <motion.div
           key="video-lightbox"
           data-testid="video-lightbox"
@@ -2236,7 +2244,8 @@ function VideoLightbox({ video, onClose }: { video: ProjectVideo | null; onClose
               )}
             </div>
           </motion.div>
-        </motion.div>
+        </motion.div>,
+        document.body
       )}
     </AnimatePresence>
   );

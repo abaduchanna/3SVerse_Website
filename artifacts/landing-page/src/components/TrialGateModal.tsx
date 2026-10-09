@@ -10,6 +10,7 @@
  * the page remain gated either way.
  */
 import { useEffect, useState, type FormEvent } from 'react';
+import { createPortal } from 'react-dom';
 import { FileDown, Loader2, MailCheck, ShieldCheck, X } from 'lucide-react';
 import { submitTrialLead } from '@/lib/trialgate';
 
@@ -68,7 +69,9 @@ export default function TrialGateModal({ open, productName, onClose, onUnlocked 
     }, 900);
   };
 
-  return (
+  /* Portaled to document.body: Reveal ancestors carry transform/filter,
+     which would hijack `fixed inset-0` and pin this modal inside the panel. */
+  return createPortal(
     <div
       className="fixed inset-0 z-[90] flex items-end justify-center bg-[#05040a]/70 p-4 backdrop-blur-sm sm:items-center"
       role="dialog"
@@ -188,6 +191,7 @@ export default function TrialGateModal({ open, productName, onClose, onUnlocked 
           </form>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
