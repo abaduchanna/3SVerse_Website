@@ -16,6 +16,7 @@ import { savedTrialLead } from '@/lib/trialgate';
 
 const RELEASES_API = 'https://api.github.com/repos/abaduchanna/3SVerse_Downloads/releases/latest';
 const RELEASES_PAGE = 'https://github.com/abaduchanna/3SVerse_Downloads/releases/latest';
+const RELEASES_BASE = 'https://github.com/abaduchanna/3SVerse_Downloads/releases/latest/download/';
 /* Deterministic per-file URLs: GitHub redirects /releases/latest/download/<name>
    to the newest release's asset — zero API calls, never rate-limited. The
    buttons must render even when the GitHub API is exhausted (60 req/hr per
@@ -142,7 +143,11 @@ export default function DownloadPage() {
         {metaFailed && (
           <div className="mt-8 rounded-2xl border border-amber-400/30 bg-amber-400/[.06] p-5 text-[13.5px] leading-6 text-foreground">
             Live checksums and file sizes are temporarily unavailable (GitHub API limit hit on this network).
-            The apps below are always the current builds — download normally, and verify the SHA-256 on the{' '}
+            The apps below are always the current builds — download normally, and verify the SHA-256 from the{' '}
+            <a className="text-brand-cyan hover:underline" href={`${RELEASES_BASE}CHECKSUMS.txt`} target="_blank" rel="noopener noreferrer">
+              official CHECKSUMS.txt
+            </a>{' '}
+            or on the{' '}
             <a className="text-brand-cyan hover:underline" href={RELEASES_PAGE} target="_blank" rel="noopener noreferrer">
               releases page
             </a>.
