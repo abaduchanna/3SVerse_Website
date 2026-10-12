@@ -391,14 +391,49 @@ function expandProducts(order) {
 }
 
 /* ---------------------------- order intake ----------------------------- */
+/* Origin gate: public intake endpoints (/order, /contact) accept browser
+   traffic ONLY from the official site. Native clients (no Origin/Referer
+   header) and admin tooling (x-ops-key) keep working. Clone sites posting
+   from their own domain get 403 + a console log line for visibility.       */
+function originAllowed(request) {
+  if (request.headers.get("x-ops-key")) return true;
+  const origin = (request.headers.get("origin") || "").trim();
+  const referer = (request.headers.get("referer") || "").trim();
+  if (!origin && !referer) return true;
+  const okUrl = (u) => {
+    try {
+      const x = new URL(u);
+      return x.protocol === "https:" && (x.hostname === "3sverse.com" || x.hostname === "www.3sverse.com");
+    } catch {
+      return false;
+    }
+  };
+  if (origin) return okUrl(origin);
+  return okUrl(referer);
+}
+
 function corsHeaders(request) {
-  const origin = request.headers.get("origin") || "*";
+  const origin = (request.headers.get("origin") || "").trim();
+  let allow = false;
+  if (origin) {
+    try {
+      const host = new URL(origin).hostname;
+      allow = host === "3sverse.com" || host === "www.3sverse.com";
+    } catch {
+      allow = false;
+    }
+  }
   return {
-    "Access-Control-Allow-Origin": origin,
+    ...(allow ? { "Access-Control-Allow-Origin": origin } : {}),
     "Access-Control-Allow-Methods": "POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
     "Access-Control-Max-Age": "86400",
   };
+}
+
+function blockedOriginResponse(request, path) {
+  console.log(JSON.stringify({ blocked: "origin", path, origin: request.headers.get("origin") || "", referer: request.headers.get("referer") || "" }));
+  return jsonCors(request, 403, { ok: false, error: "This endpoint accepts requests only from https://3sverse.com." });
 }
 
 function jsonCors(request, status, payload) {
@@ -979,6 +1014,9 @@ async function handleOpsLic(request, env, url) {
     return json(502, { ok: false, error: String((e && e.message) || e) });
   }
   if (!rec) return json(404, { ok: false, error: "License not found in the ledger." });
+  if (String(rec.status || "").toLowerCase() === "revoked") {
+    return json(403, { ok: false, error: "License is revoked - .lic delivery disabled." });
+  }
   let lic;
   try {
     lic = await buildLicFile(env, rec);
@@ -1062,6 +1100,9 @@ async function handleOpsMailLic(request, env) {
     return json(502, { ok: false, error: String((e && e.message) || e) });
   }
   if (!rec) return json(404, { ok: false, error: "License not found in the ledger." });
+  if (String(rec.status || "").toLowerCase() === "revoked") {
+    return json(403, { ok: false, error: "License is revoked - .lic delivery disabled." });
+  }
   let lic;
   try {
     lic = await buildLicFile(env, rec);
@@ -1462,6 +1503,9 @@ export default {
       if (request.method !== "POST") {
         return jsonCors(request, 405, { ok: false, error: "Method not allowed." });
       }
+      if (!originAllowed(request)) {
+        return blockedOriginResponse(request, "/order");
+      }
       return handleOrderPost(request, env);
     }
 
@@ -1471,6 +1515,9 @@ export default {
       }
       if (request.method !== "POST") {
         return jsonCors(request, 405, { ok: false, error: "Method not allowed." });
+      }
+      if (!originAllowed(request)) {
+        return blockedOriginResponse(request, "/contact");
       }
       return handleContactPost(request, env);
     }
