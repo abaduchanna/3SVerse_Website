@@ -37,8 +37,8 @@ const KNOWN_EXES: Array<{ name: string; label: string }> = [
    stable even if newer releases appear; Range/streaming verified). A .mp4 URL
    renders a native <video> player; paste a YouTube/Loom embed URL instead and
    the iframe branch takes over automatically. */
-const ACTIVATION_VIDEO_URL = 'https://github.com/abaduchanna/3SVerse_Downloads/releases/download/latest/3SVerse_Activation_in_60_Seconds.mp4';
-const ACTIVATION_VIDEO_POSTER = 'https://github.com/abaduchanna/3SVerse_Downloads/releases/download/latest/3SVerse_Activation_poster.jpg';
+const ACTIVATION_VIDEO_URL: string = ''; // asset wiped from the rolling GitHub release (live 404 found 2026-10-13) — restore when re-uploaded, ideally self-hosted
+const ACTIVATION_VIDEO_POSTER: string = ''; // unused while ACTIVATION_VIDEO_URL is empty
 
 interface AssetMeta { size?: number; digest?: string }
 
@@ -107,7 +107,7 @@ export default function DownloadPage() {
       <header className="sticky top-0 z-10 border-b border-border bg-background/85 backdrop-blur-xl">
         <div className="mx-auto flex h-[76px] max-w-7xl items-center justify-between gap-8 px-5 lg:px-8">
           <a href="#/" aria-label="3SVerse — home" className="flex items-center gap-2.5">
-            <img src="/logo-240.webp" alt="3SVerse" width={240} height={57} className="h-7 w-auto" />
+            <img src="/logo-240.webp" alt="3SVerse" width={789} height={240} className="h-7 w-auto" />
           </a>
           <a
             href="#/"

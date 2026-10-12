@@ -171,11 +171,9 @@ export const VIDEO_DEMO = {
 
 /** Short, captioned overview assembled from the real product recordings. */
 export const OVERVIEW_DEMO = {
-  url: 'https://github.com/abaduchanna/3SVerse_Downloads/releases/download/latest/3SVerse_VidaPay_Tools_90_Second_Demo.mp4',
-  poster: 'https://github.com/abaduchanna/3SVerse_Downloads/releases/download/latest/3SVerse_VidaPay_Tools_90_Second_Demo_Poster.jpg',
-  kicker: '90-second product overview',
-  title: 'See all three tools in 90 seconds',
-  note: 'A captioned overview built from the real Incentive Extractor and Rebate Filing recordings, plus the live Device Ordering interface.',
+  kicker: 'Product demos — recorded from the real apps',
+  title: 'See all three tools at work',
+  note: 'Full walkthroughs of Rebate Filing and Incentive Extractor, plus the live Device Ordering interface.',
 } as const;
 
 /** Both published product demos — embedded on the landing page and linked on YouTube. */

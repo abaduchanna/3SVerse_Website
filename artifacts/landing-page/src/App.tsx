@@ -14,6 +14,7 @@ const OrderStatusPage = lazy(() => import('@/pages/OrderStatus'));
    via the inline script in index.html (404.html SPA fallback). */
 const LegalPage = lazy(() => import('@/pages/Legal'));
 const DownloadPage = lazy(() => import('@/pages/DownloadPage'));
+const DemoPage = lazy(() => import('@/pages/DemoPage'));
 /* About + Pricing — template-style standalone pages, same hash-routing
    pattern as the legal views (static-safe on GitHub Pages). */
 const AboutPage = lazy(() => import('@/pages/About'));
@@ -377,7 +378,7 @@ function BrandCursor() {
       {/* the 27s loop, right of the pointer: logo chip → mini hero ring → mini footer orb */}
       <div ref={chipRef} className="brand-cursor-chip-anchor will-change-transform">
         <div className="brand-cursor-fade f-chip">
-          <img src="/logo-240.webp" alt="" width={240} height={57} draggable={false} className="select-none" />
+          <img src="/logo-240.webp" alt="" width={789} height={240} draggable={false} className="select-none" />
         </div>
         <div className="brand-cursor-fade f-ring">
           <img src="/shapes/shape-v1.webp" alt="" width={900} height={932} draggable={false} className="shape-img-dark" />
@@ -603,7 +604,7 @@ function Hero() {
               <div className="mt-10 flex flex-wrap items-center gap-4">
                 <BtnWhite href="#/download" testId="button-hero-get-started">Download the free trial</BtnWhite>
                 <a href="#demo" data-testid="link-hero-explore" className="group inline-flex items-center gap-2 px-2 py-3 text-[15px] font-medium text-foreground transition-colors hover:text-foreground">
-                  Watch the 90-second demo
+                  Watch the demo
                   <ArrowDownRight className="h-4 w-4 text-brand-cyan transition-transform duration-300 group-hover:translate-x-1 group-hover:translate-y-1" />
                 </a>
               </div>
@@ -1515,19 +1516,17 @@ function DemoStrip() {
       <div className="p-8 pb-0 sm:p-12 sm:pb-0">
         <p className="flex items-center gap-2 font-mono-tech text-[10px] uppercase tracking-[.22em] text-brand-cyan"><PlayCircle className="h-3.5 w-3.5" /> {OVERVIEW_DEMO.kicker}</p>
         <h3 className="mt-3 text-[clamp(1.6rem,2.4vw,2.2rem)] font-light leading-[1.1] tracking-[-0.02em] text-foreground">{OVERVIEW_DEMO.title}</h3>
-        <p className="mt-4 max-w-2xl text-[14px] font-light leading-7 text-foreground/75">{OVERVIEW_DEMO.note} Press play below — no download is required.</p>
-      </div>
-      <div className="p-8 pb-0 sm:p-12 sm:pb-0">
-        <video controls preload="metadata" poster={OVERVIEW_DEMO.poster} className="aspect-video w-full rounded-2xl border border-border bg-black" data-testid="overview-demo-video">
-          <source src={OVERVIEW_DEMO.url} type="video/mp4" />
-          Your browser does not support MP4 video. Download it from the link below.
-        </video>
-        <a href={OVERVIEW_DEMO.url} className="mt-3 inline-flex items-center gap-2 text-[13px] font-medium text-brand-cyan hover:text-foreground">Need an offline copy? Download the video <Download className="h-3.5 w-3.5" /></a>
+        <p className="mt-4 max-w-2xl text-[14px] font-light leading-7 text-foreground/75">{OVERVIEW_DEMO.note} Both full walkthroughs play right here — no signup, no gates.</p>
       </div>
       <div className="px-8 pt-10 sm:px-12">
         <p className="font-mono-tech text-[10px] uppercase tracking-[.22em] text-muted-foreground">{VIDEO_DEMO.kicker}</p>
         <h4 className="mt-2 text-[20px] font-light text-foreground">{VIDEO_DEMO.title}</h4>
         <p className="mt-2 max-w-2xl text-[13.5px] font-light leading-6 text-foreground/70">{VIDEO_DEMO.note}</p>
+        <p className="mt-3">
+          <a href="/demo" data-testid="link-demo-page" className="inline-flex items-center gap-1.5 text-[13px] font-medium text-brand-cyan underline-offset-4 transition-colors hover:text-foreground hover:underline">
+            <PlayCircle className="h-3.5 w-3.5" /> Permanent watch page — 3sverse.com/demo
+          </a>
+        </p>
       </div>
       <div className="grid gap-6 p-8 sm:p-12 lg:grid-cols-2">
         {DEMOS.map((demo) => (
@@ -2870,6 +2869,19 @@ function App() {
   // #/order — order tracking / free re-download. Hash-routed like the views
   // above so it works on GitHub Pages, where a clean /order path would hit
   // the 404 shim (the shim maps /order -> /#/order).
+  // #/demo — dedicated video watch page (generated at /demo/ via
+    // generate-routes + sitemap; videos are the main content there).
+    if (hash.startsWith('#/demo')) {
+      return (
+        <Suspense fallback={
+          <div className="grid min-h-screen place-items-center bg-background text-sm text-muted-foreground" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            Loading…
+          </div>
+        }>
+          <DemoPage />
+        </Suspense>
+      );
+    }
   if (hash.startsWith('#/order')) {
     return (
       <Suspense fallback={

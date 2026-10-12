@@ -97,6 +97,14 @@ const ROUTES = {
     canonical: `${SITE}/download/`,
     shim: "#/download",
   },
+  demo: {
+    title: "Watch the demos — VidaPay Rebate Filing & Incentive Extractor — 3S Verse",
+    description:
+      "Full walkthroughs of the 3S Verse VidaPay dealer tools, recorded from the real apps: file and track rebate claims step by step, and pull incentive data straight from the VidaPay portal into a clean Excel sheet.",
+    robots: "index,follow",
+    canonical: `${SITE}/demo/`,
+    shim: "#/demo",
+  },
   order: {
     title: "Order Status — 3S Verse",
     description:
@@ -115,7 +123,7 @@ const ROUTES = {
   },
 };
 
-const SHIM = (view) => `<script>(function(){var p=location.pathname.replace(/\\/+$/,'').toLowerCase();var map={'/privacy':'#/privacy','/terms':'#/terms','/refund':'#/refund','/eula':'#/eula','/security':'#/security','/about':'#/about','/pricing':'#/pricing','/download':'#/download','/trial':'#/download'};var v=map[p];if(v){location.replace(location.origin+'/'+v+location.search);}})();</script>`;
+const SHIM = (view) => `<script>(function(){var p=location.pathname.replace(/\\/+$/,'').toLowerCase();var map={'/privacy':'#/privacy','/terms':'#/terms','/refund':'#/refund','/eula':'#/eula','/security':'#/security','/about':'#/about','/pricing':'#/pricing','/download':'#/download','/trial':'#/download','/demo':'#/demo'};var v=map[p];if(v){location.replace(location.origin+'/'+v+location.search);}})();</script>`;
 
 function buildPage(route, meta) {
   let html = readFileSync(indexHtml, "utf-8");
