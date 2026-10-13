@@ -117,8 +117,9 @@ export interface Product {
   /** Optional list price that takes over AUTOMATICALLY once the launch offer
    *  ends (endsAt passes): per-tool lifetime settles at the $999 price point
    *  and the bundle at $2,499 — no manual flip needed on Nov 1.
-   *  Owner 2026-10-08: monthly does the SAME flip — $89/$300 sale during the
-   *  window, then the $149/$450 list returns on Nov 1. */
+   *  Owner 2026-10-13: monthly does the SAME flip — $119/$299 sale during
+   *  the window, then the $149/$450 list returns on Nov 1 (launch $89→$119
+   *  per tool, $300→$299 bundle per the Oct 12 audit P0 monthly fix). */
   postLaunchPrices?: Partial<Record<ModelId, number>>;
   /** Launch-offer price per model in whole USD (optional — falls back to list). */
   launchPrices?: Partial<Record<ModelId, number>>;
@@ -138,7 +139,7 @@ export const LAUNCH_OFFER = {
      MONTHLY rate changes Nov 1 — lifetime does not — so the note now says
      exactly that, and gives lifetime buyers their own reason to act today
      (founding-customer pricing + 1 year of updates). */
-  note: 'Launch pricing ends Oct 31, 2026 — honored to the minute. Monthly goes up Nov 1: $89 → $149 per tool · $300 → $450 Full Bundle. Lifetime stays $999 per tool · $2,499 Full Bundle — founding-customer pricing, 1 year of updates included.',
+  note: 'Launch pricing ends Oct 31, 2026 — honored to the minute. Monthly goes up Nov 1: $119 → $149 per tool · $299 → $450 Full Bundle. Lifetime stays $999 per tool · $2,499 Full Bundle — founding-customer pricing, 1 year of updates included.',
   /** ISO deadline for launch pricing — the storefront counts down to it.
    *  Flip `active` to false (or clear endsAt) when the promo ends. */
   endsAt: '2026-10-31T23:59:59-05:00',
@@ -354,9 +355,11 @@ export const PRODUCTS: Product[] = [
     ],
     /* Owner 2026-10-08: monthly sale 89 (list 149 returns Nov 1) + the $999
        per-tool lifetime price point (standing price from Nov 1). The list
-       anchors are what the strikethrough/discount badges compare against. */
+       anchors are what the strikethrough/discount badges compare against.
+       Owner 2026-10-13: launch monthly raised 89 → 119 (audit P0 — bundle
+       must stay cheaper than 3 separate monthly licenses). */
     prices: { trial: 0, monthly: 149, annual: 599, lifetime: 1299 },
-    launchPrices: { trial: 0, monthly: 89, lifetime: 999 },
+    launchPrices: { trial: 0, monthly: 119, lifetime: 999 },
     postLaunchPrices: { lifetime: 999, monthly: 149 },
   },
   {
@@ -370,7 +373,7 @@ export const PRODUCTS: Product[] = [
       'Runs on a second screen with limited supervision',
     ],
     prices: { trial: 0, monthly: 149, annual: 599, lifetime: 1499 },
-    launchPrices: { trial: 0, monthly: 89, lifetime: 999 },
+    launchPrices: { trial: 0, monthly: 119, lifetime: 999 },
     postLaunchPrices: { lifetime: 999, monthly: 149 },
   },
   {
@@ -384,7 +387,7 @@ export const PRODUCTS: Product[] = [
       'Per-claim status tracking',
     ],
     prices: { trial: 0, monthly: 149, annual: 699, lifetime: 1699 },
-    launchPrices: { trial: 0, monthly: 89, lifetime: 999 },
+    launchPrices: { trial: 0, monthly: 119, lifetime: 999 },
     postLaunchPrices: { lifetime: 999, monthly: 149 },
   },
   {
@@ -398,12 +401,14 @@ export const PRODUCTS: Product[] = [
       'Priority support',
     ],
     /* Owner 2026-10-08: bundle monthly = $300 now, $450 list returns Nov 1.
+       Owner 2026-10-13: launch monthly 300 → 299 (audit P0 — the bundle is
+       now strictly cheaper than 3 × $119 separate monthly licenses).
        Lifetime LIST = $2,997 (the 3-tools-separately math used across the
        site) so the $2,499 launch price keeps its strikethrough anchor
        (−17% badge, same as the per-tool cards); from Nov 1 the post-launch
        $2,499 stands alone. */
     prices: { trial: 0, monthly: 450, annual: 999, lifetime: 2997 },
-    launchPrices: { trial: 0, monthly: 300, lifetime: 2499 },
+    launchPrices: { trial: 0, monthly: 299, lifetime: 2499 },
     postLaunchPrices: { lifetime: 2499, monthly: 450 },
   },
 ];
@@ -416,7 +421,7 @@ export function seatsAllowedForModel(model: ModelId): PcCount[] {
 }
 
 /** Annual-plan savings vs the CURRENT effective monthly price (launch-aware:
- *  vs the $89/$300 sale today, vs the $149/$450 list after it ends) — the
+ *  vs the $119/$299 sale today, vs the $149/$450 list after it ends) — the
  *  “save X% vs monthly” line never lies on either side of Nov 1. */
 export function annualSavingsPct(product: Product): number {
   const m = perPcPrice(product, 'monthly', 1);

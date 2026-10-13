@@ -78,8 +78,6 @@ import {
 import {
   PRODUCTS,
   REVIEWS,
-  VIDEO_DEMO,
-  OVERVIEW_DEMO,
   DEMOS,
   YOUTUBE_URL,
   formatUSD,
@@ -756,91 +754,128 @@ function Services() {
   );
 }
 
-function HowItWorks() {
-  const steps = [
-    ['01', 'Map the real work', 'We start where the work happens — the manual loops, the bottlenecks, the hours nobody tracks. You can’t fix what nobody has measured.'],
-    ['02', 'Build the fix', 'A tool, dashboard, or automation — the right build for the problem, shipped clean, documented, and live on a date we committed to.'],
-    ['03', 'Keep it moving', 'Operations change, and your systems keep up. We stay close — tuning and extending what we built so it never becomes the next bottleneck.'],
-  ];
+function LiveProof() {
+  const wa = whatsappLink();
   return (
-    <section id="how" className="relative overflow-hidden py-28 lg:py-36">
-      {/* Owner 2026-10-08: the fake "Automate a workflow" form + "Run complete"
-          chart confused customers (owner: samajh nahi aa raha yeh dono kyun hain).
-          Removed — and instead of leaving the right side empty, the three real
-          steps now run full-width as a 3-column row under the heading. */}
+    <section id="demo" className="relative overflow-hidden py-28 lg:py-36">
+      {/* Audit P1 (owner-approved 2026-10-13): the two real YouTube demos move
+          UP from the bottom of Dealer Tools into their own "Live proof"
+          section directly under the hero — skeptical dealers see the bot
+          driving VidaPay before they read anything else. Replaces the old
+          agency-pitch "How it works" block AND the old DemoStrip. */}
       <div className="mx-auto max-w-7xl px-5 lg:px-8">
         <Reveal>
-          <div className="max-w-2xl">
-            <Kicker magenta>02 — How it works</Kicker>
-            <h2 className="text-[clamp(2.2rem,4vw,3.6rem)] font-light leading-[1.05] tracking-[-0.02em] text-foreground">
-              From bottleneck
-              <br />
-              to <span className="text-brand-magenta">live system</span>
-              <br />
-              in three moves.
-            </h2>
+          <div className="mb-12 flex flex-col justify-between gap-8 lg:flex-row lg:items-end">
+            <div className="max-w-2xl">
+              <Kicker magenta>02 — Live proof</Kicker>
+              <h2 className="text-[clamp(2.2rem,4vw,3.6rem)] font-light leading-[1.05] tracking-[-0.02em] text-foreground">
+                Watch the tools
+                <br />
+                <span className="text-brand-magenta">drive VidaPay.</span>
+              </h2>
+            </div>
+            <p className="max-w-sm text-[15px] font-light leading-7 text-foreground/75">
+              Raw screen recordings — no production polish, no script. Portal in, clean Excel out, rebate claims filed in real time. If the tools don&apos;t work on your stores, the 7-day trial is free.
+            </p>
           </div>
         </Reveal>
-        <div className="mt-14 grid gap-x-10 gap-y-12 md:grid-cols-3">
-          {steps.map(([number, title, copy], i) => (
-            <Reveal key={number} delay={i * 0.1}>
-              <div className="border-t border-border pt-7">
-                <div className="font-mono-tech text-[10px] uppercase tracking-[.24em] text-brand-magenta">Step {number}</div>
-                <h3 className="mt-3 text-[22px] font-light tracking-[-0.01em] text-foreground transition-colors duration-300 hover:text-brand-cyan">
-                  {title}
-                </h3>
-                <p className="mt-2.5 text-[14px] font-light leading-7 text-foreground/75">{copy}</p>
+        <div className="grid gap-6 lg:grid-cols-2">
+          {DEMOS.map((demo, i) => (
+            <Reveal key={demo.id} delay={i * 0.08}>
+              <div className="overflow-hidden rounded-2xl border border-border bg-card">
+                <div className="relative aspect-video w-full">
+                  <iframe
+                    src={`https://www.youtube.com/embed/${demo.id}`}
+                    title={demo.title}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                    loading="lazy"
+                    className="absolute inset-0 h-full w-full"
+                  />
+                </div>
+                <div className="flex items-start justify-between gap-4 p-5">
+                  <div>
+                    <p className="text-[15px] font-medium leading-6 text-foreground">{demo.title}</p>
+                    <p className="mt-1 text-[13px] font-light leading-6 text-foreground/70">{demo.blurb}</p>
+                  </div>
+                  <span className="shrink-0 rounded-full border border-border px-3 py-1 font-mono-tech text-[10px] uppercase tracking-[.14em] text-muted-foreground">{demo.dur}</span>
+                </div>
               </div>
             </Reveal>
           ))}
         </div>
+        <Reveal delay={0.1}>
+          <div className="mt-10 flex flex-wrap items-center gap-3">
+            <a
+              href="/demo"
+              data-testid="link-demo-page"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-input px-5 py-3 text-[13.5px] font-medium text-foreground transition-colors hover:border-brand-cyan/60 hover:text-brand-cyan"
+            >
+              <PlayCircle className="h-4 w-4" /> Permanent watch page — 3sverse.com/demo
+            </a>
+            <a
+              href={YOUTUBE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-testid="demo-cta-youtube"
+              className="inline-flex items-center gap-2 rounded-xl border bg-white px-5 py-3 text-[13.5px] font-semibold text-[#0b0a10] transition-transform hover:scale-[1.02]"
+            >
+              <Youtube className="h-4 w-4" /> Watch on YouTube — @3SVerse
+            </a>
+            <a
+              href={LINKEDIN_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-xl border border-input px-5 py-3 text-[13.5px] font-medium text-foreground transition-colors hover:border-brand-cyan/60 hover:text-brand-cyan"
+            >
+              <Linkedin className="h-4 w-4" /> Follow on LinkedIn
+            </a>
+            {wa ? (
+              <a href={wa} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-xl border border-input px-5 py-3 text-[13.5px] font-medium text-foreground transition-colors hover:border-brand-wa/60 hover:text-brand-wa"><MessageCircle className="h-4 w-4" /> WhatsApp us</a>
+            ) : null}
+          </div>
+        </Reveal>
       </div>
     </section>
   );
 }
 
-function Outcomes() {
-  /* Replaced the old operator-career stats (telecom/FMCG/pharma programs) —
-     they read as irrelevant to a wireless dealer and the site contradicted
-     its own "no invented praise" rule. These three are VERIFIABLE facts
-     about the product and the purchase instead.
-     Owner 2026-10-08: the abstract bars/rings/line mini-charts were removed —
-     they looked like data but meant nothing ("fake kuch nahi chahiye"). Each
-     card now carries a plain real icon instead. */
-  const stats = [
-    { value: '3 tools', label: 'Extractor · Device Ordering · Rebate Filing — all 3 tools on 2 PCs for $2,499 lifetime. The second desk is free — $2,997 if bought separately.', icon: Boxes, accent: 'text-brand-cyan' },
-    { value: '7 days', label: 'free full-software trial on every tool — no card, no feature locks', icon: Clock, accent: 'text-brand-magenta' },
-    { value: '2 PCs', label: 'Full Bundle includes two complete bundle licenses — all 3 tools on each PC', icon: MonitorSmartphone, accent: 'text-brand-cyan' },
-  ];
+function QuickStart() {
+  /* Audit block 3 (owner-approved 2026-10-13): a 3-step PRODUCT workflow
+     replaces the agency pitch AND the "short version" stats (which repeated
+     the hero + pricing numbers). The steps are the real software flow, and
+     step 2 carries the zero-cloud credential story dealers already love
+     (audit customer-perspective 8.8/10 item). */
+  const steps = [
+    ['01', 'Launch the portable .exe', 'Download once, double-click, run — no installation, no admin rights, no setup wizard. One file per tool, straight from the download page, on any Windows 10/11 PC.', Download, 'text-brand-cyan'],
+    ['02', 'Log in to your own VidaPay session', 'The tool pauses while you type your dealer login and OTP into the real portal. Your credentials stay on your PC, on your session — zero cloud, zero credential sharing, nothing to get your UID blocked.', KeyRound, 'text-brand-magenta'],
+    ['03', 'Export clean Excel — or let it file', 'Incentives land in a formatted workbook, bulk device orders submit store by store, and rebate claims file themselves — one PC, every store you operate.', FileSpreadsheet, 'text-brand-cyan'],
+  ] as const;
   return (
-    <section id="outcomes" className="relative overflow-hidden py-28 lg:py-36">
+    <section id="how" className="relative overflow-hidden py-28 lg:py-36">
       <div className="mx-auto max-w-7xl px-5 lg:px-8">
         <Reveal>
-          <div className="mb-16 flex flex-col justify-between gap-8 md:flex-row md:items-end">
-            <div>
-              <Kicker>03 — The short version</Kicker>
-              <h2 className="max-w-2xl text-[clamp(2.2rem,4vw,3.6rem)] font-light leading-[1.05] tracking-[-0.02em] text-foreground">
-                Simple to try, <span className="text-brand-magenta">safer to buy.</span>
-              </h2>
-            </div>
-            <p className="max-w-sm text-[15px] font-light leading-7 text-foreground/75">
-              Everything below is a fact about the product and the purchase — the trial, the bundle, and the license terms — not a promise of results we haven&apos;t measured on your stores yet. Run the free trial and judge the tools on your own data.
-            </p>
+          <div className="max-w-2xl">
+            <Kicker magenta>03 — Product workflow</Kicker>
+            <h2 className="text-[clamp(2.2rem,4vw,3.6rem)] font-light leading-[1.05] tracking-[-0.02em] text-foreground">
+              Three steps
+              <br />
+              to your <span className="text-brand-magenta">first clean export.</span>
+            </h2>
           </div>
         </Reveal>
-        <div className="grid gap-4 md:grid-cols-3">
-          {stats.map(({ value, label, icon: Icon, accent }, i) => (
-            <Reveal key={label} delay={i * 0.1} className="h-full">
-              <div data-testid={`stat-outcome-${i}`} className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card transition-colors duration-500 hover:border-input">
-                <div className="flex items-center gap-4 px-8 pb-10 pt-10">
-                  <span className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-border bg-foreground/[.04] ${accent}`}>
-                    <Icon className="h-6 w-6" />
-                  </span>
-                  <div className="text-[44px] font-light leading-none tracking-[-0.03em] text-foreground lg:text-[52px]">{value}</div>
+        <div className="mt-14 grid gap-x-10 gap-y-12 md:grid-cols-3">
+          {steps.map(([number, title, copy, Icon, accent], i) => (
+            <Reveal key={number} delay={i * 0.1}>
+              <div className="border-t border-border pt-7">
+                <div className="flex items-center justify-between">
+                  <div className="font-mono-tech text-[10px] uppercase tracking-[.24em] text-brand-magenta">Step {number}</div>
+                  <Icon className={`h-5 w-5 ${accent}`} />
                 </div>
-                <div className="flex-1 border-t border-border px-8 py-7">
-                  <div className="font-mono-tech text-[10px] uppercase leading-5 tracking-[.2em] text-muted-foreground">{label}</div>
-                </div>
+                <h3 className="mt-3 text-[22px] font-light tracking-[-0.01em] text-foreground transition-colors duration-300 hover:text-brand-cyan">
+                  {title}
+                </h3>
+                <p className="mt-2.5 text-[14px] font-light leading-7 text-foreground/75">{copy}</p>
               </div>
             </Reveal>
           ))}
@@ -1168,7 +1203,7 @@ function Tools() {
         <RoiCalculator />
         <BargainBand />
         <DealerStore />
-        <DemoStrip />
+        {/* DemoStrip removed 2026-10-13 — videos now live in the "02 — Live proof" section directly under the hero (audit P1). */}
       </div>
     </section>
   );
@@ -1377,9 +1412,9 @@ function Compare() {
             </div>
             <div className="rounded-3xl border border-border bg-card p-7">
               <p className="flex items-center gap-2.5 font-mono-tech text-[10px] uppercase tracking-[.2em] text-brand-cyan"><TrendingUp className="h-3.5 w-3.5" /> Savings — time and money</p>
-              <p className="mt-3 text-[19px] font-light tracking-[-0.01em] text-foreground">$1,160+ vs $300 a month</p>
+              <p className="mt-3 text-[19px] font-light tracking-[-0.01em] text-foreground">$3,120 vs $299 a month</p>
               <p className="mt-2.5 text-[13.5px] font-light leading-6 text-foreground/75">
-                One employee costs $1,160+/month at the $7.25 federal minimum wage — before taxes and turnover — and works one store at a time. The Full Bundle is $300/month for all 3 tools on 2 PCs, running every store you operate. That&apos;s about one week of one employee&apos;s pay.
+                One back-office employee costs $3,120+/month at the $18/hr a trusted US manager actually earns — before taxes and turnover — and works one store at a time. The Full Bundle is $299/month for all 3 tools on 2 PCs, running every store you operate. That&apos;s about three days of one employee&apos;s pay.
               </p>
             </div>
           </div>
@@ -1505,77 +1540,10 @@ function RoiCalculator() {
   );
 }
 
-/* Demo strip — audit action #3: dealers need to SEE the tools working.
-   Both published YouTube demos render here as embeds; YOUTUBE_URL links the
-   channel. Watching the real workflow IS the sales pitch — no gates, no
-   "request a walkthrough" friction. */
-function DemoStrip() {
-  const wa = whatsappLink();
-  return (
-    <div id="demo" data-testid="demo-strip" className="mt-14 scroll-mt-24 overflow-hidden rounded-3xl border border-border bg-card">
-      <div className="p-8 pb-0 sm:p-12 sm:pb-0">
-        <p className="flex items-center gap-2 font-mono-tech text-[10px] uppercase tracking-[.22em] text-brand-cyan"><PlayCircle className="h-3.5 w-3.5" /> {OVERVIEW_DEMO.kicker}</p>
-        <h3 className="mt-3 text-[clamp(1.6rem,2.4vw,2.2rem)] font-light leading-[1.1] tracking-[-0.02em] text-foreground">{OVERVIEW_DEMO.title}</h3>
-        <p className="mt-4 max-w-2xl text-[14px] font-light leading-7 text-foreground/75">{OVERVIEW_DEMO.note} Both full walkthroughs play right here — no signup, no gates.</p>
-      </div>
-      <div className="px-8 pt-10 sm:px-12">
-        <p className="font-mono-tech text-[10px] uppercase tracking-[.22em] text-muted-foreground">{VIDEO_DEMO.kicker}</p>
-        <h4 className="mt-2 text-[20px] font-light text-foreground">{VIDEO_DEMO.title}</h4>
-        <p className="mt-2 max-w-2xl text-[13.5px] font-light leading-6 text-foreground/70">{VIDEO_DEMO.note}</p>
-        <p className="mt-3">
-          <a href="/demo" data-testid="link-demo-page" className="inline-flex items-center gap-1.5 text-[13px] font-medium text-brand-cyan underline-offset-4 transition-colors hover:text-foreground hover:underline">
-            <PlayCircle className="h-3.5 w-3.5" /> Permanent watch page — 3sverse.com/demo
-          </a>
-        </p>
-      </div>
-      <div className="grid gap-6 p-8 sm:p-12 lg:grid-cols-2">
-        {DEMOS.map((demo) => (
-          <div key={demo.id} className="overflow-hidden rounded-2xl border border-border bg-background">
-            <div className="relative aspect-video w-full">
-              <iframe
-                src={`https://www.youtube.com/embed/${demo.id}`}
-                title={demo.title}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
-                loading="lazy"
-                className="absolute inset-0 h-full w-full"
-              />
-            </div>
-            <div className="flex items-start justify-between gap-4 p-5">
-              <div>
-                <p className="text-[15px] font-medium leading-6 text-foreground">{demo.title}</p>
-                <p className="mt-1 text-[13px] font-light leading-6 text-foreground/70">{demo.blurb}</p>
-              </div>
-              <span className="shrink-0 rounded-full border border-border px-3 py-1 font-mono-tech text-[10px] uppercase tracking-[.14em] text-muted-foreground">{demo.dur}</span>
-            </div>
-          </div>
-        ))}
-      </div>
-      <div className="flex flex-wrap items-center gap-3 px-8 pb-8 sm:px-12 sm:pb-12">
-        <a
-          href={YOUTUBE_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          data-testid="demo-cta-youtube"
-          className="inline-flex items-center gap-2 rounded-xl border bg-white px-5 py-3 text-[13.5px] font-semibold text-[#0b0a10] transition-transform hover:scale-[1.02]"
-        >
-          <Youtube className="h-4 w-4" /> Watch the demos on YouTube — @3SVerse
-        </a>
-        <a
-          href={LINKEDIN_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 rounded-xl border border-input px-5 py-3 text-[13.5px] font-medium text-foreground transition-colors hover:border-brand-cyan/60 hover:text-brand-cyan"
-        >
-          <Linkedin className="h-4 w-4" /> Follow on LinkedIn
-        </a>
-        {wa ? (
-          <a href={wa} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-xl border border-input px-5 py-3 text-[13.5px] font-medium text-foreground transition-colors hover:border-brand-wa/60 hover:text-brand-wa"><MessageCircle className="h-4 w-4" /> WhatsApp us</a>
-        ) : null}
-      </div>
-    </div>
-  );
-}
+/* DemoStrip — REMOVED 2026-10-13 (audit P1, owner-approved): the demo videos
+   moved UP into the dedicated "02 — Live proof" section (LiveProof component)
+   so skeptical dealers see the real VidaPay runs before anything else.
+   The old placement (bottom of Dealer Tools) buried them 60% down the page. */
 
 /* WhatsApp float — audit action #10: dealers want a quick answer before
    spending $999. Renders only when WHATSAPP_NUMBER is set in catalog.ts. */
@@ -2784,8 +2752,8 @@ function Home() {
       <main>
         <Hero />
         <Marquee />
-        <HowItWorks />
-        <Outcomes />
+        <LiveProof />
+        <QuickStart />
         <Tools />
         <Compare />
         <Audience />
