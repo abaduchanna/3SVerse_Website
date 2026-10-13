@@ -36,7 +36,6 @@ import {
   ArrowUpRight,
   BarChart3,
   Boxes,
-  Calculator,
   Check,
   ChevronLeft,
   ChevronRight,
@@ -1200,7 +1199,7 @@ function Tools() {
             if (gateFor) startTrialDownload(gateFor.product);
           }}
         />
-        <RoiCalculator />
+        <StoreSlider />
         <BargainBand />
         <DealerStore />
         {/* DemoStrip removed 2026-10-13 — videos now live in the "02 — Live proof" section directly under the hero (audit P1). */}
@@ -1263,7 +1262,7 @@ function Audience() {
             </div>
             <h2 className="text-[clamp(2rem,4.6vw,3.2rem)] font-light leading-[1.1] tracking-[-0.02em] text-foreground">
               Built for wireless retail operations —{' '}
-              <span className="font-normal text-brand-cyan">rebate claims to device orders</span>
+              <span className="font-normal text-brand-cyan">device orders to rebate claims</span>
             </h2>
             <p className="mt-5 text-[16px] font-light leading-7 text-foreground/70">
               3SVerse serves Total Wireless dealers and MVNO retail teams that live in the
@@ -1336,7 +1335,7 @@ function Compare() {
         <Reveal>
           <div className="mb-12 flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <Kicker>05 — Manual vs 3SVerse</Kicker>
+              <Kicker>06 — Manual vs 3SVerse</Kicker>
               <h2 className="max-w-2xl text-[clamp(2.2rem,4vw,3.6rem)] font-light leading-[1.05] tracking-[-0.02em] text-foreground">
                 The same week, <span className="text-brand-cyan">two ways.</span>
               </h2>
@@ -1424,119 +1423,96 @@ function Compare() {
   );
 }
 
-/* Customer-entered planning calculator. It uses catalog pricing but does
-   not present 3SVerse benchmarks or guaranteed savings. */
-function RoiCalculator() {
-  const bundle = PRODUCTS.find((p) => p.id === 'bundle')!;
-  /* Audit v4 #4: default = 1 store (the median visitor), not 3 — a single-store
-     dealer must see their own realistic number first, then add stores. */
-  const [stores, setStores] = useState(1);
-  const [lossPerStore, setLossPerStore] = useState(500);
-
-  const monthlyLoss = stores * lossPerStore;
-  const bundleUnits = Math.ceil(stores / 2);
-  const coveredPcs = bundleUnits * 2;
-  const lifetimePrice = perPcPrice(bundle, 'lifetime', 1) * bundleUnits;
-  const monthlyPrice = perPcPrice(bundle, 'monthly', 1) * bundleUnits;
-  const paybackDays = Math.max(1, Math.ceil((lifetimePrice / monthlyLoss) * 30));
-  const savedYear = Math.max(0, monthlyLoss * 12 - lifetimePrice);
-
+/* Audit 04+05 (owner order 2026-10-13): the customer-input ROI calculator is
+   REPLACED by the audit's multi-store slider card (StoreSlider) — "2 stores or
+   50 stores, your price stays the same" (audit §8.4 fix) — and the page gains
+   the audit's "05 — The real cost of doing nothing" benchmark bars
+   (CostBenchmark) carrying the single site-wide disclaimer footnote
+   (audit §6.2: one clean footnote instead of scattered defensive lines). */
+function StoreSlider() {
+  const [stores, setStores] = useState(10);
   return (
-    <div id="roi" data-testid="roi-calculator" className="mt-14 rounded-3xl border border-border bg-gradient-to-br from-card via-card to-card p-7 sm:p-10">
-      <div className="grid items-center gap-10 lg:grid-cols-[1fr_1.1fr]">
+    <div id="stores-slider" data-testid="store-slider" className="mt-14 rounded-3xl border border-brand-cyan/25 bg-gradient-to-br from-[#6ee7ef]/[.06] via-card to-[#e44bd7]/[.05] p-7 sm:p-10">
+      <div className="grid items-center gap-10 lg:grid-cols-[1.15fr_1fr]">
         <div>
-          <p className="flex items-center gap-2 font-mono-tech text-[10px] uppercase tracking-[.22em] text-brand-cyan"><Calculator className="h-3.5 w-3.5" /> ROI calculator</p>
+          <p className="flex items-center gap-2 font-mono-tech text-[10px] uppercase tracking-[.22em] text-brand-cyan"><Store className="h-3.5 w-3.5" /> Unlimited stores, one license</p>
           <h3 className="mt-3 text-[clamp(1.6rem,2.4vw,2.2rem)] font-light leading-[1.1] tracking-[-0.02em] text-foreground">
-            Estimate your dealership&apos;s <span className="text-brand-magenta">manual-work cost.</span>
+            Whether you own <span className="text-brand-cyan">2 stores or 50 stores</span> — your price stays the same.
           </h3>
-          <p className="mt-4 max-w-md text-[14px] font-light leading-6 text-foreground/75">
-            Enter your own monthly estimate for missed claims and staff time. The calculator compares that number with current catalog pricing; it does not promise savings or recovered revenue.
+          <p className="mt-4 max-w-md text-[13.5px] font-light leading-6 text-foreground/75">
+            Every merchant ID you operate runs from one licensed back-office PC. Adding a store adds work, never license cost.
           </p>
-          <div className="mt-7 space-y-6">
-            <div>
-              <div className="mb-2 flex items-center justify-between">
-                <span className="text-[13px] font-medium text-foreground/75">Stores you run</span>
-                <span className="font-mono-tech text-[15px] font-semibold text-foreground" data-testid="roi-stores-value">{stores}</span>
-              </div>
-              <input
-                type="range"
-                min={1}
-                max={9}
-                value={stores}
-                onChange={(e) => setStores(Number(e.target.value))}
-                aria-label="Number of stores"
-                data-testid="roi-stores-slider"
-                className="w-full accent-brand-cyan"
-              />
-            </div>
-            {/* Deep-audit proposal (owner-approved 2026-10-08): make the
-                unlimited-stores value visible inside the calculator itself —
-                the slider moves desks, never the per-store license price. */}
-            <p className="text-[12px] font-light leading-5 text-muted-foreground" data-testid="roi-unlimited-note">
-              Store count alone never adds license cost — one license runs every store you operate from one desk. The
-              estimate only grows when you add workstations (about two stores per PC of back-office work).
-            </p>
-            <div>
-              <span className="mb-2 block text-[13px] font-medium text-foreground/75">Your estimated manual-work and missed-claim cost per store / month</span>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  { v: 250, label: '$250 example' },
-                  { v: 500, label: '$500 example' },
-                  { v: 1000, label: '$1,000 example' },
-                ].map((o) => (
-                  <button
-                    key={o.v}
-                    type="button"
-                    onClick={() => setLossPerStore(o.v)}
-                    className={lossPerStore === o.v
-                      ? 'rounded-lg border bg-white px-3 py-1.5 text-[12.5px] font-semibold text-[#0b0a10]'
-                      : 'rounded-lg border border-input px-3 py-1.5 text-[12.5px] text-foreground transition-colors hover:border-foreground/40 hover:text-foreground'}
-                  >
-                    {o.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <p className="text-[12px] font-light leading-5 text-muted-foreground">
-              Running 10 or more stores? Message us for district pricing. Results vary by
-              dealership. The examples are starting points only, and payback = bundle price ÷
-              the monthly cost you selected. Validate the workflow during the free trial before
-              making a purchase.
-            </p>
-          </div>
         </div>
-        <div className="grid gap-3 sm:grid-cols-2">
-          <div className="rounded-2xl border border-brand-magenta/25 bg-[#e44bd7]/[.06] p-5">
-            <p className="font-mono-tech text-[10px] uppercase tracking-[.16em] text-brand-magenta">Your monthly estimate</p>
-            <p className="mt-2 text-[clamp(1.6rem,2.4vw,2.1rem)] font-light leading-none text-foreground" data-testid="roi-monthly-loss">{formatUSD(monthlyLoss)}<span className="text-[14px] text-muted-foreground">/mo</span></p>
-            <p className="mt-2 text-[12px] leading-5 text-muted-foreground">{formatUSD(monthlyLoss * 12)} annualized from the amount you selected</p>
-          </div>
-          <div className="rounded-2xl border border-brand-cyan/25 bg-[#6ee7ef]/[.06] p-5">
-            <p className="font-mono-tech text-[10px] uppercase tracking-[.16em] text-brand-cyan">{bundleUnits} Full Bundle purchase{bundleUnits === 1 ? '' : 's'} — covers {coveredPcs} PCs</p>
-            <p className="mt-2 text-[clamp(1.6rem,2.4vw,2.1rem)] font-light leading-none text-foreground" data-testid="roi-bundle-price">{formatUSD(lifetimePrice)}</p>
-            <p className="mt-2 text-[12px] leading-5 text-muted-foreground">one-time lifetime · or {formatUSD(monthlyPrice)}/mo cancel-anytime</p>
-          </div>
-          <div className="rounded-2xl border border-border bg-foreground/[.03] p-5 sm:col-span-2">
-            <div className="flex flex-wrap items-center justify-between gap-4">
-              <div>
-                <p className="font-mono-tech text-[10px] uppercase tracking-[.16em] text-brand-cyan">Illustrative payback</p>
-                <p className="mt-1.5 text-[clamp(1.6rem,2.4vw,2.1rem)] font-light leading-none text-foreground" data-testid="roi-payback">{paybackDays} days</p>
-              </div>
-              <p className="max-w-[240px] text-[12.5px] leading-5 text-foreground/75">
-                Based only on your inputs: <span className="text-brand-cyan">{formatUSD(savedYear)} estimated first-year difference</span>. Actual results may be lower or higher.
-              </p>
-            </div>
-          </div>
-          <a
-            href="#tools"
-            data-testid="roi-cta"
-            className="inline-flex items-center justify-center gap-2 rounded-xl border bg-white px-5 py-3 text-[13.5px] font-semibold text-[#0b0a10] transition-transform hover:scale-[1.02] sm:col-span-2"
-          >
-            Compare plans and licenses <ArrowRight className="h-4 w-4" />
-          </a>
+        <div>
+          <p className="text-[13.5px] font-light leading-6 text-foreground/75">
+            Drag the slider:{' '}
+            <span className="font-mono-tech text-[26px] font-semibold text-brand-cyan" data-testid="store-slider-value">{stores}</span>{' '}
+            stores managed from <b className="font-medium text-foreground">one licensed PC</b> · extra doors: <b className="font-medium text-foreground">$0</b>
+          </p>
+          <input
+            type="range"
+            min={1}
+            max={100}
+            value={stores}
+            onChange={(e) => setStores(Number(e.target.value))}
+            aria-label="Number of stores"
+            data-testid="store-slider-input"
+            className="mt-3 w-full accent-brand-cyan"
+          />
+          <p className="mt-3 text-[12.5px] font-light leading-5 text-muted-foreground" data-testid="store-slider-msg">
+            Traditional per-door platforms would charge this dealer{' '}
+            <span className="font-medium text-foreground">{formatUSD(stores * 125)}+/mo</span> extra. 3SVerse charges{' '}
+            <span className="font-medium text-foreground">$0 per extra door</span> — one license, all your merchant IDs.
+          </p>
         </div>
       </div>
     </div>
+  );
+}
+
+function CostBenchmark() {
+  const bundle = PRODUCTS.find((p) => p.id === 'bundle')!;
+  const bundleMonthly = formatUSD(perPcPrice(bundle, 'monthly', 1));
+  const bars = [
+    { label: 'US in-house back-office admin ($18/hr)', num: '$3,120/mo', width: 100, tone: 'bg-foreground/35', hi: false },
+    { label: 'Missed / rejected VidaPay rebates (est.)', num: '$1,850/mo', width: 59, tone: 'bg-brand-magenta', hi: false },
+    { label: 'ERP / POS per-door add-ons ($125 × 10 stores)', num: '$1,250/mo', width: 40, tone: 'bg-amber-400', hi: false },
+    { label: '3SVerse Full Bundle (unlimited stores)', num: `${bundleMonthly}/mo`, width: 9.6, tone: 'bg-brand-cyan', hi: true },
+  ];
+  return (
+    <section id="cost" data-testid="cost-benchmark" className="relative overflow-hidden py-28 lg:py-36">
+      <div className="mx-auto max-w-7xl px-5 lg:px-8">
+        <Reveal>
+          <div className="mb-12 max-w-3xl">
+            <Kicker>05 — The real cost of doing nothing</Kicker>
+            <h2 className="max-w-2xl text-[clamp(2.2rem,4vw,3.6rem)] font-light leading-[1.05] tracking-[-0.02em] text-foreground">
+              A 10-store dealer&apos;s monthly bleed, and where <span className="text-brand-cyan">3SVerse stops it.</span>
+            </h2>
+          </div>
+        </Reveal>
+        <Reveal delay={0.08}>
+          <div className="rounded-3xl border border-border bg-card p-7 sm:p-10">
+            <div className="space-y-5">
+              {bars.map((b) => (
+                <div key={b.label} className="grid items-center gap-2 sm:grid-cols-[minmax(0,1fr)_190px_96px] sm:gap-4">
+                  <span className={`text-[13.5px] leading-5 ${b.hi ? 'font-medium text-foreground' : 'text-foreground/75'}`}>{b.label}</span>
+                  <div className="h-3 overflow-hidden rounded-full bg-foreground/[.06]">
+                    <div className={`h-full rounded-full ${b.tone}`} style={{ width: `${b.width}%` }} />
+                  </div>
+                  <span className={`font-mono-tech text-[13.5px] sm:text-right ${b.hi ? 'font-semibold text-brand-cyan' : 'text-foreground/85'}`}>{b.num}</span>
+                </div>
+              ))}
+            </div>
+            <p className="mt-8 border-t border-border pt-5 text-[11.5px] font-light leading-5 text-muted-foreground">
+              Figures are illustrative examples, not promises of results: admin cost assumes one back-office employee at $18/hr
+              for a full-time month (~173 hrs); missed-rebate leakage varies by dealer volume and promo calendar; per-door
+              add-on pricing reflects the $100–$250/store/mo tiers typical of legacy wireless POS platforms. One mistyped IMEI
+              or a missed port-in promo window alone costs $50–$150 in pure lost profit per occurrence.
+            </p>
+          </div>
+        </Reveal>
+      </div>
+    </section>
   );
 }
 
@@ -1651,7 +1627,7 @@ function Faq() {
       <div className="relative mx-auto max-w-4xl px-5 lg:px-8">
         <Reveal>
           <div className="mb-12 text-center">
-            <Kicker>06 — Straight answers</Kicker>
+            <Kicker>07 — Straight answers</Kicker>
             <h2 className="text-[clamp(2.2rem,4vw,3.6rem)] font-light leading-[1.05] tracking-[-0.02em] text-foreground">
               Questions dealers <span className="text-brand-magenta">actually ask.</span>
             </h2>
@@ -1705,7 +1681,7 @@ const GUIDES = [
       'Manual VidaPay work doesn’t show up as a line item, which is exactly why it survives every budget review. So price it out. A three-store dealership running screenshots, retyping, and manual claim filing spends roughly fifteen to thirty staff-hours a week on portal busywork. At even a modest loaded labor rate, that’s hundreds of dollars a month in wages doing work a machine should do.',
       'Then add the error tax. Retyped IMEIs get one digit wrong. Screenshots miss the one row that mattered. Claims go in past the window because nobody saw the promo until it ended. Across the industry this shows up as several hundred to a couple thousand dollars a month in rebates and incentives that were earned, owed — and never collected. That is not a rounding error; at the low end it is a staff wage, at the high end it is a store’s rent.',
       'Finally add the focus cost. The owner or office manager doing portal work at 9 PM is not training staff, walking the floor, or opening store number four. Automation’s biggest return is rarely the hours it saves — it’s the decisions the operator finally gets to make because the extraction, ordering, and claim tracking run themselves.',
-      'The payback math is one line: if the tools recover even the low end of the leakage — a few hundred dollars a month — they can pay for themselves inside the first month, and everything after that is recovered margin. Run your own numbers for two minutes in the ROI calculator above and the manual process stops looking free.',
+      'The payback math is one line: if the tools recover even the low end of the leakage — a few hundred dollars a month — they can pay for themselves inside the first month, and everything after that is recovered margin. Run your own numbers for two minutes against the cost benchmark above and the manual process stops looking free.',
     ],
   },
 ];
@@ -1753,7 +1729,7 @@ function Guides() {
         <Reveal>
           <div className="mb-14 flex flex-col justify-between gap-8 md:flex-row md:items-end">
             <div>
-              <Kicker magenta>07 — Dealer field guides</Kicker>
+              <Kicker magenta>09 — Dealer field guides</Kicker>
               <h2 className="max-w-2xl text-[clamp(2.2rem,4vw,3.6rem)] font-light leading-[1.05] tracking-[-0.02em] text-foreground">
                 Written for the <span className="text-brand-cyan">front office,</span> not the boardroom.
               </h2>
@@ -1973,7 +1949,7 @@ function Reviews() {
         <Reveal>
           <div className="mb-14 flex flex-col justify-between gap-8 md:flex-row md:items-end">
             <div>
-              <Kicker>07 — Trust &amp; guarantees</Kicker>
+              <Kicker>08 — Trust &amp; guarantees</Kicker>
               <h2 className="max-w-2xl text-[clamp(2.2rem,4vw,3.6rem)] font-light leading-[1.05] tracking-[-0.02em] text-foreground">
                 No invented praise. <span className="text-brand-cyan">Verified dealers</span> only.
               </h2>
@@ -2575,7 +2551,7 @@ function MiniNav() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
   const links = [
-    { label: 'ROI calculator', href: '#roi' },
+    { label: 'Cost benchmark', href: '#cost' },
     { label: 'Store & pricing', href: '#store' },
     { label: 'FAQ', href: '#faq' },
     { label: 'Reviews', href: '#reviews' },
@@ -2611,8 +2587,8 @@ function MiniNav() {
 /* "Why $2,499 is a bargain" (deep-audit proposal, owner-approved 2026-10-08):
    the lifetime bundle's value story in three static cards — labor math,
    rebate leakage, and the stores-not-desks pricing shape. All prices come
-   from the catalog; the $20/hour figure is labeled as an example and the
-   band defers personal math to the ROI calculator (audit rules: no invented
+   from the catalog; the $18/hour figure matches the audit's payroll
+   benchmark and the single disclaimer footnote lives under the cost benchmark (audit rules: no invented
    benchmarks, no point repeated twice). Unnumbered band inside #tools, so
    the section numbering 01-07 stays untouched. */
 function BargainBand() {
@@ -2624,7 +2600,7 @@ function BargainBand() {
     {
       icon: Clock,
       title: 'The labor math',
-      body: `Ten hours a week of manual extracting, ordering and filing at $20/hour is about $800 a month of staff time. ${bundleLifetime} once — and the work is automated from day one. That is an example, not a promise.`,
+      body: `Ten hours a week of manual extracting, ordering and filing at $18/hour is about $780 a month of staff time. ${bundleLifetime} once — and the work is automated from day one.`,
     },
     {
       icon: TrendingUp,
@@ -2654,9 +2630,8 @@ function BargainBand() {
           </div>
         ))}
       </div>
-      <p className="mt-6 text-[12px] font-light leading-5 text-muted-foreground">
-        Numbers above are illustrative examples, not guarantees — run your own estimates in the ROI calculator above and validate everything during the free 7-day trial.
-      </p>
+      {/* Disclaimer consolidated 2026-10-13 into the single footnote under the
+          cost benchmark (audit §6.2: one clean footnote, no scattered lines). */}
     </div>
   );
 }
@@ -2755,6 +2730,7 @@ function Home() {
         <LiveProof />
         <QuickStart />
         <Tools />
+        <CostBenchmark />
         <Compare />
         <Audience />
         <Faq />
