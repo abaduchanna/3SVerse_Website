@@ -406,8 +406,11 @@ export const PRODUCTS: Product[] = [
        Lifetime LIST = $2,997 (the 3-tools-separately math used across the
        site) so the $2,499 launch price keeps its strikethrough anchor
        (−17% badge, same as the per-tool cards); from Nov 1 the post-launch
-       $2,499 stands alone. */
-    prices: { trial: 0, monthly: 450, annual: 999, lifetime: 2997 },
+       $2,499 stands alone.
+       Owner 2026-10-13 (later): bundle annual 999 → 1,300. Annual has no
+       launch variant — $1,300/yr holds on both sides of Nov 1. Savings %
+       copy ("save up to X%") recomputes itself from this number. */
+    prices: { trial: 0, monthly: 450, annual: 1300, lifetime: 2997 },
     launchPrices: { trial: 0, monthly: 299, lifetime: 2499 },
     postLaunchPrices: { lifetime: 2499, monthly: 450 },
   },
