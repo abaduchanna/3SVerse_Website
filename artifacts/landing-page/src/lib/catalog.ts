@@ -407,10 +407,11 @@ export const PRODUCTS: Product[] = [
        site) so the $2,499 launch price keeps its strikethrough anchor
        (−17% badge, same as the per-tool cards); from Nov 1 the post-launch
        $2,499 stands alone.
-       Owner 2026-10-13 (later): bundle annual 999 → 1,300. Annual has no
-       launch variant — $1,300/yr holds on both sides of Nov 1. Savings %
-       copy ("save up to X%") recomputes itself from this number. */
-    prices: { trial: 0, monthly: 450, annual: 1300, lifetime: 2997 },
+       Owner 2026-10-13 (later): bundle annual 999 → 1,300.
+       Owner 2026-10-13 (later still): 1,300 → 1,299 (charm pricing). Annual
+       has no launch variant — $1,299/yr holds on both sides of Nov 1.
+       Savings % copy ("save up to X%") recomputes itself from this number. */
+    prices: { trial: 0, monthly: 450, annual: 1299, lifetime: 2997 },
     launchPrices: { trial: 0, monthly: 299, lifetime: 2499 },
     postLaunchPrices: { lifetime: 2499, monthly: 450 },
   },
