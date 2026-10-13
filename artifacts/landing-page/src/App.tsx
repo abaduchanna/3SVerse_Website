@@ -705,7 +705,7 @@ function Services() {
         <Reveal>
           <div className="mb-16 flex flex-col justify-between gap-8 md:flex-row md:items-end">
             <div>
-              <Kicker>01 — What we offer</Kicker>
+              <Kicker>10 — What we offer</Kicker>
               <h2 className="max-w-2xl text-[clamp(2.2rem,4vw,3.6rem)] font-light leading-[1.05] tracking-[-0.02em] text-foreground">
                 The portal tools — and whatever your dealership needs next.
               </h2>
