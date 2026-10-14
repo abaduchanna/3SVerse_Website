@@ -1,0 +1,2 @@
+#!/bin/bash
+exec java -jar /home/z/my-project/lib/rev-tools/apktool.jar "$@"
