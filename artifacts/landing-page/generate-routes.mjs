@@ -105,6 +105,24 @@ const ROUTES = {
     canonical: `${SITE}/demo/`,
     shim: "#/demo",
   },
+  /* SEO landing pages (2026-10-15, Leados search-gap keywords). Real static
+     pages with their own canonical; the hash shim lands on the matching view. */
+  "vidapay-rebate-filing": {
+    title: "VidaPay Rebate Filing Automation for Wireless Dealers — 3S Verse",
+    description:
+      "How to file rebates on VidaPay, automated: bulk claim filing from Excel, field validation, store logins and per-claim status tracking. Free 7-day trial.",
+    robots: "index,follow",
+    canonical: `${SITE}/vidapay-rebate-filing/`,
+    shim: "#/rebate-filing",
+  },
+  "front-office-automation": {
+    title: "Wireless Dealer Front Office Automation — 3S Verse",
+    description:
+      "Front office automation for wireless dealers: incentive tracking software, multi-store reporting tools, device ordering and rebate filing. Free 7-day trial.",
+    robots: "index,follow",
+    canonical: `${SITE}/front-office-automation/`,
+    shim: "#/front-office",
+  },
   order: {
     title: "Order Status — 3S Verse",
     description:
@@ -123,7 +141,7 @@ const ROUTES = {
   },
 };
 
-const SHIM = (view) => `<script>(function(){var p=location.pathname.replace(/\\/+$/,'').toLowerCase();var map={'/privacy':'#/privacy','/terms':'#/terms','/refund':'#/refund','/eula':'#/eula','/security':'#/security','/about':'#/about','/pricing':'#/pricing','/download':'#/download','/trial':'#/download','/demo':'#/demo'};var v=map[p];if(v){location.replace(location.origin+'/'+v+location.search);}})();</script>`;
+const SHIM = (view) => `<script>(function(){var p=location.pathname.replace(/\\/+$/,'').toLowerCase();var map={'/privacy':'#/privacy','/terms':'#/terms','/refund':'#/refund','/eula':'#/eula','/security':'#/security','/about':'#/about','/pricing':'#/pricing','/download':'#/download','/trial':'#/download','/demo':'#/demo','/vidapay-rebate-filing':'#/rebate-filing','/front-office-automation':'#/front-office'};var v=map[p];if(v){location.replace(location.origin+'/'+v+location.search);}})();</script>`;
 
 function buildPage(route, meta) {
   let html = readFileSync(indexHtml, "utf-8");

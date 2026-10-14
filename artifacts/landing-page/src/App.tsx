@@ -19,6 +19,12 @@ const DemoPage = lazy(() => import('@/pages/DemoPage'));
    pattern as the legal views (static-safe on GitHub Pages). */
 const AboutPage = lazy(() => import('@/pages/About'));
 const PricingPage = lazy(() => import('@/pages/Pricing'));
+/* SEO landing pages (2026-10-15, Leados search-gap keywords): rebate filing
+   automation + how-to-file guide, and the front-office automation suite page.
+   Same hash-routing pattern; canonical URLs /vidapay-rebate-filing/ and
+   /front-office-automation/ are real pages via generate-routes.mjs. */
+const RebateFilingPage = lazy(() => import('@/pages/RebateFiling'));
+const FrontOfficePage = lazy(() => import('@/pages/FrontOffice'));
 /* Invoice Studio — seller-only (password gate inside the page; no nav or
    footer link). Static-safe: the gate is client-side SHA-256, the page
    renders fine on GitHub Pages. */
@@ -1286,12 +1292,29 @@ function Audience() {
           ))}
         </div>
         <Reveal>
+          <div className="mx-auto mt-10 flex max-w-4xl flex-wrap items-center justify-center gap-3">
+            <a
+              href="#/rebate-filing"
+              className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-[12.5px] font-medium text-foreground transition-colors hover:border-brand-cyan/40 hover:text-brand-cyan"
+            >
+              VidaPay rebate filing automation <ArrowRight className="h-3.5 w-3.5" />
+            </a>
+            <a
+              href="#/front-office"
+              className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-[12.5px] font-medium text-foreground transition-colors hover:border-brand-cyan/40 hover:text-brand-cyan"
+            >
+              Wireless dealer front office automation <ArrowRight className="h-3.5 w-3.5" />
+            </a>
+          </div>
+        </Reveal>
+        <Reveal>
           <p className="mx-auto mt-12 max-w-4xl text-center text-[13px] font-light leading-6 text-muted-foreground">
             Searching for a faster way through the Tcetra dashboard or the VidaPay portal?
-            Whether the job is rebate claims, incentive reports, device ordering, inventory
-            audits, or day-to-day store operations, the 3SVerse tools were built on the same
-            retail back-office workflows your dealership runs — start free and see a real run
-            on your own store data within days.
+            Whether the job is VidaPay rebate filing automation, incentive tracking software,
+            device ordering, multi-store wireless dealer reporting tools, inventory audits, or
+            day-to-day store operations, the 3SVerse tools were built on the same retail
+            back-office workflows your dealership runs — start free and see a real run on your
+            own store data within days.
           </p>
         </Reveal>
       </div>
@@ -2506,6 +2529,14 @@ function Footer() {
               </div>
             </div>
             <div>
+              <div className="font-mono-tech text-[10px] uppercase tracking-[.22em] text-muted-foreground">Solutions</div>
+              <div className="mt-4 flex flex-col gap-2.5">
+                <a href="#/rebate-filing" className="text-[14px] font-light text-foreground/85 transition-colors hover:text-brand-cyan">VidaPay rebate filing automation</a>
+                <a href="#/front-office" className="text-[14px] font-light text-foreground/85 transition-colors hover:text-brand-cyan">Front office automation</a>
+                <a href="#/demo" className="text-[14px] font-light text-foreground/85 transition-colors hover:text-brand-cyan">Watch the demos</a>
+              </div>
+            </div>
+            <div>
               <div className="font-mono-tech text-[10px] uppercase tracking-[.22em] text-muted-foreground">Support</div>
               <div className="mt-4 flex flex-col gap-2.5">
                 <a href="#faq" data-testid="link-footer-faq" className="text-[14px] font-light text-foreground/85 transition-colors hover:text-brand-cyan">FAQ</a>
@@ -2784,6 +2815,28 @@ function App() {
         </div>
       }>
         <PricingPage />
+      </Suspense>
+    );
+  }
+  if (hash.startsWith('#/rebate-filing')) {
+    return (
+      <Suspense fallback={
+        <div className="grid min-h-screen place-items-center bg-background text-sm text-muted-foreground" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+          Loading…
+        </div>
+      }>
+        <RebateFilingPage />
+      </Suspense>
+    );
+  }
+  if (hash.startsWith('#/front-office')) {
+    return (
+      <Suspense fallback={
+        <div className="grid min-h-screen place-items-center bg-background text-sm text-muted-foreground" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+          Loading…
+        </div>
+      }>
+        <FrontOfficePage />
       </Suspense>
     );
   }
