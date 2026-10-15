@@ -11,7 +11,7 @@
 | **SignalScout** | Lead scouting for wireless retailers — multi-store sweeps, org-API alternative, Excel export, challenge-resume flow | [SignalScout](https://github.com/abaduchanna/SignalScout) |
 | **3SVerse WiFi Transfer** | Fast phone ↔ PC file transfer over local Wi-Fi — no cables, no cloud | [3SVerse_WiFi_Transfer](https://github.com/abaduchanna/3SVerse_WiFi_Transfer) |
 | **License Studio** | License / product / pricing management for the 3S Verse store (Lemon Squeezy powered) | [3SVerse_License_Studio](https://github.com/abaduchanna/3SVerse_License_Studio) |
-| **MangoDisk** | Large-file transfer app for Android — simple, resumable, local | [app-repos/MangoDisk](https://github.com/abaduchanna) |
+| **MangoDisk** | Disk cleaner for Android — temp/log/cache sweep, large-file finder (50 MB+), review-then-clean, fully on-device | [MangoDisk](https://github.com/abaduchanna/MangoDisk) |
 | **NetSpeedMeter** | Network speed display embedded in the Windows 10/11 taskbar (SetParent technique, TrafficMonitor-style) | [NetSpeedMeter](https://github.com/abaduchanna/NetSpeedMeter) |
 | **Facebook Group Poster / Live Poster** | Scheduled posting + live announcements across Facebook groups | [FB_Live_Group_Poster](https://github.com/abaduchanna/FB_Live_Group_Poster) |
 | **LinkedIn Poster** | Browser-mode LinkedIn posting automation | [3SVerse_LinkedIn_Poster](https://github.com/abaduchanna/3SVerse_LinkedIn_Poster) |
