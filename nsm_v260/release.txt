@@ -1,0 +1,3 @@
+release id 415449534 NetSpeedMeter v2.6.0 - ONE row + black background
+648890049 NetSpeedMeter-2.6.0-x64-Setup.exe 2141082 https://github.com/abaduchanna/NetSpeedMeter/releases/download/v2.6.0/NetSpeedMeter-2.6.0-x64-Setup.exe
+648890050 NetSpeedMonitor-v2.6.0-x64.exe 187392 https://github.com/abaduchanna/NetSpeedMeter/releases/download/v2.6.0/NetSpeedMonitor-v2.6.0-x64.exe
