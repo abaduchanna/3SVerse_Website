@@ -15,6 +15,7 @@ const OrderStatusPage = lazy(() => import('@/pages/OrderStatus'));
 const LegalPage = lazy(() => import('@/pages/Legal'));
 const DownloadPage = lazy(() => import('@/pages/DownloadPage'));
 const DemoPage = lazy(() => import('@/pages/DemoPage'));
+const WatchPage = lazy(() => import('@/pages/WatchPage'));
 /* About + Pricing — template-style standalone pages, same hash-routing
    pattern as the legal views (static-safe on GitHub Pages). */
 const AboutPage = lazy(() => import('@/pages/About'));
@@ -788,16 +789,25 @@ function LiveProof() {
           {DEMOS.map((demo, i) => (
             <Reveal key={demo.id} delay={i * 0.08}>
               <div className="overflow-hidden rounded-2xl border border-border bg-card">
-                <div className="relative aspect-video w-full">
-                  <iframe
-                    src={`https://www.youtube.com/embed/${demo.id}`}
-                    title={demo.title}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    allowFullScreen
+                <a
+                  href={`/watch/${demo.slug}/`}
+                  data-testid={`live-proof-${demo.slug}`}
+                  className="group relative block aspect-video w-full bg-black"
+                  aria-label={`Watch: ${demo.title}`}
+                >
+                  <img
+                    src={`https://i.ytimg.com/vi/${demo.id}/hqdefault.jpg`}
+                    alt={demo.title}
                     loading="lazy"
-                    className="absolute inset-0 h-full w-full"
+                    className="absolute inset-0 h-full w-full object-cover opacity-90 transition-opacity group-hover:opacity-100"
                   />
-                </div>
+                  <span className="absolute inset-0 grid place-items-center">
+                    <span className="grid h-16 w-16 place-items-center rounded-full bg-foreground/85 text-background transition-transform group-hover:scale-110">
+                      <PlayCircle className="h-8 w-8" />
+                    </span>
+                  </span>
+                  <span className="absolute bottom-3 right-3 rounded-full bg-black/70 px-3 py-1 font-mono-tech text-[10px] uppercase tracking-[.14em] text-white">{demo.dur}</span>
+                </a>
                 <div className="flex items-start justify-between gap-4 p-5">
                   <div>
                     <p className="text-[15px] font-medium leading-6 text-foreground">{demo.title}</p>
@@ -2876,6 +2886,22 @@ function App() {
           </div>
         }>
           <DemoPage />
+        </Suspense>
+      );
+    }
+  // #/watch/<slug> — ONE video per page: the watch pages Google's video
+  // indexing requires (GSC: "Video isn't on a watch page"). Generated as
+  // real /watch/<slug>/ index.html files by generate-routes.mjs, which
+  // also injects the VideoObject JSON-LD into each page head.
+    if (hash.startsWith('#/watch/')) {
+      const watchSlug = hash.replace('#/watch/', '').replace(/\/+$/, '');
+      return (
+        <Suspense fallback={
+          <div className="grid min-h-screen place-items-center bg-background text-sm text-muted-foreground" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            Loading…
+          </div>
+        }>
+          <WatchPage slug={watchSlug} />
         </Suspense>
       );
     }

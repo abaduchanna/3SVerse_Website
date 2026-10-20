@@ -105,6 +105,72 @@ const ROUTES = {
     canonical: `${SITE}/demo/`,
     shim: "#/demo",
   },
+  // One video per watch page — this is what clears Google Search
+  // Console's "Video isn't on a watch page" validation. The VideoObject
+  // JSON-LD is injected server-side into each page head. Keep the video
+  // metadata in sync with DEMOS in src/lib/catalog.ts.
+  "watch/rebate-filing": {
+    title: "VidaPay Rebate Filing — full walkthrough (video) — 3S Verse",
+    description:
+      "Watch the complete VidaPay rebate filing flow, step by step: pull claims from the portal, file them, and track the money — recorded from the real app, no mockups.",
+    robots: "index,follow",
+    canonical: `${SITE}/watch/rebate-filing/`,
+    shim: "#/watch/rebate-filing",
+    jsonld: {
+      "@context": "https://schema.org",
+      "@type": "VideoObject",
+      name: "VidaPay Rebate Filing — full walkthrough",
+      description:
+        "The complete rebate filing flow, step by step: pull claims from the VidaPay portal, file them, and track the money. Recorded from the real app — no mockups, no marketing polish.",
+      thumbnailUrl: [
+        "https://i.ytimg.com/vi/vwU8vkcCQWs/maxresdefault.jpg",
+        "https://i.ytimg.com/vi/vwU8vkcCQWs/hqdefault.jpg",
+      ],
+      uploadDate: "2026-07-28",
+      duration: "PT19M11S",
+      embedUrl: "https://www.youtube.com/embed/vwU8vkcCQWs",
+      contentUrl: "https://www.youtube.com/watch?v=vwU8vkcCQWs",
+      mainEntityOfPage: `${SITE}/watch/rebate-filing/`,
+      isFamilyFriendly: true,
+      publisher: {
+        "@type": "Organization",
+        name: "3S Verse",
+        url: `${SITE}/`,
+        logo: { "@type": "ImageObject", url: `${SITE}/logo.png` },
+      },
+    },
+  },
+  "watch/incentive-extractor": {
+    title: "VidaPay Incentive Extractor — portal to Excel (video) — 3S Verse",
+    description:
+      "Watch incentive data pulled straight from the VidaPay portal into a clean Excel sheet — recorded from the real app, no mockups.",
+    robots: "index,follow",
+    canonical: `${SITE}/watch/incentive-extractor/`,
+    shim: "#/watch/incentive-extractor",
+    jsonld: {
+      "@context": "https://schema.org",
+      "@type": "VideoObject",
+      name: "VidaPay Incentive Extractor — portal to Excel",
+      description:
+        "Incentive data pulled straight from the VidaPay portal into a clean spreadsheet. Recorded from the real app — no mockups, no marketing polish.",
+      thumbnailUrl: [
+        "https://i.ytimg.com/vi/Eij45OnT-lw/maxresdefault.jpg",
+        "https://i.ytimg.com/vi/Eij45OnT-lw/hqdefault.jpg",
+      ],
+      uploadDate: "2026-09-01",
+      duration: "PT7M49S",
+      embedUrl: "https://www.youtube.com/embed/Eij45OnT-lw",
+      contentUrl: "https://www.youtube.com/watch?v=Eij45OnT-lw",
+      mainEntityOfPage: `${SITE}/watch/incentive-extractor/`,
+      isFamilyFriendly: true,
+      publisher: {
+        "@type": "Organization",
+        name: "3S Verse",
+        url: `${SITE}/`,
+        logo: { "@type": "ImageObject", url: `${SITE}/logo.png` },
+      },
+    },
+  },
   /* SEO landing pages (2026-10-15, Leados search-gap keywords). Real static
      pages with their own canonical; the hash shim lands on the matching view. */
   "vidapay-rebate-filing": {
@@ -141,7 +207,7 @@ const ROUTES = {
   },
 };
 
-const SHIM = (view) => `<script>(function(){var p=location.pathname.replace(/\\/+$/,'').toLowerCase();var map={'/privacy':'#/privacy','/terms':'#/terms','/refund':'#/refund','/eula':'#/eula','/security':'#/security','/about':'#/about','/pricing':'#/pricing','/download':'#/download','/trial':'#/download','/demo':'#/demo','/vidapay-rebate-filing':'#/rebate-filing','/front-office-automation':'#/front-office'};var v=map[p];if(v){location.replace(location.origin+'/'+v+location.search);}})();</script>`;
+const SHIM = (view) => `<script>(function(){var p=location.pathname.replace(/\\/+$/,'').toLowerCase();var map={'/privacy':'#/privacy','/terms':'#/terms','/refund':'#/refund','/eula':'#/eula','/security':'#/security','/about':'#/about','/pricing':'#/pricing','/download':'#/download','/trial':'#/download','/demo':'#/demo','/vidapay-rebate-filing':'#/rebate-filing','/front-office-automation':'#/front-office','/watch/rebate-filing':'#/watch/rebate-filing','/watch/incentive-extractor':'#/watch/incentive-extractor'};var v=map[p];if(v){location.replace(location.origin+'/'+v+location.search);}})();</script>`;
 
 function buildPage(route, meta) {
   let html = readFileSync(indexHtml, "utf-8");
@@ -169,6 +235,16 @@ function buildPage(route, meta) {
     /(<link\s+rel="canonical"[^>]*>)/,
     `$1\n    <meta name="robots" content="${meta.robots}">`,
   );
+
+  // 4b. optional server-rendered JSON-LD (VideoObject on watch pages) —
+  //     in the RAW HTML so Google never depends on JS to read it.
+  if (meta.jsonld) {
+    const ld = `<script type="application/ld+json">${JSON.stringify(meta.jsonld).replace(/</g, "\\u003c")}</script>`;
+    html = html.replace(
+      /(<meta\s+name="robots"[^>]*>)/,
+      `$1\n    ${ld}`,
+    );
+  }
 
   // 5. inject the path->hash shim as the FIRST thing in <head> so it runs
   //    before the deferred module bundle boots React
@@ -208,6 +284,9 @@ for (const [route, meta] of Object.entries(ROUTES)) {
   }
   if (meta.shim && !html.includes("location.replace")) {
     throw new Error(`route ${route}: shim missing`);
+  }
+  if (meta.jsonld && !html.includes('"@type":"VideoObject"')) {
+    throw new Error(`route ${route}: VideoObject JSON-LD missing`);
   }
 }
 console.log("generate-routes: all pages verified (canonical + title + shim)");

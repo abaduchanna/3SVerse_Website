@@ -177,19 +177,31 @@ export const OVERVIEW_DEMO = {
   note: 'Full walkthroughs of Rebate Filing and Incentive Extractor, plus the live Device Ordering interface.',
 } as const;
 
-/** Both published product demos — embedded on the landing page and linked on YouTube. */
+/** Both published product demos — embedded on /demo, one per watch page.
+ *  slug/published/durationISO feed the /watch/<slug>/ watch pages, the
+ *  VideoObject JSON-LD injected by generate-routes.mjs and the video
+ *  sitemap. `published` = date computed from YouTube's relative "N weeks
+ *  ago" display (channel: 12 wks / 7 wks as of 2026-10-20), rounded to the
+ *  day — YouTube blocks API/datacenter access so exact timestamps are not
+ *  verifiable from here. */
 export const DEMOS = [
   {
     id: 'vwU8vkcCQWs',
+    slug: 'rebate-filing',
     title: 'VidaPay Rebate Filing — full walkthrough',
     blurb: 'The complete rebate filing flow, step by step: pull claims, file them, track the money.',
     dur: '19 min',
+    durationISO: 'PT19M11S',
+    published: '2026-07-28',
   },
   {
     id: 'Eij45OnT-lw',
+    slug: 'incentive-extractor',
     title: 'VidaPay Incentive Extractor — portal to Excel',
     blurb: 'Incentive data pulled straight from the VidaPay portal into a clean spreadsheet.',
     dur: '7:49',
+    durationISO: 'PT7M49S',
+    published: '2026-09-01',
   },
 ] as const;
 

@@ -7,10 +7,13 @@
  * indexing flagged the homepage with "Video isn't on a watch page" — the
  * homepage is not a watch page, and the release asset later vanished from
  * the rolling "latest" release (404 for visitors). The demos live on the
- * 3SVerse YouTube channel, so this page embeds them as the MAIN content —
- * that is what makes it a watch page. No VideoObject JSON-LD here on
- * purpose: we can't verify uploadDate, and wrong structured data is worse
- * than none.
+ * 3SVerse YouTube channel, so this page embeds them as the MAIN content.
+ *
+ * GSC follow-up (2026-10-20): validation still failed because a page with
+ * TWO videos + marketing copy is not a per-video watch page. Each demo now
+ * has a dedicated /watch/<slug>/ page (video as hero, VideoObject JSON-LD
+ * injected server-side by generate-routes.mjs, video-sitemap entry), and
+ * the homepage links posters instead of embedding players.
  */
 import { PlayCircle, Download, ArrowRight, Youtube } from 'lucide-react';
 import PageShell from '@/pages/PageShell';
@@ -49,6 +52,13 @@ export default function DemoPage() {
             <h2 className="mt-4 text-[19px] font-medium leading-6 text-foreground">{demo.title}</h2>
             <p className="mt-2 max-w-2xl text-[13.5px] font-light leading-6 text-foreground/70">{demo.blurb}</p>
             <p className="mt-1 font-mono-tech text-[10px] uppercase tracking-[.22em] text-muted-foreground">Runtime {demo.dur}</p>
+            <a
+              href={`/watch/${demo.slug}/`}
+              data-testid={`demo-watch-page-${demo.slug}`}
+              className="mt-2 inline-flex items-center gap-1.5 text-[12.5px] font-medium text-brand-cyan transition-colors hover:text-foreground"
+            >
+              Permanent watch page — 3sverse.com/watch/{demo.slug}
+            </a>
           </div>
         ))}
       </div>

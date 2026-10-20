@@ -1,10 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
   <url>
     <loc>https://3sverse.com/</loc>
-    <lastmod>2026-10-15</lastmod>
+    <lastmod>2026-10-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://3sverse.com/watch/rebate-filing/</loc>
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <video:video>
+      <video:thumbnail_loc>https://i.ytimg.com/vi/vwU8vkcCQWs/hqdefault.jpg</video:thumbnail_loc>
+      <video:title>VidaPay Rebate Filing — full walkthrough</video:title>
+      <video:description>The complete rebate filing flow, step by step: pull claims from the VidaPay portal, file them, and track the money. Recorded from the real app — no mockups, no marketing polish.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/vwU8vkcCQWs</video:player_loc>
+      <video:duration>1151</video:duration>
+      <video:publication_date>2026-07-28T00:00:00+00:00</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:live>no</video:live>
+    </video:video>
+  </url>
+  <url>
+    <loc>https://3sverse.com/watch/incentive-extractor/</loc>
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <video:video>
+      <video:thumbnail_loc>https://i.ytimg.com/vi/Eij45OnT-lw/hqdefault.jpg</video:thumbnail_loc>
+      <video:title>VidaPay Incentive Extractor — portal to Excel</video:title>
+      <video:description>Incentive data pulled straight from the VidaPay portal into a clean spreadsheet. Recorded from the real app — no mockups, no marketing polish.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/Eij45OnT-lw</video:player_loc>
+      <video:duration>469</video:duration>
+      <video:publication_date>2026-09-01T00:00:00+00:00</video:publication_date>
+      <video:family_friendly>yes</video:family_friendly>
+      <video:live>no</video:live>
+    </video:video>
   </url>
   <url>
     <loc>https://3sverse.com/download/</loc>
@@ -44,7 +77,7 @@
   </url>
   <url>
     <loc>https://3sverse.com/demo/</loc>
-    <lastmod>2026-10-15</lastmod>
+    <lastmod>2026-10-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -52,24 +85,24 @@
     <loc>https://3sverse.com/vidapay-rebate-filing/</loc>
     <lastmod>2026-10-15</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://3sverse.com/front-office-automation/</loc>
     <lastmod>2026-10-15</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://3sverse.com/about/</loc>
     <lastmod>2026-10-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
   </url>
   <url>
     <loc>https://3sverse.com/pricing/</loc>
     <lastmod>2026-10-15</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
 </urlset>
