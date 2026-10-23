@@ -2450,51 +2450,51 @@ function Contact() {
             <div className="grid gap-5 sm:grid-cols-2">
               <label className="block font-mono-tech text-[11px] uppercase tracking-[.18em] text-muted-foreground">
                 Name
-                <span className="glow-field glow-d0 mt-2 block">
-                  <input required maxLength={120} name="name" value={form.name} onChange={(event) => { setForm((current) => ({ ...current, name: event.target.value })); setSubmitStatus('idle'); }} data-testid="input-contact-name" className="w-full rounded-xl bg-foreground/[.03] px-4 py-3 font-sans text-[14px] normal-case tracking-normal text-foreground outline-none placeholder:text-muted-foreground/50" placeholder="Your name" />
-                </span>
+                <div className="crawl-box mt-2">
+                  <input required maxLength={120} name="name" value={form.name} onChange={(event) => { setForm((current) => ({ ...current, name: event.target.value })); setSubmitStatus('idle'); }} data-testid="input-contact-name" className="w-full rounded-xl border border-border bg-foreground/[.03] px-4 py-3 font-sans text-[14px] normal-case tracking-normal text-foreground outline-none transition-colors placeholder:text-muted-foreground/50" placeholder="Your name" />
+                </div>
               </label>
               <label className="block font-mono-tech text-[11px] uppercase tracking-[.18em] text-muted-foreground">
                 Email
-                <span className="glow-field glow-d1 mt-2 block">
-                  <input required maxLength={254} type="email" name="email" value={form.email} onChange={(event) => { setForm((current) => ({ ...current, email: event.target.value })); setSubmitStatus('idle'); }} data-testid="input-contact-email" autoComplete="email" className="w-full rounded-xl bg-foreground/[.03] px-4 py-3 font-sans text-[14px] normal-case tracking-normal text-foreground outline-none placeholder:text-muted-foreground/50" placeholder="you@company.com" />
-                </span>
+                <div className="crawl-box cd-1 mt-2">
+                  <input required maxLength={254} type="email" name="email" value={form.email} onChange={(event) => { setForm((current) => ({ ...current, email: event.target.value })); setSubmitStatus('idle'); }} data-testid="input-contact-email" autoComplete="email" className="w-full rounded-xl border border-border bg-foreground/[.03] px-4 py-3 font-sans text-[14px] normal-case tracking-normal text-foreground outline-none transition-colors placeholder:text-muted-foreground/50" placeholder="you@company.com" />
+                </div>
               </label>
               <label className="block font-mono-tech text-[11px] uppercase tracking-[.18em] text-muted-foreground sm:col-span-2">
                 Organization
-                <span className="glow-field glow-d2 mt-2 block">
-                  <input required maxLength={160} name="organization" value={form.organization} onChange={(event) => { setForm((current) => ({ ...current, organization: event.target.value })); setSubmitStatus('idle'); }} data-testid="input-contact-organization" className="w-full rounded-xl bg-foreground/[.03] px-4 py-3 font-sans text-[14px] normal-case tracking-normal text-foreground outline-none placeholder:text-muted-foreground/50" placeholder="Company or organization" />
-                </span>
+                <div className="crawl-box cd-2 mt-2">
+                  <input required maxLength={160} name="organization" value={form.organization} onChange={(event) => { setForm((current) => ({ ...current, organization: event.target.value })); setSubmitStatus('idle'); }} data-testid="input-contact-organization" className="w-full rounded-xl border border-border bg-foreground/[.03] px-4 py-3 font-sans text-[14px] normal-case tracking-normal text-foreground outline-none transition-colors placeholder:text-muted-foreground/50" placeholder="Company or organization" />
+                </div>
               </label>
               <label className="block font-mono-tech text-[11px] uppercase tracking-[.18em] text-muted-foreground">
                 Locations you run
-                <span className="glow-field glow-d3 mt-2 block">
-                  <select name="locations" value={form.locations} onChange={(event) => { setForm((current) => ({ ...current, locations: event.target.value })); setSubmitStatus('idle'); }} data-testid="select-contact-locations" className="w-full appearance-none rounded-xl bg-foreground/[.03] px-4 py-3 font-sans text-[14px] normal-case tracking-normal text-foreground outline-none">
-                  <option className="bg-card">Just exploring</option>
-                  <option className="bg-card">1 store</option>
-                  <option className="bg-card">2–5 stores</option>
-                  <option className="bg-card">6–15 stores</option>
-                  <option className="bg-card">16+ stores</option>
-                </select>
-                </span>
+                <div className="crawl-box cd-3 mt-2">
+                  <select name="locations" value={form.locations} onChange={(event) => { setForm((current) => ({ ...current, locations: event.target.value })); setSubmitStatus('idle'); }} data-testid="select-contact-locations" className="w-full appearance-none rounded-xl border border-border bg-foreground/[.03] px-4 py-3 font-sans text-[14px] normal-case tracking-normal text-foreground outline-none transition-colors">
+                    <option className="bg-card">Just exploring</option>
+                    <option className="bg-card">1 store</option>
+                    <option className="bg-card">2–5 stores</option>
+                    <option className="bg-card">6–15 stores</option>
+                    <option className="bg-card">16+ stores</option>
+                  </select>
+                </div>
               </label>
               <label className="block font-mono-tech text-[11px] uppercase tracking-[.18em] text-muted-foreground">
                 I&apos;m interested in
-                <span className="glow-field glow-d4 mt-2 block">
-                  <select name="interest" value={form.interest} onChange={(event) => { setForm((current) => ({ ...current, interest: event.target.value })); setSubmitStatus('idle'); }} data-testid="select-contact-interest" className="w-full appearance-none rounded-xl bg-foreground/[.03] px-4 py-3 font-sans text-[14px] normal-case tracking-normal text-foreground outline-none">
-                  <option className="bg-card">Dealer tools (Extractor / Ordering / Rebate)</option>
-                  <option className="bg-card">Custom automation for my dealership</option>
-                  <option className="bg-card">More PCs / district pricing</option>
-                  <option className="bg-card">Something else</option>
-                </select>
-                </span>
+                <div className="crawl-box cd-4 mt-2">
+                  <select name="interest" value={form.interest} onChange={(event) => { setForm((current) => ({ ...current, interest: event.target.value })); setSubmitStatus('idle'); }} data-testid="select-contact-interest" className="w-full appearance-none rounded-xl border border-border bg-foreground/[.03] px-4 py-3 font-sans text-[14px] normal-case tracking-normal text-foreground outline-none transition-colors">
+                    <option className="bg-card">Dealer tools (Extractor / Ordering / Rebate)</option>
+                    <option className="bg-card">Custom automation for my dealership</option>
+                    <option className="bg-card">More PCs / district pricing</option>
+                    <option className="bg-card">Something else</option>
+                  </select>
+                </div>
               </label>
             </div>
             <label className="mt-5 block font-mono-tech text-[11px] uppercase tracking-[.18em] text-muted-foreground">
               Message
-              <span className="glow-field glow-d5 mt-2 block">
-                <textarea required maxLength={5000} name="message" value={form.message} onChange={(event) => { setForm((current) => ({ ...current, message: event.target.value })); setSubmitStatus('idle'); }} data-testid="textarea-contact-message" rows={5} className="w-full resize-y rounded-xl bg-foreground/[.03] px-4 py-3 font-sans text-[14px] normal-case tracking-normal text-foreground outline-none placeholder:text-muted-foreground/50" placeholder="What should we automate first?" />
-              </span>
+              <div className="crawl-box cd-5 mt-2">
+                <textarea required maxLength={5000} name="message" value={form.message} onChange={(event) => { setForm((current) => ({ ...current, message: event.target.value })); setSubmitStatus('idle'); }} data-testid="textarea-contact-message" rows={5} className="w-full resize-y rounded-xl border border-border bg-foreground/[.03] px-4 py-3 font-sans text-[14px] normal-case tracking-normal text-foreground outline-none transition-colors placeholder:text-muted-foreground/50" placeholder="What should we automate first?" />
+              </div>
             </label>
             {TURNSTILE_SITE_KEY && <TurnstileWidget key={cfResetCount} onToken={setCfToken} />}
             <div className="mt-7 flex flex-wrap items-center gap-4">

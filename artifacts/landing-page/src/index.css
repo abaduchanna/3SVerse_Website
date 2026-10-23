@@ -457,63 +457,99 @@ body, header, footer, section {
   transition: background-color 0.4s ease, border-color 0.4s ease, color 0.3s ease;
 }
 
-/* ── Contact form boxes — brand light crawling the edges (infinite loop) ──
-   Each control sits in a .glow-field wrapper: a conic-gradient "comet"
-   (::before) rotates behind it forever, and a card-colored mask (::after)
-   leaves only a 1.5px edge ring visible — so the light reads as if it
-   crawls along the box border, non-stop. Brand CSS vars keep both themes
-   correct (dark neon ramp / daylight ramp); .glow-d0…d5 stagger the six
-   fields so the comets never look synced. */
-@keyframes glow-crawl { to { transform: rotate(1turn); } }
-.glow-field {
-  position: relative;
-  border-radius: 17.5px;
-  isolation: isolate;
-  overflow: hidden;
+/* ── Crawling gradient border — Z.ai chat-input style ────────────────────
+   A soft brand light (cyan → periwinkle → magenta) endlessly crawls along
+   the edge of each contact-form box. Two layers per box:
+   ::before = the crisp ring ON the border (conic light + faint base ring
+   underneath so the unlit edge still reads as a border), ::after = the same
+   light blurred into a halo that trails just outside the edge.
+   The rotation animates the registered custom property --crawl-angle
+   (Chrome 85+/Safari 16.4+/Firefox 128+ — same support the theme water-swipe
+   already relies on). Boxes are phase-staggered via .cd-1…cd-5 so the six
+   fields don't crawl in lockstep. */
+@property --crawl-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
 }
-.glow-field::before {
-  content: '';
-  position: absolute;
-  inset: -150%;
-  z-index: 0;
-  background: conic-gradient(
-    from 0deg,
-    transparent 0deg 300deg,
-    hsl(var(--brand-periwinkle) / 0) 300deg,
-    hsl(var(--brand-periwinkle)) 327deg,
-    hsl(var(--brand-cyan)) 342deg,
-    hsl(var(--brand-magenta)) 355deg,
+
+@keyframes crawl-spin {
+  to { --crawl-angle: 360deg; }
+}
+
+.crawl-box {
+  --crawl-delay: 0s;
+  --crawl-base: rgba(23, 23, 50, 0.16);
+  --crawl-light: conic-gradient(
+    from var(--crawl-angle),
+    transparent 0deg,
+    rgba(12, 115, 141, 0.85) 30deg,
+    rgba(41, 77, 194, 0.8) 64deg,
+    rgba(169, 25, 152, 0.65) 98deg,
+    transparent 142deg,
     transparent 360deg
   );
-  animation: glow-crawl 4.2s linear infinite;
-  will-change: transform;
+  position: relative;
+  isolation: isolate;
+  border-radius: 0.75rem;
 }
-/* the interior mask — everything past the 1.5px ring falls back to the
-   card surface, so only the edge itself carries the moving light */
-.glow-field::after {
+
+html.dark .crawl-box {
+  --crawl-base: rgba(255, 255, 255, 0.1);
+  --crawl-light: conic-gradient(
+    from var(--crawl-angle),
+    transparent 0deg,
+    rgba(110, 231, 239, 0.95) 30deg,
+    rgba(120, 166, 255, 0.9) 64deg,
+    rgba(228, 75, 215, 0.72) 98deg,
+    transparent 142deg,
+    transparent 360deg
+  );
+}
+
+.crawl-box::before,
+.crawl-box::after {
   content: '';
   position: absolute;
-  inset: 1.5px;
-  z-index: 1;
-  border-radius: 16px;
-  background: var(--card);
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1.5px;
+  pointer-events: none;
+  animation: crawl-spin 4.5s linear infinite;
+  animation-delay: var(--crawl-delay, 0s);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
 }
-.glow-field > input,
-.glow-field > select,
-.glow-field > textarea {
-  position: relative;
-  z-index: 2;
+
+/* crisp ring — conic light over a faint base ring (unlit edge keeps a border) */
+.crawl-box::before {
+  background: var(--crawl-light), linear-gradient(var(--crawl-base), var(--crawl-base));
 }
-.glow-field:focus-within {
-  box-shadow:
-    0 0 0 1px hsl(var(--brand-cyan) / .5),
-    0 0 22px hsl(var(--brand-cyan) / .16);
+
+/* soft halo — same light in a WIDER masked band hugging the edge (no blur:
+   mask applies after filter, so blur+mask would cancel — the band itself
+   reads as glow without tinting the box interior) */
+.crawl-box::after {
+  padding: 4px;
+  background: var(--crawl-light);
+  opacity: 0.45;
+  z-index: -1;
+  transition: opacity 0.35s ease;
 }
-.glow-d1::before { animation-delay: -.7s; }
-.glow-d2::before { animation-delay: -1.4s; }
-.glow-d3::before { animation-delay: -2.1s; }
-.glow-d4::before { animation-delay: -2.8s; }
-.glow-d5::before { animation-delay: -3.5s; }
+
+/* typing focus = the light breathes brighter (smooth opacity, no phase jump) */
+.crawl-box:focus-within::after { opacity: 0.95; }
+
+/* phase stagger across the six form boxes */
+.crawl-box.cd-1 { --crawl-delay: -0.75s; }
+.crawl-box.cd-2 { --crawl-delay: -1.5s; }
+.crawl-box.cd-3 { --crawl-delay: -2.25s; }
+.crawl-box.cd-4 { --crawl-delay: -3s; }
+.crawl-box.cd-5 { --crawl-delay: -3.75s; }
+
 @media (prefers-reduced-motion: reduce) {
-  .glow-field::before { animation-duration: 12s; }
+  .crawl-box::before,
+  .crawl-box::after { animation: none; }
 }
