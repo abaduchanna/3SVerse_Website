@@ -1,0 +1,42 @@
+FIX NOTES — District "Unknown" Bug (Inventory Audit Status tab)
+================================================================
+Date: 2026-10-24 | 3SVerse
+
+PROBLEM (jo tumne report kiya):
+  - Store List tab: stores<->districts SAHI match
+  - Variance Audit tab: districts SAHI
+  - Inventory Audit Status tab: District = "Unknown" (sab rows)
+  - Same issue GFH Audit + Audit Timesheet dono main
+
+ROOT CAUSE:
+  Inventory Audit Status banane wala function (build_inventory_status_rows)
+  district SIRF Employee Time Sheet se uthata tha. Naye flow main time sheet
+  ka district source zaroori nahi (rep name ab count file ke "Created By"
+  se aata hai), to jab time sheet khali/missing hoti -> har district
+  "Unknown". Variance tab ka alag function Store List ko merge karta tha,
+  isliye wahan districts sahi the.
+
+FIX (ab 4 jagah lag gaya — GFH_Inventory_Audit, GFH_Inventory_Audit_Timesheet,
+GFH_Audit_Automation, Automation.py):
+  District ab is priority se milta hai:
+    1. Count file ka "District" column (agar ho aur khali na ho)
+    2. Store List tab (tumhara master — jaise tumne bhara hai)
+    3. Employee Time Sheet ka District column (legacy fallback)
+    4. "Unknown" sirf tab jab kahin na mile
+  -> Status tab aur Variance tab ab HAMESHA same district dikhayenge.
+
+TESTS:
+  - 7 naye regression tests (test_status_district_fallback.py) dono repos
+    main pass — bug hamesha ke liye locked
+  - Existing 52 tests (timesheet matching, audit row tags, district colors)
+    sab pass — kuch toota nahi
+
+TUMHE KYA KARNA HAI:
+  1. Updated source zips download karo (gofile links bheje hain)
+  2. Har app ka build_*.bat chalao (jaise pehle karte ho) — EXE ban jayegi
+  3. EXE kholo -> inventory file dobara import karo (ek baar) — Status tab
+     ab districts ke sath bharega
+  4. Purani DB main agar Unknown rows padi hain to wo re-import pe apne aap
+     theek ho jayengi (upsert district UPDATE karta hai)
+  5. Kisi bhi tab main ab bhi Unknown dikhe to batao — kaunsa store, kaunsi
+     file (count/timesheet) — main turant fix karunga
