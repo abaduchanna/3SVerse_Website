@@ -456,3 +456,64 @@ html:not(.dark) .shape-img {
 body, header, footer, section {
   transition: background-color 0.4s ease, border-color 0.4s ease, color 0.3s ease;
 }
+
+/* ── Contact form boxes — brand light crawling the edges (infinite loop) ──
+   Each control sits in a .glow-field wrapper: a conic-gradient "comet"
+   (::before) rotates behind it forever, and a card-colored mask (::after)
+   leaves only a 1.5px edge ring visible — so the light reads as if it
+   crawls along the box border, non-stop. Brand CSS vars keep both themes
+   correct (dark neon ramp / daylight ramp); .glow-d0…d5 stagger the six
+   fields so the comets never look synced. */
+@keyframes glow-crawl { to { transform: rotate(1turn); } }
+.glow-field {
+  position: relative;
+  border-radius: 17.5px;
+  isolation: isolate;
+  overflow: hidden;
+}
+.glow-field::before {
+  content: '';
+  position: absolute;
+  inset: -150%;
+  z-index: 0;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg 300deg,
+    hsl(var(--brand-periwinkle) / 0) 300deg,
+    hsl(var(--brand-periwinkle)) 327deg,
+    hsl(var(--brand-cyan)) 342deg,
+    hsl(var(--brand-magenta)) 355deg,
+    transparent 360deg
+  );
+  animation: glow-crawl 4.2s linear infinite;
+  will-change: transform;
+}
+/* the interior mask — everything past the 1.5px ring falls back to the
+   card surface, so only the edge itself carries the moving light */
+.glow-field::after {
+  content: '';
+  position: absolute;
+  inset: 1.5px;
+  z-index: 1;
+  border-radius: 16px;
+  background: var(--card);
+}
+.glow-field > input,
+.glow-field > select,
+.glow-field > textarea {
+  position: relative;
+  z-index: 2;
+}
+.glow-field:focus-within {
+  box-shadow:
+    0 0 0 1px hsl(var(--brand-cyan) / .5),
+    0 0 22px hsl(var(--brand-cyan) / .16);
+}
+.glow-d1::before { animation-delay: -.7s; }
+.glow-d2::before { animation-delay: -1.4s; }
+.glow-d3::before { animation-delay: -2.1s; }
+.glow-d4::before { animation-delay: -2.8s; }
+.glow-d5::before { animation-delay: -3.5s; }
+@media (prefers-reduced-motion: reduce) {
+  .glow-field::before { animation-duration: 12s; }
+}
