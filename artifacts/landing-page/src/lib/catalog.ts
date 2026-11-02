@@ -133,16 +133,16 @@ export interface Product {
  * false to end the promotion early.
  */
 export const LAUNCH_OFFER = {
-  active: true,
+  active: false,
   label: 'Launch Offer',
   /* Audit v6 #1: urgency must apply to the buyer who reads it. Only the
      MONTHLY rate changes Nov 1 — lifetime does not — so the note now says
      exactly that, and gives lifetime buyers their own reason to act today
      (founding-customer pricing + 1 year of updates). */
-  note: 'Launch pricing ends Oct 31, 2026 — honored to the minute. Monthly goes up Nov 1: $119 → $149 per tool · $299 → $450 Full Bundle. Lifetime stays $999 per tool · $2,499 Full Bundle — founding-customer pricing, 1 year of updates included.',
+  note: 'Monthly $119 per tool · $299 Full Bundle · lifetime $999 per tool · $2,499 Full Bundle — founding-customer pricing, 1 year of updates included.',
   /** ISO deadline for launch pricing — the storefront counts down to it.
    *  Flip `active` to false (or clear endsAt) when the promo ends. */
-  endsAt: '2026-10-31T23:59:59-05:00',
+  endsAt: '',
 } as const;
 
 /**
@@ -370,9 +370,9 @@ export const PRODUCTS: Product[] = [
        anchors are what the strikethrough/discount badges compare against.
        Owner 2026-10-13: launch monthly raised 89 → 119 (audit P0 — bundle
        must stay cheaper than 3 separate monthly licenses). */
-    prices: { trial: 0, monthly: 149, annual: 599, lifetime: 1299 },
+    prices: { trial: 0, monthly: 119, annual: 599, lifetime: 1299 },
     launchPrices: { trial: 0, monthly: 119, lifetime: 999 },
-    postLaunchPrices: { lifetime: 999, monthly: 149 },
+    postLaunchPrices: { lifetime: 999, monthly: 119 },
   },
   {
     id: 'ordering',
@@ -384,9 +384,9 @@ export const PRODUCTS: Product[] = [
       'Portal verification steps pause for your approval — nothing bypasses you',
       'Runs on a second screen with limited supervision',
     ],
-    prices: { trial: 0, monthly: 149, annual: 599, lifetime: 1499 },
+    prices: { trial: 0, monthly: 119, annual: 599, lifetime: 1499 },
     launchPrices: { trial: 0, monthly: 119, lifetime: 999 },
-    postLaunchPrices: { lifetime: 999, monthly: 149 },
+    postLaunchPrices: { lifetime: 999, monthly: 119 },
   },
   {
     id: 'rebate',
@@ -398,9 +398,9 @@ export const PRODUCTS: Product[] = [
       'Store login management built in',
       'Per-claim status tracking',
     ],
-    prices: { trial: 0, monthly: 149, annual: 699, lifetime: 1699 },
+    prices: { trial: 0, monthly: 119, annual: 699, lifetime: 1699 },
     launchPrices: { trial: 0, monthly: 119, lifetime: 999 },
-    postLaunchPrices: { lifetime: 999, monthly: 149 },
+    postLaunchPrices: { lifetime: 999, monthly: 119 },
   },
   {
     id: 'bundle',
@@ -423,9 +423,9 @@ export const PRODUCTS: Product[] = [
        Owner 2026-10-13 (later still): 1,300 → 1,299 (charm pricing). Annual
        has no launch variant — $1,299/yr holds on both sides of Nov 1.
        Savings % copy ("save up to X%") recomputes itself from this number. */
-    prices: { trial: 0, monthly: 450, annual: 1299, lifetime: 2997 },
+    prices: { trial: 0, monthly: 299, annual: 1299, lifetime: 2997 },
     launchPrices: { trial: 0, monthly: 299, lifetime: 2499 },
-    postLaunchPrices: { lifetime: 2499, monthly: 450 },
+    postLaunchPrices: { lifetime: 2499, monthly: 299 },
   },
 ];
 

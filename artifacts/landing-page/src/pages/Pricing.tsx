@@ -32,7 +32,7 @@ const FAQS: Array<{ q: string; a: string }> = [
   },
   {
     q: 'Do you offer discounts?',
-    a: `Three ways. Volume: 10% off per PC from 2 seats, 20% from 5 seats, and 10+ seats are quoted as a district deal — message us. Plans: annual saves ${annualSavingsPct(PRODUCTS.find((p) => p.id === 'extractor')!)}% on Incentive Extractor and Device Ordering, ${annualSavingsPct(PRODUCTS.find((p) => p.id === 'rebate')!)}% on Rebate Filing, and ${annualSavingsPct(PRODUCTS.find((p) => p.id === 'bundle')!)}% on the Full Bundle versus monthly. And launch pricing (shown on the cards) runs until Oct 31, 2026 — honored to the minute. From Nov 1: monthly $149 per tool · $450 Full Bundle; lifetime stays $999 per tool · $2,499 Full Bundle.`,
+    a: `Three ways. Volume: 10% off per PC from 2 seats, 20% from 5 seats, and 10+ seats are quoted as a district deal — message us. Plans: annual saves ${annualSavingsPct(PRODUCTS.find((p) => p.id === 'extractor')!)}% on Incentive Extractor and Device Ordering, ${annualSavingsPct(PRODUCTS.find((p) => p.id === 'rebate')!)}% on Rebate Filing, and ${annualSavingsPct(PRODUCTS.find((p) => p.id === 'bundle')!)}% on the Full Bundle versus monthly. Monthly is $119 per tool · $299 Full Bundle, and lifetime is $999 per tool · $2,499 Full Bundle — founding-customer pricing, 1 year of updates included.`,
   },
   {
     q: 'What happens when VidaPay changes its portal?',

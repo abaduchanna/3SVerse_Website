@@ -60,9 +60,9 @@ export default function PricingSummaryTable() {
         </table>
       </div>
       <p className="border-t border-border px-5 py-3 text-[11.5px] font-light leading-5 text-muted-foreground">
-        One row per product — the whole price picture in one glance. Monthly rates go up on Nov 1; annual and lifetime
-        prices stay where they are. Annual = billed once a year, cancel before renewal, every update included while
-        active. Lifetime = one-time payment, permanent use, 1 year of updates included.
+        One row per product — the whole price picture in one glance. Annual = billed once a year, cancel before
+        renewal, every update included while active. Lifetime = one-time payment, permanent use, 1 year of updates
+        included.
       </p>
     </div>
   );
