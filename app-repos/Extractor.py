@@ -3101,6 +3101,48 @@ def _wa_launch():
             continue
 
 
+def _wa_paste_text(text, _pyperclip=None):
+    """Paste text via clipboard. The new WhatsApp Desktop (WebView2) reliably
+    DROPS synthetic per-char keystrokes (VkKeyScanW typing) right after focus,
+    so clipboard paste is the PRIMARY path and typing is only a fallback."""
+    import time as _t
+    if _pyperclip is not None:
+        try:
+            _pyperclip.copy(text)
+            _t.sleep(0.2)
+            _wa_hotkey("ctrl", "v")
+            return True
+        except Exception:
+            pass
+    _wa_write(text, interval=0.05)
+    return False
+
+
+def _wa_ensure_focused(hwnd, attempts=3):
+    """Verify WhatsApp REALLY owns keyboard focus. Windows 11 blocks
+    SetForegroundWindow for background processes — an ALT-tap releases that
+    lock, so tap ALT then re-focus and re-check GetForegroundWindow."""
+    import ctypes, time as _t
+    try:
+        user32 = ctypes.windll.user32
+    except Exception:
+        return True
+    for _ in range(attempts):
+        try:
+            if user32.GetForegroundWindow() == hwnd:
+                return True
+        except Exception:
+            return True
+        _wa_win32_press("alt")          # ALT-tap unlocks foreground lock
+        _t.sleep(0.2)
+        _wa_focus_hwnd(hwnd)
+        _t.sleep(0.6)
+    try:
+        return user32.GetForegroundWindow() == hwnd
+    except Exception:
+        return True
+
+
 def send_whatsapp_2fa_alert(log=print, driver=None):
     """Send a '2FA' alert via WhatsApp Desktop (pyautogui) or WhatsApp Web
     (browser tab), depending on the _WA_MODE global set in the UI."""
@@ -3209,7 +3251,10 @@ def _send_whatsapp_desktop_alert(log=print):
             log("WhatsApp Desktop window not found — skipping alert.")
             return False
         _wa_focus_hwnd(hwnd)
-        log("WhatsApp Desktop focused (window layout untouched).")
+        if _wa_ensure_focused(hwnd):
+            log("WhatsApp Desktop focused (window layout untouched).")
+        else:
+            log("WhatsApp focus could not be verified — continuing with paste-only path.")
 
         _t.sleep(1.0)
 
@@ -3219,17 +3264,15 @@ def _send_whatsapp_desktop_alert(log=print):
         _t.sleep(0.7)
         _wa_hotkey("ctrl", "a")
         _t.sleep(0.2)
-        _wa_write(_WA_GROUP_NAME, interval=0.05)
-        _t.sleep(1.2)
+        # FIX: naya WhatsApp Desktop typing drop karta hai — group name ab
+        # clipboard se PASTE hota hai (typing sirf fallback hai).
+        _wa_paste_text(_WA_GROUP_NAME, _pyperclip)
+        _t.sleep(1.5)
         _wa_press("enter")
         _t.sleep(1.5)
 
-        # ── Paste "2FA" and send ──────────────────────────────────────────────
-        if _pyperclip is not None:
-            _pyperclip.copy("2FA")
-            _wa_hotkey("ctrl", "v")
-        else:
-            _wa_write("2FA", interval=0.1)
+        # ── Paste "2FA" and send (clipboard paste, not typing) ────────────────
+        _wa_paste_text("2FA", _pyperclip)
 
         _t.sleep(0.7)
         _wa_press("enter")
