@@ -650,13 +650,22 @@
       </div>
     </noscript>
     <div id="root">
-      <!-- instant boot splash (pure inline CSS, replaced by React on mount) -->
-      <div style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#060509;">
-        <div style="display:flex;flex-direction:column;align-items:center;gap:18px;font-family:'Montserrat',system-ui,sans-serif;">
-          <span style="width:10px;height:10px;border-radius:9999px;background:#6ee7ef;box-shadow:0 0 24px #6ee7ef;animation:pf-pulse 1.4s ease-in-out infinite;"></span>
-          <span style="font-size:12px;letter-spacing:.42em;text-transform:uppercase;color:rgba(242,240,250,.55);">3S Verse</span>
+      <!-- instant boot splash (pure inline CSS, replaced by React on mount).
+           Same behaviour/timing as before: shown the moment HTML paints, no
+           minimum duration, 1.4s pulse loop, removed when React mounts. -->
+      <div style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--boot-splash-bg,#060509);overflow:hidden;">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:22px;font-family:'Montserrat',system-ui,sans-serif;">
+          <img src="/logo-240.webp" alt="3SVerse" width="240" height="57" decoding="async" fetchpriority="high" style="width:min(56vw,220px);height:auto;display:block;animation:pf-pulse 1.4s ease-in-out infinite;" />
+          <span style="display:block;width:84px;height:3px;border-radius:3px;background:rgba(127,127,150,.22);overflow:hidden;">
+            <i style="display:block;height:100%;width:42%;border-radius:3px;background:linear-gradient(90deg,#6ee7ef,#b57cf4,#e83dcc);animation:pf-sweep 1.4s ease-in-out infinite;"></i>
+          </span>
+          <span style="font-size:10px;letter-spacing:.42em;text-transform:uppercase;color:var(--boot-splash-fg,rgba(242,240,250,.55));">Software · Systems · Operations</span>
         </div>
-        <style>@keyframes pf-pulse{0%,100%{opacity:.35;transform:scale(1)}50%{opacity:1;transform:scale(1.35)}}</style>
+        <style>
+          @keyframes pf-pulse{0%,100%{opacity:.55;transform:scale(1)}50%{opacity:1;transform:scale(1.04)}}
+          @keyframes pf-sweep{0%{transform:translateX(-110%)}100%{transform:translateX(250%)}}
+          @media (prefers-reduced-motion:reduce){#root img,#root i{animation:none!important}}
+        </style>
       </div>
     </div>
     <script type="module" src="/src/main.tsx"></script>
