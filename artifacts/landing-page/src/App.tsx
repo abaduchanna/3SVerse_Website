@@ -1493,8 +1493,7 @@ function StoreSlider() {
             className="mt-3 w-full accent-brand-cyan"
           />
           <p className="mt-3 text-[12.5px] font-light leading-5 text-muted-foreground" data-testid="store-slider-msg">
-            Traditional per-door platforms would charge this dealer{' '}
-            <span className="font-medium text-foreground">{formatUSD(stores * 125)}+/mo</span> extra. 3SVerse charges{' '}
+            Your cost stays flat:{' '}
             <span className="font-medium text-foreground">$0 per extra door</span> — one license, all your merchant IDs.
           </p>
         </div>
@@ -1509,7 +1508,6 @@ function CostBenchmark() {
   const bars = [
     { label: 'US in-house back-office admin ($18/hr)', num: '$3,120/mo', width: 100, tone: 'bg-foreground/35', hi: false },
     { label: 'Missed / rejected VidaPay rebates (est.)', num: '$1,850/mo', width: 59, tone: 'bg-brand-magenta', hi: false },
-    { label: 'ERP / POS per-door add-ons ($125 × 10 stores)', num: '$1,250/mo', width: 40, tone: 'bg-amber-400', hi: false },
     { label: '3SVerse Full Bundle (unlimited stores)', num: `${bundleMonthly}/mo`, width: 9.6, tone: 'bg-brand-cyan', hi: true },
   ];
   return (
@@ -1593,7 +1591,7 @@ const FAQ_ITEMS: Array<{ q: string; a: string }> = [
   },
   {
     q: 'I run multiple stores. Will it keep up?',
-    a: 'That is exactly what they were built for. All three tools were born inside a real multi-store wireless operation — per-store dashboards, per-store ordering quantities, and bulk claim filing across every branch are the default, not an add-on. Pick exactly how many PCs you need when ordering: 2–4 PCs get 10% off per PC and 5–9 get 20%, applied automatically. For 10 or more PCs we quote district pricing with central billing.',
+    a: 'That is exactly what they were built for. All three tools were born inside a real multi-store wireless operation — per-store dashboards, per-store ordering quantities, and bulk claim filing across every branch are the default, not an add-on. Each license is one PC with unlimited stores. Pick how many PCs you need when ordering: 2–4 PCs get 10% off per PC and 5–9 get 20%, applied automatically. For 10 or more PCs we quote district pricing with central billing.',
   },
   {
     q: 'Is this a subscription?',

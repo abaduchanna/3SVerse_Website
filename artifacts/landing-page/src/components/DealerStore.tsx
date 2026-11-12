@@ -861,7 +861,7 @@ export default function DealerStore() {
                       {tier.offPct > 0 ? (
                         <span className="text-brand-cyan">{tier.label} included</span>
                       ) : (
-                        '1 license, runs on as many PCs as you pick'
+                        '1 license · 1 PC · unlimited stores'
                       )}
                       {nextTier ? ` — ${nextTier.min - sel.pcs} more PC${nextTier.min - sel.pcs === 1 ? '' : 's'} → ${nextTier.offPct}% off per PC` : ''}
                     </p>
@@ -918,7 +918,7 @@ export default function DealerStore() {
                           ? '7 days · 1 PC · no card needed'
                           : product.id === 'bundle'
                             ? `${bundleLicenseNote()} · ${modelBillingNote(sel.model, product)}`
-                            : `${formatUSD(perPcPrice(product, sel.model, sel.pcs))} per PC · ${modelBillingNote(sel.model, product)}`}
+                            : `${formatUSD(perPcPrice(product, sel.model, sel.pcs))} · one PC · unlimited stores · ${modelBillingNote(sel.model, product)}`}
                       </p>
                     </div>
                     {/* two SELF-EXPLANATORY paths (owner-audit: bare "+ Add" read

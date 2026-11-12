@@ -28,7 +28,7 @@ const FAQS: Array<{ q: string; a: string }> = [
   },
   {
     q: 'What does per-PC pricing mean?',
-    a: 'One PC can run every store you operate — most single-workstation dealers need exactly one license. Extra PCs are for extra workstations (a second office, a colleague\u2019s desk): each seat is a separate activation with its own key, support and updates, so volume discounts apply per PC.',
+    a: 'Each license covers one PC and unlimited stores — most single-workstation dealers need exactly one license. Extra PCs (a second office, a colleague\u2019s desk) each need their own license key, with support and updates, and volume discounts apply per PC.',
   },
   {
     q: 'Do you offer discounts?',
@@ -68,7 +68,7 @@ function PlanCard({ product, featured }: { product: Product; featured?: boolean 
           {formatUSD(lifetime)}
         </span>
         <span className="pb-0.5 text-[12px] font-light text-muted-foreground">
-          {isBundle ? 'one-time · buy 1 complete bundle, get 1 free · covers 2 PCs' : 'one-time · per PC'}
+          {isBundle ? 'one-time · buy 1 complete bundle, get 1 free · covers 2 PCs' : 'one-time · one PC · unlimited stores'}
         </span>
       </div>
       <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] font-light text-muted-foreground">
