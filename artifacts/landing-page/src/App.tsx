@@ -1535,8 +1535,7 @@ function CostBenchmark() {
             </div>
             <p className="mt-8 border-t border-border pt-5 text-[11.5px] font-light leading-5 text-muted-foreground">
               Figures are illustrative examples, not promises of results: labor cost assumes 10 hours a week at $18/hr
-              (about $780 a month). One mistyped IMEI
-              or a missed port-in promo window alone costs $50–$150 in pure lost profit per occurrence.
+              (about $780 a month).
             </p>
           </div>
         </Reveal>
