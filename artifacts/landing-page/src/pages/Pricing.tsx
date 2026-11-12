@@ -12,7 +12,6 @@ import PricingSummaryTable from '@/components/PricingSummaryTable';
 import {
   PRODUCTS,
   LAUNCH_OFFER,
-  VOLUME_TIERS,
   perPcPrice,
   listPrice,
   discountPercent,
@@ -28,11 +27,11 @@ const FAQS: Array<{ q: string; a: string }> = [
   },
   {
     q: 'What does per-PC pricing mean?',
-    a: 'Each license covers one PC and unlimited stores — most single-workstation dealers need exactly one license. Extra PCs (a second office, a colleague\u2019s desk) each need their own license key, with support and updates, and volume discounts apply per PC.',
+    a: 'Each license covers one PC and unlimited stores — most single-workstation dealers need exactly one license. Extra PCs (a second office, a colleague\u2019s desk) each need their own license key, with support and updates.',
   },
   {
     q: 'Do you offer discounts?',
-    a: `Three ways. Volume: 10% off per PC from 2 seats, 20% from 5 seats, and 10+ seats are quoted as a district deal — message us. Plans: annual saves ${annualSavingsPct(PRODUCTS.find((p) => p.id === 'extractor')!)}% on Incentive Extractor and Device Ordering, ${annualSavingsPct(PRODUCTS.find((p) => p.id === 'rebate')!)}% on Rebate Filing, and ${annualSavingsPct(PRODUCTS.find((p) => p.id === 'bundle')!)}% on the Full Bundle versus monthly. Monthly is $119 per tool · $299 Full Bundle, and lifetime is $999 per tool · $2,499 Full Bundle — founding-customer pricing, 1 year of updates included.`,
+    a: `Plans: annual saves ${annualSavingsPct(PRODUCTS.find((p) => p.id === 'extractor')!)}% on Incentive Extractor and Device Ordering, ${annualSavingsPct(PRODUCTS.find((p) => p.id === 'rebate')!)}% on Rebate Filing, and ${annualSavingsPct(PRODUCTS.find((p) => p.id === 'bundle')!)}% on the Full Bundle versus monthly. Monthly is $119 per tool · $299 Full Bundle, and lifetime is $999 per tool · $2,499 Full Bundle — founding-customer pricing, 1 year of updates included.`,
   },
   {
     q: 'What happens when VidaPay changes its portal?',
@@ -165,10 +164,6 @@ function Faq() {
 }
 
 export default function Pricing() {
-  const volNote = VOLUME_TIERS.filter((t) => t.offPct > 0)
-    .sort((a, b) => b.min - a.min)
-    .map((t) => `${t.min}+ PCs: ${t.offPct}% off per PC`)
-    .join(' · ');
 
   return (
     <PageShell
@@ -185,7 +180,7 @@ export default function Pricing() {
           while active. One PC license can process every store you operate from that computer.
         </p>
         <p>
-          {LAUNCH_OFFER.active ? LAUNCH_OFFER.note : 'Launch pricing has ended — list prices below.'} {volNote}.{' '}
+          {LAUNCH_OFFER.active ? LAUNCH_OFFER.note : 'Launch pricing has ended — list prices below.'}{' '}
           Running 10 or more PCs? <a className="text-brand-cyan hover:underline" href="mailto:Connect@3SVerse.com">Message us</a> for district pricing.
         </p>
         <p className="rounded-2xl border border-brand-cyan/25 bg-brand-cyan/[.06] px-5 py-4 text-foreground">

@@ -1444,9 +1444,9 @@ function Compare() {
             </div>
             <div className="rounded-3xl border border-border bg-card p-7">
               <p className="flex items-center gap-2.5 font-mono-tech text-[10px] uppercase tracking-[.2em] text-brand-cyan"><TrendingUp className="h-3.5 w-3.5" /> Savings — time and money</p>
-              <p className="mt-3 text-[19px] font-light tracking-[-0.01em] text-foreground">$3,120 vs $299 a month</p>
+              <p className="mt-3 text-[19px] font-light tracking-[-0.01em] text-foreground">$780 vs $299 a month</p>
               <p className="mt-2.5 text-[13.5px] font-light leading-6 text-foreground/75">
-                One back-office employee costs $3,120+/month at the $18/hr a trusted US manager actually earns — before taxes and turnover — and works one store at a time. The Full Bundle is $299/month for all 3 tools on 2 PCs, running every store you operate. That&apos;s about three days of one employee&apos;s pay.
+                Manual VidaPay work of about 10 hours a week at $18/hr comes to roughly $780/month, before taxes and turnover, and covers one store at a time. The Full Bundle is $299/month for all 3 tools on 2 PCs, running every store you operate.
               </p>
             </div>
           </div>
@@ -1506,9 +1506,8 @@ function CostBenchmark() {
   const bundle = PRODUCTS.find((p) => p.id === 'bundle')!;
   const bundleMonthly = formatUSD(perPcPrice(bundle, 'monthly', 1));
   const bars = [
-    { label: 'US in-house back-office admin ($18/hr)', num: '$3,120/mo', width: 100, tone: 'bg-foreground/35', hi: false },
-    { label: 'Missed / rejected VidaPay rebates (est.)', num: '$1,850/mo', width: 59, tone: 'bg-brand-magenta', hi: false },
-    { label: '3SVerse Full Bundle (unlimited stores)', num: `${bundleMonthly}/mo`, width: 9.6, tone: 'bg-brand-cyan', hi: true },
+    { label: 'Manual VidaPay work: 10 hrs/week at $18/hr', num: '$780/mo', width: 100, tone: 'bg-foreground/35', hi: false },
+    { label: '3SVerse Full Bundle (unlimited stores)', num: `${bundleMonthly}/mo`, width: 38, tone: 'bg-brand-cyan', hi: true },
   ];
   return (
     <section id="cost" data-testid="cost-benchmark" className="relative overflow-hidden py-28 lg:py-36">
@@ -1517,7 +1516,7 @@ function CostBenchmark() {
           <div className="mb-12 max-w-3xl">
             <Kicker>05 — The real cost of doing nothing</Kicker>
             <h2 className="max-w-2xl text-[clamp(2.2rem,4vw,3.6rem)] font-light leading-[1.05] tracking-[-0.02em] text-foreground">
-              A 10-store dealer&apos;s monthly bleed, and where <span className="text-brand-cyan">3SVerse stops it.</span>
+              What manual VidaPay work costs, and where <span className="text-brand-cyan">3SVerse stops it.</span>
             </h2>
           </div>
         </Reveal>
@@ -1535,9 +1534,8 @@ function CostBenchmark() {
               ))}
             </div>
             <p className="mt-8 border-t border-border pt-5 text-[11.5px] font-light leading-5 text-muted-foreground">
-              Figures are illustrative examples, not promises of results: admin cost assumes one back-office employee at $18/hr
-              for a full-time month (~173 hrs); missed-rebate leakage varies by dealer volume and promo calendar; per-door
-              add-on pricing reflects the $100–$250/store/mo tiers typical of legacy wireless POS platforms. One mistyped IMEI
+              Figures are illustrative examples, not promises of results: labor cost assumes 10 hours a week at $18/hr
+              (about $780 a month). One mistyped IMEI
               or a missed port-in promo window alone costs $50–$150 in pure lost profit per occurrence.
             </p>
           </div>
@@ -1591,7 +1589,7 @@ const FAQ_ITEMS: Array<{ q: string; a: string }> = [
   },
   {
     q: 'I run multiple stores. Will it keep up?',
-    a: 'That is exactly what they were built for. All three tools were born inside a real multi-store wireless operation — per-store dashboards, per-store ordering quantities, and bulk claim filing across every branch are the default, not an add-on. Each license is one PC with unlimited stores. Pick how many PCs you need when ordering: 2–4 PCs get 10% off per PC and 5–9 get 20%, applied automatically. For 10 or more PCs we quote district pricing with central billing.',
+    a: 'That is exactly what they were built for. All three tools were born inside a real multi-store wireless operation — per-store dashboards, per-store ordering quantities, and bulk claim filing across every branch are the default, not an add-on. Each license is one PC with unlimited stores. Need more PCs or central billing for a whole district? Message us for a quote.',
   },
   {
     q: 'Is this a subscription?',

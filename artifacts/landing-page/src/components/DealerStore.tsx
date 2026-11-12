@@ -811,45 +811,7 @@ export default function DealerStore() {
                   </div>
                   ) : (
                   <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      aria-label="Fewer PCs"
-                      data-testid={`pcs-minus-${product.id}`}
-                      disabled={sel.model === 'trial' || sel.pcs <= PC_MIN}
-                      className={[pill(false), 'px-3', sel.model === 'trial' || sel.pcs <= PC_MIN ? 'cursor-not-allowed opacity-30' : ''].join(' ')}
-                      onClick={() => setPcs(product.id, sel.pcs - 1)}
-                    >
-                      −
-                    </button>
-                    <span
-                      data-testid={`pcs-value-${product.id}`}
-                      className="min-w-[72px] text-center text-[14px] font-medium text-foreground"
-                    >
-                      {pcLabel(sel.pcs)}
-                    </span>
-                    <button
-                      type="button"
-                      aria-label="More PCs"
-                      data-testid={`pcs-plus-${product.id}`}
-                      disabled={sel.model === 'trial'}
-                      className={[pill(false), 'px-3', sel.model === 'trial' ? 'cursor-not-allowed opacity-30' : ''].join(' ')}
-                      onClick={() => setPcs(product.id, sel.pcs + 1)}
-                    >
-                      +
-                    </button>
-                    {sel.model === 'trial' ? (
-                      <span className="text-[12px] text-muted-foreground">trials are 1 PC</span>
-                    ) : (
-                      <input
-                        type="number"
-                        min={1}
-                        max={50}
-                        aria-label="Number of PCs"
-                        value={sel.pcs}
-                        onChange={(e) => setPcs(product.id, Number(e.target.value))}
-                        className="w-[64px] rounded-lg border border-border bg-foreground/[.04] px-2 py-1.5 text-center text-[13px] text-foreground outline-none focus:border-brand-cyan/60 [&::-webkit-inner-spin-button]:appearance-none"
-                      />
-                    )}
+                    <span className="text-[14px] font-medium text-foreground">1 PC</span>
                   </div>
                   )}
                   {product.id === 'bundle' ? (
@@ -985,9 +947,8 @@ export default function DealerStore() {
 
       {!result ? (
         <p className="mt-5 text-[13px] font-light text-muted-foreground">
-          For individual tools, pick exactly how many PCs you need — 2–4 PCs get 10% off per PC and 5–9 get 20%,
-          applied automatically. The Full Bundle already includes two complete PC licenses. Monthly plans cancel anytime; annual
-          is billed once a year; lifetime is a permanent-use option with 1 year of updates included. Need 10 or more PCs, or central
+          Each individual tool is one PC with unlimited stores. The Full Bundle already includes two complete PC licenses. Monthly plans cancel anytime; annual
+          is billed once a year; lifetime is a permanent-use option with 1 year of updates included. Need more PCs, or central
           billing for a whole district? Message us for a quote and we will set it up.
         </p>
       ) : null}

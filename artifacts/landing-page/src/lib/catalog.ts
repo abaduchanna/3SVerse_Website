@@ -56,7 +56,7 @@ export function isRecurringModel(model: ModelId): boolean {
 export const PER_PC_NOTE =
   'One PC can run every store you operate — most single-PC dealers need exactly one license. '
   + 'Extra PCs are for extra workstations (a second office, a colleague\u2019s desk): each seat is a separate '
-  + 'activation with its own license key, support and updates, so volume discounts apply per PC instead.';
+  + 'activation with its own license key, support and updates, so each one is licensed separately.';
 
 export interface ModelOption {
   id: ModelId;
@@ -82,8 +82,6 @@ export interface VolumeTier {
  * Ordered best-tier-first; pick the first tier whose min the count reaches.
  */
 export const VOLUME_TIERS: VolumeTier[] = [
-  { min: 5, multiplier: 0.8, offPct: 20, label: '20% off per PC' },
-  { min: 2, multiplier: 0.9, offPct: 10, label: '10% off per PC' },
   { min: 1, multiplier: 1, offPct: 0, label: '' },
 ];
 
