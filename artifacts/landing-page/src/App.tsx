@@ -1839,8 +1839,8 @@ function ReviewCard({ review }: { review: DealerReview }) {
         <div>
           <div className="flex items-center gap-1.5 text-[14px] font-medium text-foreground">
             {review.name}
-            <span className="inline-flex items-center gap-1 rounded-md border border-brand-cyan/30 bg-[#6ee7ef]/[.08] px-1.5 py-0.5 font-mono-tech text-[8.5px] uppercase tracking-[.12em] text-brand-cyan" title="License verified against purchase records">
-              <ShieldCheck className="h-2.5 w-2.5" /> Verified purchase
+            <span className="inline-flex items-center gap-1 rounded-md border border-brand-cyan/30 bg-[#6ee7ef]/[.08] px-1.5 py-0.5 font-mono-tech text-[8.5px] uppercase tracking-[.12em] text-brand-cyan" title="Submitted by a dealer, checked against license records before publishing">
+              <ShieldCheck className="h-2.5 w-2.5" /> Dealer review
             </span>
           </div>
           <div className="mt-0.5 font-mono-tech text-[10px] uppercase tracking-[.16em] text-muted-foreground">{review.org} · {review.date}</div>
@@ -1979,11 +1979,11 @@ function Reviews() {
             <div>
               <Kicker>08 — Trust &amp; guarantees</Kicker>
               <h2 className="max-w-2xl text-[clamp(2.2rem,4vw,3.6rem)] font-light leading-[1.05] tracking-[-0.02em] text-foreground">
-                No invented praise. <span className="text-brand-cyan">Verified dealers</span> only.
+                No invented praise. <span className="text-brand-cyan">Checked dealer reviews</span> only.
               </h2>
             </div>
             <p className="max-w-sm text-[15px] font-light leading-7 text-foreground/75">
-              Every review below comes from a real license holder running our tools in their stores today — 100% verified, no anonymous quotes, no paid testimonials.
+              Reviews below are written by dealers who submit them here. Each one is checked against license records before it goes up. We don’t publish anonymous quotes or paid testimonials.
             </p>
           </div>
         </Reveal>
@@ -2089,7 +2089,7 @@ function Reviews() {
                     <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
                   </button>
                   <span aria-live="polite" className="font-mono-tech text-[10px] uppercase tracking-[.16em] text-muted-foreground">
-                    {status === 'success' ? 'Review received — thank you. It goes up after verification.' : status === 'error' ? `${note || 'Couldn’t send'}. Email ${CONTACT_EMAIL} directly.` : 'Verified against purchase records before publishing.'}
+                    {status === 'success' ? 'Review received — thank you. It goes up after we check it.' : status === 'error' ? `${note || 'Couldn’t send'}. Email ${CONTACT_EMAIL} directly.` : 'Checked against license records before publishing.'}
                   </span>
                 </div>
               </form>
