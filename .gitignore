@@ -1,9 +1,5 @@
 # See https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
 
-# secrets - never commit
-.env
-.env.*
-
 # compiled output
 dist
 tmp
@@ -83,3 +79,6 @@ worklog.md
 # local secrets — never commit (PAT lives in bridge_mem/Pat_Key)
 .secrets/
 *.pem
+
+# working scratch space (docgen experiments, patient-data docs) — NEVER commit
+/work/
