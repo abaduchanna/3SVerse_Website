@@ -82,3 +82,20 @@ worklog.md
 
 # working scratch space (docgen experiments, patient-data docs) — NEVER commit
 /work/
+
+
+# env file — never commit (a bot auto-commit once re-added it)
+.env
+
+# 3SVerse_PDF_To_Word: local tool folder only — not a repo, not published
+/app-repos/3SVerse_PDF_To_Word/
+
+
+# local-only tooling & reverse-engineering workspace — NEVER commit
+# (platform-tools, jadx/apktool, NSM MSI payloads/disassembly, pyc, packaged zips)
+app-repos/__pycache__/
+app-repos/download_pkg/
+/lib/android/
+/lib/rev-tools/
+/nsm_msi/
+/nsm_v260/
