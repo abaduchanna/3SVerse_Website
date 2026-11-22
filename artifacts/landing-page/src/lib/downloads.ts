@@ -22,16 +22,18 @@ export const DOWNLOAD_BASE =
 
 const asset = (file: string) => `${DOWNLOAD_BASE}/${file}`;
 
-/** Product id → the one official build in the public mirror. */
+/** Product id → the one official build in the public mirror.
+ *  Switched to the PySide6/Qt builds (2026-11-22) — same license/trial
+ *  behavior and automation logic as the retired Tkinter builds, new UI. */
 export const PRODUCT_BUILDS: Record<string, { build: string }> = {
   extractor: {
-    build: asset('VidaPay_Incentive_Extractor.exe'),
+    build: asset('VidaPay_Incentive_Extractor_Qt.exe'),
   },
   ordering: {
-    build: asset('VidaPay_Device_Ordering.exe'),
+    build: asset('VidaPay_Device_Ordering_Qt.exe'),
   },
   rebate: {
-    build: asset('VidaPay_Rebate_Filing.exe'),
+    build: asset('VidaPay_Rebate_Filing_Qt.exe'),
   },
 };
 

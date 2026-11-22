@@ -229,10 +229,12 @@ export const YOUTUBE_URL = 'https://www.youtube.com/@3SVerse';
 const TRIAL_BASE =
   'https://github.com/abaduchanna/3SVerse_Downloads/releases/latest/download/';
 
+/* Switched to the PySide6/Qt builds (2026-11-22) — same license/trial
+   behavior and automation logic as the retired Tkinter builds, new UI. */
 export const TRIAL_DOWNLOADS: Record<string, string> = {
-  extractor: `${TRIAL_BASE}VidaPay_Incentive_Extractor.exe`,
-  ordering: `${TRIAL_BASE}VidaPay_Device_Ordering.exe`,
-  rebate: `${TRIAL_BASE}VidaPay_Rebate_Filing.exe`,
+  extractor: `${TRIAL_BASE}VidaPay_Incentive_Extractor_Qt.exe`,
+  ordering: `${TRIAL_BASE}VidaPay_Device_Ordering_Qt.exe`,
+  rebate: `${TRIAL_BASE}VidaPay_Rebate_Filing_Qt.exe`,
   /* Bundle → the branded download page lists all three portable executables
      with live SHA-256 checksums. */
   bundle: '/#/download',

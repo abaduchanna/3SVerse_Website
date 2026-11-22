@@ -25,10 +25,12 @@ const RELEASES_BASE = 'https://github.com/abaduchanna/3SVerse_Downloads/releases
 const dlUrl = (name: string) =>
   `https://github.com/abaduchanna/3SVerse_Downloads/releases/latest/download/${name}`;
 
+/* Switched to the PySide6/Qt builds (2026-11-22) — same license/trial
+   behavior and automation logic as the retired Tkinter builds, new UI. */
 const KNOWN_EXES: Array<{ name: string; label: string }> = [
-  { name: 'VidaPay_Incentive_Extractor.exe', label: 'VidaPay Incentive Extractor — 7-day trial included' },
-  { name: 'VidaPay_Device_Ordering.exe', label: 'VidaPay Device Ordering — 7-day trial included' },
-  { name: 'VidaPay_Rebate_Filing.exe', label: 'VidaPay Rebate Filing — 7-day trial included' },
+  { name: 'VidaPay_Incentive_Extractor_Qt.exe', label: 'VidaPay Incentive Extractor — 7-day trial included' },
+  { name: 'VidaPay_Device_Ordering_Qt.exe', label: 'VidaPay Device Ordering — 7-day trial included' },
+  { name: 'VidaPay_Rebate_Filing_Qt.exe', label: 'VidaPay Rebate Filing — 7-day trial included' },
 ];
 
 /* Audit 4.5: a 60-second "how to activate your key in 3 steps" video on the
