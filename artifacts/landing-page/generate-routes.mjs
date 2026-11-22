@@ -171,6 +171,37 @@ const ROUTES = {
       },
     },
   },
+  "watch/device-ordering": {
+    title: "VidaPay Device Ordering — Excel to portal, automatically (video) — 3S Verse",
+    description:
+      "Watch handset orders placed automatically for every store, straight from an Excel inventory sheet — recorded from the real app, no mockups.",
+    robots: "index,follow",
+    canonical: `${SITE}/watch/device-ordering/`,
+    shim: "#/watch/device-ordering",
+    jsonld: {
+      "@context": "https://schema.org",
+      "@type": "VideoObject",
+      name: "VidaPay Device Ordering — Excel to portal, automatically",
+      description:
+        "Handset orders placed automatically for every store, straight from an Excel inventory sheet. Recorded from the real app — no mockups, no marketing polish.",
+      thumbnailUrl: [
+        "https://i.ytimg.com/vi/OTAQNsOqnuA/maxresdefault.jpg",
+        "https://i.ytimg.com/vi/OTAQNsOqnuA/hqdefault.jpg",
+      ],
+      uploadDate: "2026-11-22",
+      duration: "PT6M9S",
+      embedUrl: "https://www.youtube.com/embed/OTAQNsOqnuA",
+      contentUrl: "https://www.youtube.com/watch?v=OTAQNsOqnuA",
+      mainEntityOfPage: `${SITE}/watch/device-ordering/`,
+      isFamilyFriendly: true,
+      publisher: {
+        "@type": "Organization",
+        name: "3S Verse",
+        url: `${SITE}/`,
+        logo: { "@type": "ImageObject", url: `${SITE}/logo.png` },
+      },
+    },
+  },
   /* SEO landing pages (2026-10-15, Leados search-gap keywords). Real static
      pages with their own canonical; the hash shim lands on the matching view. */
   "vidapay-rebate-filing": {
@@ -207,7 +238,7 @@ const ROUTES = {
   },
 };
 
-const SHIM = (view) => `<script>(function(){var p=location.pathname.replace(/\\/+$/,'').toLowerCase();var map={'/privacy':'#/privacy','/terms':'#/terms','/refund':'#/refund','/eula':'#/eula','/security':'#/security','/about':'#/about','/pricing':'#/pricing','/download':'#/download','/trial':'#/download','/demo':'#/demo','/vidapay-rebate-filing':'#/rebate-filing','/front-office-automation':'#/front-office','/watch/rebate-filing':'#/watch/rebate-filing','/watch/incentive-extractor':'#/watch/incentive-extractor'};var v=map[p];if(v){location.replace(location.origin+'/'+v+location.search);}})();</script>`;
+const SHIM = (view) => `<script>(function(){var p=location.pathname.replace(/\\/+$/,'').toLowerCase();var map={'/privacy':'#/privacy','/terms':'#/terms','/refund':'#/refund','/eula':'#/eula','/security':'#/security','/about':'#/about','/pricing':'#/pricing','/download':'#/download','/trial':'#/download','/demo':'#/demo','/vidapay-rebate-filing':'#/rebate-filing','/front-office-automation':'#/front-office','/watch/rebate-filing':'#/watch/rebate-filing','/watch/incentive-extractor':'#/watch/incentive-extractor','/watch/device-ordering':'#/watch/device-ordering'};var v=map[p];if(v){location.replace(location.origin+'/'+v+location.search);}})();</script>`;
 
 function buildPage(route, meta) {
   let html = readFileSync(indexHtml, "utf-8");
