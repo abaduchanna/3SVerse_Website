@@ -1,0 +1,10 @@
+/* ══ ASCII wake ════════════════════════════════════════════ */
+.asc {
+  position: relative;
+  cursor: crosshair;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;}
+
+.asc-canvas { display: block; color: var(--fill-on, var(--ink)); }
