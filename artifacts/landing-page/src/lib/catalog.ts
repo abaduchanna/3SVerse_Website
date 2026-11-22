@@ -201,6 +201,12 @@ export const DEMOS = [
     durationISO: 'PT7M49S',
     published: '2026-09-01',
   },
+  {
+    id: 'OTAQNsOqnuA',
+    title: 'VidaPay Device Ordering — Excel to portal, automatically',
+    blurb: 'Handset orders placed automatically for every store, straight from an Excel inventory sheet.',
+    dur: '6:09',
+  },
 ] as const;
 
 /** YouTube channel — @3SVerse. */
